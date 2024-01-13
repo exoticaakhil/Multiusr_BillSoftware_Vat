@@ -340,4 +340,14 @@ def createbill(request):
     else:
           cmp = request.user.employee.company
     # usr = CustomUser.objects.get(email=email)
-    return render(request, 'createpurchasebill.html')
+    party=Party.objects.all()
+    return render(request, 'createpurchasebill.html',{'party':party})
+
+def custdata(request):
+  cid = request.POST['id']
+  part = Party.objects.get(id=cid)
+  phno = part.contact
+  address = part.address
+  pay = part.payment
+  bal = part.openingbalance
+  return JsonResponse({'phno':phno, 'address':address, 'pay':pay, 'bal':bal})
