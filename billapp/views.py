@@ -341,7 +341,39 @@ def createbill(request):
           cmp = request.user.employee.company
     # usr = CustomUser.objects.get(email=email)
     party=Party.objects.all()
-    return render(request, 'createpurchasebill.html',{'party':party})
+    item=Item.objects.all()
+    return render(request, 'createpurchasebill.html',{'party':party,'item':item})
+def itemdetails(request):
+  itmid = request.GET['id']
+  itm = Item.objects.get(id=itmid)
+  hsn = itm.itm_hsn
+  vat = itm.itm_vat
+  price = itm.itm_purchase_price
+  qty = itm.itm_stock_in_hand
+  return JsonResponse({'hsn':hsn, 'vat':vat,  'price':price, 'qty':qty})
+def item_dropdown(request):
+  options = {}
+  option_objects = Item.objects.all()
+  for option in option_objects:
+      options[option.id] = [option.item_name]
+  return JsonResponse(options)
+
+def cust_dropdown(request):
+    if request.user.is_company:
+          cmp = request.user.company
+    else:
+          cmp = request.user.employee.company
+    # usr = CustomUser.objects.get(email=email)
+    party=Party.objects.all()
+
+    id_list = []
+    party_list = []
+    for p in party:
+      id_list.append(p.id)
+      party_list.append(p.party_name)
+
+    return JsonResponse({'id_list':id_list, 'party_list':party_list })
+
 
 def custdata(request):
   cid = request.POST['id']

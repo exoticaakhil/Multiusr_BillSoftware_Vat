@@ -31,6 +31,10 @@ urlpatterns = [
     ######Akhil#####
     path('allbill',views.allbill,name='allbill'), 
     path('createbill',views.createbill,name='createbill'), 
-    path('custdata',views.custdata,name='custdata'), 
+    path('custdata',views.custdata,name='custdata'),
+    path('cust_dropdown',views.cust_dropdown,name='cust_dropdown'),  
+    path('itemdetails',views.itemdetails,name='itemdetails'), 
+    path('item_dropdown',views.item_dropdown,name='item_dropdown'), 
+ 
 
 ]
