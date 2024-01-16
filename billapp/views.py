@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.models import auth
 from django.utils.crypto import get_random_string
 import random
+from django.db.models import F
 from django.conf import settings
 from django.core.mail import send_mail
 from django.utils import timezone
@@ -327,14 +328,17 @@ def reject_staff(request,id):
   emp.delete()
   messages.info(request,'Employee Deleted !!')
   return redirect('load_staff_request')
+################Akhil###############
 def allbill(request):
     if request.user.is_company:
           cmp = request.user.company
     else:
           cmp = request.user.employee.company
     # usr = CustomUser.objects.get(email=email)
-    return render(request, 'all_billdetils.html')
-def createbill(request):
+    itm=PurchaseBill.objects.all()
+    pbill = PurchaseBill.objects.all()
+    return render(request, 'all_billdetils.html',{'itm':itm,'pbill':pbill})
+def purchasebill(request):
     if request.user.is_company:
           cmp = request.user.company
     else:
@@ -342,7 +346,18 @@ def createbill(request):
     # usr = CustomUser.objects.get(email=email)
     party=Party.objects.all()
     item=Item.objects.all()
-    return render(request, 'createpurchasebill.html',{'party':party,'item':item})
+    last_bill = PurchaseBill.objects.all().order_by('-billno').first()
+    if last_bill:
+        bill_no = last_bill.billno + 1
+    else:
+        bill_no = 1
+    context = {
+        'bill_no': bill_no,
+        'party':party,
+        'item':item,
+        # Add other context variables as needed
+    }
+    return render(request, 'createpurchasebill.html',context)
 def itemdetails(request):
   itmid = request.GET['id']
   itm = Item.objects.get(id=itmid)
@@ -383,3 +398,89 @@ def custdata(request):
   pay = part.payment
   bal = part.openingbalance
   return JsonResponse({'phno':phno, 'address':address, 'pay':pay, 'bal':bal})
+def createbill(request):
+  if request.method == 'POST': 
+    if request.user.is_company:
+      cmp = request.user.company
+    else:
+      cmp = request.user.employee.company   
+    part = Party.objects.get(id=request.POST.get('customername'))
+    pbill = PurchaseBill(party=part, 
+                          billno=request.POST.get('bill_no'),
+                          billdate=request.POST.get('billdate'),
+                          advance = request.POST.get("advance"),
+                          balance = request.POST.get("balance"),
+                          subtotal=float(request.POST.get('subtotal')),
+                          adjust = request.POST.get("adj"),
+                          taxamount = request.POST.get("taxamount"),
+                          grandtotal=request.POST.get('grandtotal'),
+                          )
+    pbill.save()
+        
+    product = tuple(request.POST.getlist("product[]"))
+    qty =  tuple(request.POST.getlist("qty[]"))
+    discount =  tuple(request.POST.getlist("discount[]"))
+    tax =  tuple(request.POST.getlist("vat[]"))
+    total =  tuple(request.POST.getlist("total[]"))
+    billno = PurchaseBill.objects.get(billno=pbill.billno)
+
+    if len(product)==len(qty)==len(tax)==len(discount)==len(total):
+        mapped=zip(product,qty,tax,discount,total)
+        mapped=list(mapped)
+        for ele in mapped:
+          itm = Item.objects.get(id=ele[0])
+          PurchaseBillItem.objects.create(product = itm,qty=ele[1], VAT=ele[2],discount=ele[3],total=ele[4],purchasebill=billno,company=cmp)
+
+    PurchaseBill.objects.filter(company=cmp).update(tot_bill_no=F('tot_bill_no') + 1)
+    
+    
+    pbill.tot_bill_no = pbill.billno
+    pbill.save()
+
+    PurchaseBillTransactionHistory.objects.create(purchasebill=pbill,action='Created')
+
+    if 'Next' in request.POST:
+      return redirect('purchasebill')
+    
+    if "Save" in request.POST:
+      return redirect('allbill')
+    
+  else:
+     return redirect('purchasebill')
+def billhistory(request):
+  pid = request.POST['id']
+  if request.user.is_company:
+    cmp = request.user.company
+  else:
+    cmp = request.user.employee.company
+  pbill = PurchaseBill.objects.get(billno=pid,company=cmp)
+  hst = PurchaseBillTransactionHistory.objects.filter(purchasebill=pbill,company=cmp).last()
+  name = hst.staff.first_name + ' ' + hst.staff.last_name 
+  action = hst.action
+  return JsonResponse({'name':name,'action':action,'pid':pid})
+
+
+def delete_purchasebill(request,id):
+  if request.user.is_company:
+    cmp = request.user.company
+  else:
+    cmp = request.user.employee.company
+  pbill = PurchaseBill.objects.get(id=id)
+  PurchaseBillItem.objects.filter(purchasebill=pbill,company=cmp).delete()
+  pbill.delete()
+  return redirect('createbill')
+
+def details_purchasebill(request,id):
+  if request.user.is_company:
+    cmp = request.user.company
+  else:
+    cmp = request.user.employee.company
+  pbill = PurchaseBill.objects.get(id=id)
+  pitm = PurchaseBillItem.objects.filter(purchasebill=pbill)
+  dis = 0
+  for itm in pitm:
+    dis += int(itm.discount)
+  itm_len = len(pitm)
+
+  context={'pbill':pbill,'pitm':pitm,'itm_len':itm_len,'dis':dis}
+  return render(request,'vatbilldetils.html',context)

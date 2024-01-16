@@ -30,11 +30,15 @@ urlpatterns = [
     path('reject_staff/<int:id>',views.reject_staff,name='reject_staff'), 
     ######Akhil#####
     path('allbill',views.allbill,name='allbill'), 
-    path('createbill',views.createbill,name='createbill'), 
+    path('purchasebill',views.purchasebill,name='purchasebill'), 
     path('custdata',views.custdata,name='custdata'),
     path('cust_dropdown',views.cust_dropdown,name='cust_dropdown'),  
     path('itemdetails',views.itemdetails,name='itemdetails'), 
     path('item_dropdown',views.item_dropdown,name='item_dropdown'), 
+    path('createbill',views.createbill,name='createbill'),
+    path('billhistory',views.billhistory,name='billhistory'),
+    path('delete_purchasebill/<int:id>',views.delete_purchasebill,name='delete_purchasebill'), 
+    path('details_purchasebill/<int:id>',views.details_purchasebill,name='details_purchasebill'),
  
 
 ]

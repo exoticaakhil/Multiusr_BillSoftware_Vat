@@ -92,3 +92,35 @@ class Party(models.Model):
     additionalfield1 = models.CharField(max_length=100,null=True,blank=True)
     additionalfield2 = models.CharField(max_length=100,null=True,blank=True)
     additionalfield3 = models.CharField(max_length=100,null=True,blank=True)
+class PurchaseBill(models.Model):
+    billno = models.IntegerField(default=0,null=True,blank=True)
+    staff = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
+    company = models.ForeignKey(Company,on_delete= models.CASCADE,null=True,blank=True)
+    party = models.ForeignKey(Party, on_delete=models.CASCADE)
+    billdate = models.DateField()
+    subtotal = models.IntegerField(default=0, null=True)
+    VAT = models.CharField(max_length=100,default=0, null=True)
+    taxamount = models.CharField(max_length=100,default=0, null=True)
+    adjust = models.CharField(max_length=100,default=0, null=True)
+    grandtotal = models.FloatField(default=0, null=True)
+    advance=models.CharField(null=True,blank=True,max_length=255)
+    balance=models.CharField(null=True,blank=True,max_length=255)
+    tot_bill_no = models.IntegerField(default=0, null=True)
+class PurchaseBillItem(models.Model):
+    purchasebill = models.ForeignKey(PurchaseBill,on_delete=models.CASCADE)
+    company = models.ForeignKey(Company,on_delete=models.CASCADE)
+    product = models.ForeignKey(Item,on_delete=models.CASCADE)
+    qty = models.IntegerField(default=0, null=True)
+    total = models.IntegerField(default=0, null=True)
+    VAT = models.CharField(max_length=100)
+    discount = models.CharField(max_length=100,default=0, null=True)
+class PurchaseBillTransactionHistory(models.Model):
+    purchasebill = models.ForeignKey(PurchaseBill,on_delete=models.CASCADE)
+    staff = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
+    company = models.ForeignKey(Company,on_delete= models.CASCADE,null=True,blank=True)
+    CHOICES = [
+        ('Created', 'Created'),
+        ('Updated', 'Updated'),
+    ]
+    action = models.CharField(max_length=20, choices=CHOICES)
+    transactiondate = models.DateField(auto_now=True)

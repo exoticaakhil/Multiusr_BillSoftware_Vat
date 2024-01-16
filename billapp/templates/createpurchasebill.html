@@ -170,7 +170,7 @@
     
                                                         <td style="width:21%">
                                                             <div class="d-flex">
-                                                                <select name='product' id="product1" class="form-control border-danger product"  onchange="changeprd(this.id)" style="color: black; background-color: white;">
+                                                                <select name='product[]' id="product1" class="form-control border-danger product"  onchange="changeprd(this.id)" style="color: black; background-color: white;">
                                                                     <option value="" selected hidden>Select Product</option>
                                                                     {% for i in item %}
                                                                   
@@ -185,27 +185,27 @@
                                                         </td>
     
                                                         <td style="width:12%">
-                                                            <input type="text" name='hsn' id="hsn1" class="form-control border-danger HSNCODE" style="color: black; background-color: white;" readonly />
+                                                            <input type="text" name='hsn[]' id="hsn1" class="form-control border-danger HSNCODE" style="color: black; background-color: white;" readonly />
                                                         </td>
     
                                                         <td style="width:13%">
-                                                            <input type="number" name='qty' id="qty1"  class="form-control border-danger qty mb-1" step=0 min=0 style="color: black; background-color: white;" value=0 />
+                                                            <input type="number" name='qty[]' id="qty1"  class="form-control border-danger qty mb-1" step=0 min=0 style="color: black; background-color: white;" value=0 />
                                                         </td>
                                                     
                                                         <td style="width:12%">
-                                                            <input type="number" name='price' id="unit1" class="form-control border-danger price" step="0.00" min="0" style="color: black; background-color: white;" value=0 readonly />
+                                                            <input type="number" name='price[]' id="unit1" class="form-control border-danger price" step="0.00" min="0" style="color: black; background-color: white;" value=0 readonly />
                                                         </td>
                                                         <td style="width:12%">
-                                                            <input type="number" name='vat' id="Vat1" class="form-control border-danger seltax"  step="0.00" min="0" style="color: black; background-color: white;" value=0 readonly />
+                                                            <input type="number" name='vat[]' id="Vat1" class="form-control border-danger seltax"  step="0.00" min="0" style="color: black; background-color: white;" value=0 readonly />
                                                         </td>
                                                        
     
                                                         <td style="width: 10%;">
-                                                            <input type="number" name='discount'  placeholder='Enter Discount' id="disc1" value=0 class="form-control border-danger disc" step=0 min=0 style="  color: black; background-color: white;"  />
+                                                            <input type="number" name='discount[]'  placeholder='Enter Discount' id="disc1" value=0 class="form-control border-danger disc" step=0 min=0 style="  color: black; background-color: white;"  />
                                                         </td>
                                     
                                                         <td style="width:13%">
-                                                            <input type="number" name='total' id="total1" class="form-control border-danger total" value=0 readonly style="color: black; background-color: white;"  />
+                                                            <input type="number" name='total[]' id="total1" class="form-control border-danger total" value=0 readonly style="color: black; background-color: white;"  />
                                                         </td>
                                                         <td hidden><input type="number" name='taxamount1' id="taxamount1" class="taxamount" /></td>
                                                         
@@ -434,7 +434,7 @@
 
                     <td style="width:21%">
                         <div class="d-flex">
-                            <select name='product' id="product${roinc}" class="form-control border-danger product"  onchange="changeprd(this.id)" style="color: black; background-color: white;">
+                            <select name='product[]' id="product${roinc}" class="form-control border-danger product"  onchange="changeprd(this.id)" style="color: black; background-color: white;">
                                 <option value="" selected hidden>Select Product</option>
                                 {% for i in item %}
                                         <option  value="{{ i.id  }}">{{ i.itm_name  }} </option>
@@ -448,27 +448,27 @@
                     </td>
 
                     <td tyle="width:12%">
-                        <input type="text" name='hsn' id="hsn${roinc}" class="form-control border-danger" style="color: black; background-color: white;" readonly />
+                        <input type="text" name='hsn[]' id="hsn${roinc}" class="form-control border-danger" style="color: black; background-color: white;" readonly />
                     </td>
 
                     <td style="width:13%">
-                        <input type="number" name='qty' value=0 id="qty${roinc}" class="form-control border-danger qty mb-1" step=0 min=0 style="color: black; background-color: white;" />
+                        <input type="number" name='qty[]' value=0 id="qty${roinc}" class="form-control border-danger qty mb-1" step=0 min=0 style="color: black; background-color: white;" />
                     </td>
 
                     <td tyle="width:12%">
-                        <input type="number" name='price' id="unit${roinc}" value=0 class="form-control border-danger price" step="0.00" min="0" style="color: black; background-color: white;" readonly/>
+                        <input type="number" name='price[]' id="unit${roinc}" value=0 class="form-control border-danger price" step="0.00" min="0" style="color: black; background-color: white;" readonly/>
                     </td>
 
                     <td tyle="width:12%">
-                        <input type="number" name='vat' id="Vat${roinc}" value=0 class="form-control border-danger seltax" value="{{0}}" step="0.00" min="0" style="color: black; background-color: white;" readonly/>
+                        <input type="number" name='vat[]' id="Vat${roinc}" value=0 class="form-control border-danger seltax" value="{{0}}" step="0.00" min="0" style="color: black; background-color: white;" readonly/>
                     </td>  
 
                     <td tyle="width:10%">
-                        <input type="number" name='discount' placeholder='Enter Discount' value=0 id="disc${roinc}" class="form-control border-danger disc" step=0 min=0 style="color: black; background-color: white;">
+                        <input type="number" name='discount[]' placeholder='Enter Discount' value=0 id="disc${roinc}" class="form-control border-danger disc" step=0 min=0 style="color: black; background-color: white;">
                     </td>
 
                     <td style="width:13%">
-                        <input type="number" name='total' id="total${roinc}" placeholder=0 class="form-control border-danger total" value=0 step="any" style="color: black; background-color: white;" readonly />
+                        <input type="number" name='total[]' id="total${roinc}" placeholder=0 class="form-control border-danger total" value=0 step="any" style="color: black; background-color: white;" readonly />
                     </td>
 
                     <td hidden><input type="number" step="any" name='taxamount1' id="taxamount${roinc}" class=" taxamount" /></td>
@@ -478,7 +478,13 @@
                     </td>
                 </tr>`
             );
+            $('#tab_logic').off('keyup change', '.total'); // Unbind existing handlers
+            $('#tab_logic').on('keyup change', '.total', function () {
+            calc();
+    });
         });
+        calc();
+
     });
     $(document).on('change', '.product',function(){ 
         var n = $(this).attr("id").slice(7);
@@ -506,6 +512,7 @@
             },
             
         });
+        calc();
     });
     function reloadItem() {
         $.ajax({
