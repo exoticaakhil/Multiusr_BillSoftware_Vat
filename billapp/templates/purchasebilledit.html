@@ -1,0 +1,647 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<style>
+    .card-body{
+        box-shadow: 2px 2px 10px 3px rgba(0, 0, 0, 0.397);
+        border-radius: 1vh;
+    }
+
+    #tab_logic{
+        margin-left: 10px;
+        width: 98%;
+    }
+
+    #tab_logic thead th{
+        border-bottom: 1px solid black;
+        border-top: 1px solid black;
+        border-left: 1px solid black;
+        border-right: 1px solid black;
+        background-color: #FFADB0;
+    }
+    #tab_logic tbody td{
+        border-bottom: 1px solid black;
+        border-top: 1px solid black;
+        border-left: 1px solid black;
+        border-right: 1px solid black;
+    }
+
+    #toPayRadio {
+        accent-color: red;
+    }
+
+    #toReceiveRadio {
+        accent-color: green;
+    }
+
+    #modal_closing{
+        height:5vh;
+    }
+        
+    #customer{
+        background-color: white;
+        color: black;
+    }
+
+    .selectize-input {
+        height: 5vh;
+        border-color: #54B4D3;
+        border-radius: 5px;
+    }
+
+    .option:hover {
+        background-color: #FFADB0;
+        color: white;
+    }  
+    
+    ::-webkit-scrollbar {
+        display: none
+    }
+</style> 
+
+<div class="body-wrapper">
+    <br><br><br>
+    <div class="row p-0 m-0">
+        <div class="col-12  p-0 m-0">
+            <div class=" bg-light bg-light pb-0 mb-0 p-2" style="height:100%;width:100%">
+                
+                <p></p>
+
+                <form action="{% url 'save_purchasebill' pbill.id %}" method="post" enctype="multipart/form-data" onsubmit="return validatepurchasebill()" novalidate>
+                    {% csrf_token %}
+                    <div class="page-content">
+                        <div class="card radius-15">
+                            <div class="card-body bg-light">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <h3 class="mb-3">EDIT &nbsp; PURCHASE &nbsp; BILL</h3>
+                                    </div>
+                                    <div class="col-md-7"></div>
+                                    <div class="col-md-1">
+                                        <a href="{% url 'allbill' %}" style="text-align: right; font-size: large; color: black; margin-left: 8vh;">
+                                            <i class="fa fa-times mt-2" aria-hidden="true"></i>'
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div id="customer_div" style=" margin-left: .1px; margin-right: .51px;">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label class="col-form-label">Customer</label>
+                                            <div class="d-flex">
+                                                <select name="customername" id="customer" class="form-control border-danger" style="color: black; background-color: white;">
+                                                    <option value="{{ pbill.party.id }}" selected hidden>{{pbill.party.party_name}}</option>
+                                                    {% for c in cust %}
+                                                        {% if c.cid_id == cmp.cid %}
+                                                        <option value={{c.id}}> {{ c.party_name }}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select> &nbsp;&nbsp;&nbsp;
+                                                <button id="modal_closing" type="button" class="btn btn-outline-delete " data-bs-toggle="modal" data-bs-target="#customercreation" data-bs-whatever="@mdo">
+                                                    <span class="fa fa-plus"></span>
+                                                </button>    
+                                            </div>
+                                                <div class="mt-1 d-flex" >
+                                                    &nbsp;<span id="balancediv" style=" color: black;"> Available Balance : <span id="balval" style="color: green;">{{pbill.party.openingbalance}}</span></span>
+                                                </div> 
+                                            
+                                            <div id="billdiv">
+                                                <label class="col-form-label">Bill No.</label>
+                                                <input type="text" class="form-control border-danger" name="bill_no"  id="bill_no" value="{{pbill.billno}}"  style="color: black;background-color: white;" readonly> <br>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div id="phonediv">
+                                                <label class="col-form-label">Phone No. </label>
+                                                <input class="form-control border-danger" name="phno" required  id="cust_phno"  style="color: black;background-color: white;" value="{{pbill.party.contact}}" readonly>
+                                            </div>
+                                            <div id="dbilldiv" style="display: none;">
+                                                <label class="col-form-label">Bill No.</label>
+                                                <input type="text" class="form-control border-danger" value="{{pbill.billno}}"  style="color: black;background-color: white;" readonly> <br>
+                                            </div>
+                                            <div id="daddressdiv" style="display: none;">
+                                                <label class="col-form-label">Billing Address</label>
+                                                <textarea class="form-control border-danger mb-3" name="dbname" id="dbname" rows="6" type="text" style="color: black;background-color: white;" readonly>{{ pbill.party.address }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4" id="addressdiv">
+                                            <label class="col-form-label">Billing Address</label>
+                                            <textarea class="form-control border-danger  mb-3" name="bname" id="bname" rows="6" type="text"style="color: black;background-color: white;">{{ pbill.party.address }}</textarea>
+                                        </div>
+                                        <div class="col-md-4" id="ddbilldiv" style="display: none;">
+                                            <label class="col-form-label">Bill No.</label>
+                                            <input type="text" class="form-control border-danger" value="{{pbill.billno}}"  style="color: black;background-color: white;" readonly> <br>
+                                        </div>
+                                    </div>
+                                    <br>
+
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label class="col-form-label">Bill Date:</label>
+                                            <input type="date" class="form-control border-danger" style="color: black; background-color: white;" name="billdate" id="billdate" value="{{bdate}}">
+                                            <br>
+                                        </div>
+                                        
+                                    <br>
+
+                                    <div class="row clearfix">
+                                        <div class="col-md-12 table-responsive-md mt-3">
+                                            <table class="table table-bordered table-hover mt-3" id="tab_logic">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-center">#</th>
+                                                        <th class="text-center">PRODUCT</th>
+                                                        <th class="text-center">HSN</th>
+                                                        <th class="text-center">QTY</th>
+                                                        <th class="text-center">PRICE</th>
+                                                        <th class="text-center">VAT (%)</th>
+                                                        <th class="text-center">DISCOUNT</th>
+                                                        <th class="text-center">TOTAL</th>
+                                                        <th class="text-center">FIELD</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="items-table-body">
+                                                {% for j in billprd %}
+                                                    <tr id='addr0{{ forloop.counter }}'>
+                                                        <td style="text-align: center; width:2%" class="nnum">
+                                                            {{ forloop.counter }}<input type="text"  name='id[]' value="{{ j.id }}" hidden>
+                                                        </td>
+
+                                                        <td style="width:21%" >
+                                                            <div class="d-flex">
+                                                                <select name='product[]' id="product{{ forloop.counter }}" class="form-control product border-danger" onchange="changeprd(this.id)" style="color: black; background-color: white;">
+                                                                    <option value="{{ j.product.id }}" selected hidden>{{ j.product.itm_name }}</option>
+                                                                    <option value=""  hidden>Select Product</option>
+                                                                    {% for i in item %}
+                                                                        {% if i.cid_id == cmp.cid %}
+                                                                            <option value="{{ i.id }}" >{{ i.itm_name  }} </option>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </select>&nbsp;&nbsp;&nbsp;
+                                                                <button id="modal_closing" type="button" class="btn btn-outline-delete " data-bs-toggle="modal" data-bs-target="#newitem" data-bs-whatever="@mdo">
+                                                                    <span class="fa fa-plus"></span>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+
+                                                        <td style="width:12%">
+                                                            <input type="text" name='hsn[]'  value="{{ j.product.itm_hsn }}" id="hsn{{ forloop.counter }}" class="form-control border-danger" style="color: black; background-color: white;"/>
+                                                        </td>
+
+                                                        <td style="width: 13%;">
+                                                            <input type="number" name='qty[]' value="{{ j.qty }}"  placeholder='Enter Qty' id="qty{{ forloop.counter }}" value=0 class="form-control qty mb-1 border-danger" step=0 min=0 style="color: black; background-color: white;" />
+                                                        </td>
+
+                                                        <td style="width:12%">
+                                                            <input type="number" name='price[]' value="{{ j.product.itm_purchase_price }}" id="unit{{ forloop.counter }}"class="form-control border-danger price" step="0.00" min="0" style="color: black; background-color: white;" />
+                                                        </td>
+                                                        <td style="width:12%">
+                                                            <input type="number" name='vat[]' id="Vat{{ forloop.counter }}" value="{{ j.VAT }}" class="form-control border-danger seltax"  step="0.00" min="0" style="color: black; background-color: white;"  readonly />
+                                                        </td>
+                                                        
+                                                        </td>
+
+                                                        <td style="width:10%">
+                                                            <input type="number" name='discount[]' placeholder='Enter Discount' id="disc{{forloop.counter}}" value="{{j.discount|default:0}}" class="form-control disc border-danger" step=0 min=0 style="color: black; background-color: white;">
+                                                        </td>
+
+                                                        <td style="width:13%">
+                                                            <input type="number" name='total[]' value="{{ j.total }}" id="total{{ forloop.counter }}" placeholder=0 class="form-control total border-danger" value=0 step="any" readonly style="color: black; background-color: white;" />
+                                                        </td>
+
+                                                        <td style="display: none;">
+                                                            <input type="number" step="any" name='taxamount1' id="taxamount{{ forloop.counter }}" class="form-control taxamount" />
+                                                        </td>
+
+                                                        <td style="width:5%">
+
+                                                            <button type="button" id="{{forloop.counter}}" class="btn btn-danger remove_row px-2 py-1 mx-1 fa fa-close" title="Remove Row">Delete </button>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                                <tr>
+                                                <td style="border: none;"><a class="btn btn-outline-danger ml-1" role="button" id="add" >+</a></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="clearfix" style="margin-top:20px">
+                                        <div class="row" style="margin-left: 2vh;">
+                                            <div class="col-md-5 table-responsive-md mt-3" id="tab_logic_total" style=" border: 1px solid rgba(128, 128, 128, 0.6); color: black; background-color: #FFADB0;  margin-left: -2vh;">
+                                                <div class="p-3">
+                                                    <div class="row container-fluid p-2 m-0">
+                                                        <div class="col-sm-4 mt-2"><label class="text-center">Sub Total</label></div>
+                                                        <div class="col-sm-1 mt-2">:</div>
+                                                        <div class="col-sm-7">
+                                                            <input type="number" step="any" name='subtotal' value="{{pbill.subtotal}}"style="color: black; background-color: white;" readonly class="form-control" id="sub_total">
+                                                        </div>
+                                                        <div class="col-sm-4 m-0 p-0"></div>
+                                                    </div>
+                                                 
+                                                        
+                                                    <div class="row container-fluid p-2 m-0">
+                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">Tax Amount</label></div>
+                                                        <div class="col-sm-1 mt-2">:</div>
+                                                        <div class="col-sm-7">
+                                                            <input type="number" step="any" name='taxamount' value="{{pbill.taxamount}}" id="tax_amount"style="color: black; background-color: white;" readonly class="form-control"/>
+                                                        </div>
+                                                        <div class="col-sm-4 m-0 p-0"></div>
+                                                    </div>
+                                                    <div class="row container-fluid p-2 m-0">
+                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">Adjustment</label></div>
+                                                        <div class="col-sm-1 mt-2">:</div>
+                                                        <div class="col-sm-7">
+                                                            <input type="number" step="any" name='adj' id="adj" value="{{pbill.adjust}}"style="color: black; background-color: white;" class="form-control"/>
+                                                        </div>
+                                                        <div class="col-sm-4 m-0 p-0"></div>
+                                                    </div>
+                                                    <div class="row container-fluid p-2 m-0">
+                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">Grand Total</label></div>
+                                                        <div class="col-sm-1 mt-2">:</div>
+                                                        <div class="col-sm-7">
+                                                            <input type="number" name='grandtotal' value="{{pbill.grandtotal}}" id="grandtotal"style="color: black; background-color: white;"  readonly class="form-control"/>
+                                                        </div>
+                                                        <div class="col-sm-4 m-0 p-0"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row" style="margin-left: 2vh;">
+                                            <div class="col-md-5 table-responsive-md mt-3 " id="tab_logic_total" style="color: black; background-color:#FFADB0; border: 1px solid rgba(128, 128, 128, 0.6); margin-left: -2vh;">
+                                                <div class="p-3">
+                                                    <div class="row container-fluid p-2 m-0">
+                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">Paid Off</label></div>
+                                                        <div class="col-sm-1 mt-2">:</div>
+                                                        <div class="col-sm-7">
+                                                            <input type="number" step="any" name='advance' id="advance" value="{{pbill.advance}}" style="color: black; background-color: white;" class="form-control"/>
+                                                        </div>
+                                                        <div class="col-sm-4 m-0 p-0"></div>
+                                                    </div>
+                                                    <div class="row container-fluid p-2 m-0">
+                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">Balance</label></div>
+                                                        <div class="col-sm-1 mt-2">:</div>
+                                                        <div class="col-sm-7">
+                                                        <input type="number" name='balance' id="balance" readonly style="color: black; background-color: white;"  value="{{pbill.balance}}" class="form-control" readonly />
+                                                        </div>
+                                                        <div class="col-sm-4 m-0 p-0"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-1 mt-3" style="margin-right: 8vh;"></div>
+                                        <div class="col-md-2 mt-3">
+                                            <input type="submit" class="btn btn-danger bg-gradient w-75" name="Save" value="SAVE"></input>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+          
+        
+
+        <script>
+            function changeprd(id){
+                id_val = id.slice(7)
+                document.getElementById(`qty${id_val}`).value = 0
+                document.getElementById(`total1`).value = 0
+                document.getElementById(`Vat1${id_val}`).value = 0
+                document.getElementById(`disc${id_val}`).value = 0
+                document.getElementById(`taxamount${id_val}`).value = 0
+               
+                calc()
+            }
+        </script>
+         
+        <script>
+            $(document).ready(function() {
+                $("#advance").change(function() {
+                    tot_val = parseFloat($('#grandtotal').val())
+                    adv_val = parseFloat($('#advance').val())
+                    if (tot_val<adv_val){
+                        $('#advance').val(0)
+                        $('#balance').val(tot_val.toFixed(2));
+                        alert("Advance Greater than Total Amount")
+                    }else{
+                        tot_val = tot_val - adv_val
+                        $('#balance').val(tot_val.toFixed(2));
+                    }
+                })
+            })
+        </script>
+        
+        <script>
+        
+            function reloadCustomer() {
+                $.ajax({
+                    url: "{% url 'cust_dropdown' %}",
+                    type: "GET",
+                    dataType: "json",
+                    data: $(this).serialize(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+        
+                    success: function(response) {
+                        id_list = response.id_list
+                        party_list = response.party_list
+                        console.log(party_list)
+                        var $select = $(document.getElementById('customer'));
+                        var selectize = $select[0].selectize;
+                        for(let i=0; i<id_list.length;i++){
+                            selectize.addOption({value:id_list[i],text:party_list[i]});
+                        }
+                        selectize.setValue("");
+                    },
+                });
+            }
+        
+        
+            
+            $(document).ready(function () {
+                $('#customer').on('change', function() {
+                    $.ajax({
+                        type : 'POST',
+                        url: "{% url 'custdata' %}",
+                        data: {
+                            id: $('#customer').val(),
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                        },
+                      
+                        success: function(data){
+                            if (data.phno == ''){
+                                if(data.address == ''){
+                                    document.getElementById('daddressdiv').style.display = 'none';
+                                    document.getElementById('addressdiv').style.display = 'none';
+                                    document.getElementById('phonediv').style.display = 'none';
+                                    document.getElementById('dbilldiv').style.display = 'block';
+                                    document.getElementById('billdiv').style.display = 'none';
+                                    document.getElementById('ddbilldiv').style.display = 'none';
+                                }else{
+                                    document.getElementById('daddressdiv').style.display = 'block';
+                                    document.getElementById('addressdiv').style.display = 'none';
+                                    document.getElementById('phonediv').style.display = 'none';
+                                    document.getElementById('billdiv').style.display = 'block';
+                                    document.getElementById('dbilldiv').style.display = 'none';
+                                    document.getElementById('ddbilldiv').style.display = 'none';
+                                    document.getElementById('dbname').value = data.address;
+                                }
+                            }else{
+                                if(data.address == ''){
+                                    document.getElementById('daddressdiv').style.display = 'none';
+                                    document.getElementById('addressdiv').style.display = 'none';
+                                    document.getElementById('phonediv').style.display = 'block';
+                                    document.getElementById('cust_phno').value = data.phno;
+                                    document.getElementById('ddbilldiv').style.display = 'block';
+                                    document.getElementById('dbilldiv').style.display = 'none';
+                                    document.getElementById('billdiv').style.display = 'none';
+                                }else{
+                                    document.getElementById('daddressdiv').style.display = 'none';
+                                    document.getElementById('addressdiv').style.display = 'block';
+                                    document.getElementById('phonediv').style.display = 'block';
+                                    document.getElementById('bname').value = data.address;
+                                    document.getElementById('cust_phno').value = data.phno;
+                                    document.getElementById('ddbilldiv').style.display = 'none';
+                                    document.getElementById('dbilldiv').style.display = 'none';
+                                    document.getElementById('billdiv').style.display = 'block';
+                                }
+                            }
+        
+                            
+                        }
+                    });
+                });
+            });
+        
+            $(document).ready(function(){
+                $('#add').click(function(){
+                    var roinc = $("#items-table-body tr").length;
+                    roinc++
+                    $('#items-table-body').append(
+                        `<tr id='addr0${roinc}'>
+                            <td class = 'nnum' style="text-align: center; width:2%"">${roinc}</td>
+        
+                            <td style="width:21%">
+                                <div class="d-flex">
+                                    <select name='product[]' id="product${roinc}" class="form-control border-danger product"  onchange="changeprd(this.id)" style="color: black; background-color: white;">
+                                        <option value="" selected hidden>Select Product</option>
+                                        {% for i in item %}
+                                                <option  value="{{ i.id  }}">{{ i.itm_name  }} </option>
+                                        {% endfor %}
+                                    </select>&nbsp;&nbsp;&nbsp;
+        
+                                    <button id="modal_closing" type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#newitem" data-bs-whatever="@mdo">
+                                        <span class="fa fa-plus"></span>
+                                    </button>
+                                </div>
+                            </td>
+        
+                            <td tyle="width:12%">
+                                <input type="text" name='hsn[]' id="hsn${roinc}" class="form-control border-danger" style="color: black; background-color: white;" readonly />
+                            </td>
+        
+                            <td style="width:13%">
+                                <input type="number" name='qty[]' value=0 id="qty${roinc}" class="form-control border-danger qty mb-1" step=0 min=0 style="color: black; background-color: white;" />
+                            </td>
+        
+                            <td tyle="width:12%">
+                                <input type="number" name='price[]' id="unit${roinc}" value=0 class="form-control border-danger price" step="0.00" min="0" style="color: black; background-color: white;" readonly/>
+                            </td>
+        
+                            <td tyle="width:12%">
+                                <input type="number" name='vat[]' id="Vat${roinc}" value=0 class="form-control border-danger seltax" value="{{0}}" step="0.00" min="0" style="color: black; background-color: white;" readonly/>
+                            </td>  
+        
+                            <td tyle="width:10%">
+                                <input type="number" name='discount[]' placeholder='Enter Discount' value=0 id="disc${roinc}" class="form-control border-danger disc" step=0 min=0 style="color: black; background-color: white;">
+                            </td>
+        
+                            <td style="width:13%">
+                                <input type="number" name='total[]' id="total${roinc}" placeholder=0 class="form-control border-danger total" value=0 step="any" style="color: black; background-color: white;" readonly />
+                            </td>
+        
+                            <td hidden><input type="number" step="any" name='taxamount1' id="taxamount${roinc}" class=" taxamount" /></td>
+                            
+                            <td style="width:13%">
+                                <button type="button" id="${roinc}" class="btn btn-danger px-2 mx-1 py-1 remove_row fa fa-close">Delete</button>
+                            </td>
+                        </tr>`
+                    );
+                  
+           
+                });
+               
+        
+            });
+            $(document).on('change', '.product',function(){ 
+                var n = $(this).attr("id").slice(7);
+                $.ajax({
+                    url: "{% url 'itemdetails' %}",
+                    type : 'GET',
+                    data:{
+                        id : $(this).val(),
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                    
+                    success: function(response) {
+                        data = response.hsn
+                        data3 = response.price
+                        data4 = response.vat
+                        
+                        
+                        document.getElementById('hsn'+n).value = data;
+                        document.getElementById('unit'+n).value = data3;
+                        document.getElementById('Vat'+n).value = data4;
+                        
+        
+                        
+                        
+                    },
+                    
+                });
+                calc();
+            });
+            function reloadItem() {
+                $.ajax({
+                    url: "{% url 'item_dropdown' %}",
+                    type: "GET",
+                    dataType: "json",
+                    data: $(this).serialize(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+        
+                    success: function(data) {
+                        var table = document.getElementById('tab_logic');
+                        var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                        for (var i = 1; i <= rows.length; i++) {
+                            itmdropdown = document.getElementById('product'+i)
+                            var selectedIndex = itmdropdown.selectedIndex;
+                            var selectedOption = itmdropdown.options[selectedIndex];
+                            var selectedValue = selectedOption.value;
+                            var selectedText = selectedOption.text;
+                            
+                            var dropdown = $(`#product${i}`);
+                            dropdown.empty();
+                            dropdown.append(`<option ${selectedValue} selected hidden>${selectedText}</option>`);
+                            $.each(data, function(key, value) {
+                                dropdown.append($('<option></option>').attr('value', key).text(value).val(key));
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            }
+        
+        
+            $(document).on('click','.remove_row',function(){
+                var row_id = $(this).attr("id");
+                $('#addr0'+row_id+'').remove();
+                var table = document.getElementById('tab_logic');
+                var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                for (var i = 0; i < rows.length; i++) {
+                    var cells = rows[i].getElementsByTagName('td');
+                    cells[0].innerText = i + 1;
+                }
+                calc();
+            });
+           
+        
+            $(document).ready(function(){
+                $('#items-table-body').on('keyup change', function () {
+                    calc();
+                });
+        
+                $('#tax').on('keyup change', function () {
+                    calc_total();
+                });
+            });
+                
+            function calc() {
+                $('#tab_logic tbody tr').each(function () {
+                    var html = $(this).html();
+                    if (html != '') {
+                        var qty = $(this).find('.qty').val();
+                        var price = $(this).find('.price').val();
+                        var dis = $(this).find('.disc').val();
+                        var tax = $(this).find('.seltax').val();
+                       
+               
+                        $(this).find('.total').val((parseFloat(qty) *parseFloat(price))-parseFloat(dis));
+                        $(this).find('.taxamount').val(((qty * price)-dis) * (tax / 100));
+                        
+                        calc_total();
+                    }
+                });
+            }
+        
+            function calc_total() {
+                total = 0;
+                $('.total').each(function () {
+                    total += parseFloat($(this).val());
+                });
+                taxamount = 0;
+                $('.taxamount').each(function () {
+                    taxamount += parseFloat($(this).val());
+                });
+                $('#sub_total').val(total.toFixed(2));
+                $('#tax_amount').val(taxamount.toFixed(2));
+                adj_val = parseFloat($('#adj').val())
+                gtot = taxamount + total + adj_val;
+                $('#grandtotal').val(gtot.toFixed(2));
+                $('#baldue').val(gtot.toFixed(2));
+                adv_val = parseFloat($('#advance').val())
+                adv_val = gtot - adv_val
+                $('#balance').val(adv_val.toFixed(2));
+                
+            }
+        
+                
+        
+            $(document).on("change", "#adj", function(){
+                var subtot = $('#sub_total').val();
+                var tax = $('#tax_amount').val();
+                var adj = $("#adj").val();
+                var adv = $("#advance").val();
+                $('#grandtotal').val((parseFloat(subtot)+parseFloat(tax)+parseFloat(adj)).toFixed(2));
+                $('#balance').val((parseFloat(subtot)+parseFloat(tax)+parseFloat(adj)-parseFloat(adv)).toFixed(2));
+            });
+          
+           
+        </script>
+        
+        
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+              // Function to format the date as YYYY-MM-DD
+              function formatDate(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+              }
+          
+              // Get the current date
+              const currentDate = new Date();
+          
+              // Set the formatted current date in the text box
+              document.getElementById("currentDateTextbox").value = formatDate(currentDate);
+            });
+          </script>
+        {% endblock %}
+        
+        

@@ -478,12 +478,10 @@
                     </td>
                 </tr>`
             );
-            $('#tab_logic').off('keyup change', '.total'); // Unbind existing handlers
-            $('#tab_logic').on('keyup change', '.total', function () {
-            calc();
-    });
+          
+   
         });
-        calc();
+       
 
     });
     $(document).on('change', '.product',function(){ 
@@ -606,7 +604,7 @@
         adv_val = parseFloat($('#advance').val())
         adv_val = gtot - adv_val
         $('#balance').val(adv_val.toFixed(2));
-        taxfun()
+
     }
 
         

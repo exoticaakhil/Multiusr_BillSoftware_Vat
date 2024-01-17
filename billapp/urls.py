@@ -39,6 +39,9 @@ urlpatterns = [
     path('billhistory',views.billhistory,name='billhistory'),
     path('delete_purchasebill/<int:id>',views.delete_purchasebill,name='delete_purchasebill'), 
     path('details_purchasebill/<int:id>',views.details_purchasebill,name='details_purchasebill'),
+    path('history_purchasebill/<int:id>',views.history_purchasebill,name='history_purchasebill'),
+    path('edit_purchasebill/<int:id>',views.edit_purchasebill,name='edit_purchasebill'),
+    path('save_purchasebill/<int:id>',views.save_purchasebill,name='save_purchasebill'),
  
 
 ]

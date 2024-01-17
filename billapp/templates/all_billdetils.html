@@ -320,9 +320,7 @@
 
                                             <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.grandtotal}}</td>
                                             <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.balance}}</td>
-                                            <td class="clickable-row extra" style="color: black;" data-href="details_paymentout/{{ paymentout.id }}">
-                                                {{ paymentout.paymentout_history.last.action }}
-                                            </td>
+                                            <td class="clickable-row extra" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{ p.purchasebill.action }}</td>
                                             
                                             <td class="clickable-row extra" style="color: black;" data-href="details_purchasebill/{{ p.id }}"></td>
                                             <td class="pt-3 m-0 extra">
@@ -331,10 +329,10 @@
                                                         <span class="fa fa-ellipsis-v text-dark fs-1 ps-"></span>
                                                     </button>
                                                     <ul class="dropdown-menu">
-                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_v" href=""><span class="fa fa-eye pe-2 tg"></span> View </a></li>
-                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_v" href=""><span class="fa fa-edit pe-2 tj"></span> Edit</a></li>
-                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_v" href=""><span class="fa fa-history pe-2 th"></span> History</a></li>
-                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_d" onclick="deletepbill('{{p.id}}')"><span class="fa fa-trash-alt tr" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span> Delete</a></li>
+                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'details_purchasebill' p.id %}"><span class="fa fa-eye pe-2 tg"></span> View </a></li>
+                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'edit_purchasebill' p.id %}"><span class="fa fa-edit pe-2 tj"></span> Edit</a></li>
+                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'history_purchasebill' p.id %}"><span class="fa fa-history pe-2 th"></span> History</a></li>
+                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_d" href="{% url 'delete_purchasebill' p.id %}"><span class="fa fa-trash-alt tr" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span> Delete</a></li>
                                                     </ul>
                                                 </div>
                                             </td>
@@ -714,37 +712,7 @@
     });
 </script>
 
-<script>
-    function deletepbill(Id)
-    {
-        swal({
-            title: "Confirmation !",
-            text: "Do you want to Delete this Purchase Bill?",
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
-        })
-        .then((willDelete) => {
-            if (willDelete) {
-                swal({
-                    title: "Deleted !",
-                    text: "Purchase Bill Deleted Successfully!",
-                    icon: "success",
-                    buttons: false,
-                })
-                .then((willDelete) => {
-                    if (willDelete) {
-                        window.location.href = "{% url 'delete_purchasebill' 0 %}".replace('0', Id);
-                    } else {
-                        window.location.href = "{% url 'delete_purchasebill' 0 %}".replace('0', Id);
-                    }
-                });
-            } else {
-                swal("Action Cancelled!");
-            }
-        });
-    }
-</script>
+
 
 <script>
     document.getElementById("search_input").addEventListener("input", function() {

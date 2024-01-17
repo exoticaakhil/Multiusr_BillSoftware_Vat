@@ -177,15 +177,15 @@
                                 <div class="col-md-4">
                                     <h3 class="mb-3">PURCHASE  BILL DETAILS</h3> 
                                 </div>
-                                <div class="col-md-4"></div>
-                                <div class="col-md-4">
+                                <div class="col-md-2"></div>
+                                <div class="col-md-5" style="text-align: right;">
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                     <a class="btn ml-5" onclick="printfun()"><img width="30px" src="{% static 'images/printer.jpeg' %}" alt="no img"> <br>Print</a>
                                     <a class="btn ml-4" id="pdflink"><img width="20px" src="{% static 'images/pdfdownload.png' %}" alt="no img"><br>Pdf</a>
                                     <a class="btn ml-4" onclick="toggleDropdown()"> <img width="30px" src="{% static 'images/shareimg.png' %}" alt="no img"><br>Share</a>
                                     <div class="dropdown-content" id="myDropdown">
-                                        <ul style="margin-bottom: -1px;"></ul>
-                                        <ul style="margin-bottom: -1px;"></ul>
+                                        <ul style="margin-bottom: -1px;">whatsapp</ul>
+                                        <ul style="margin-bottom: -1px;">Email</ul>
                                     </div>
                                     <a class="ml-5" href="{% url 'allbill' %}" style="text-align: right; font-size: large; color: black;">
                                         <i class="fa fa-times mt-2" aria-hidden="true"></i>
@@ -251,8 +251,8 @@
                                                                 <tr>
                                                                     <td style="text-align: center; font-weight:bold; color:black ">Items</td>
                                                                     <td style="font-weight:bold; color:black ">HSN</td>
-                                                                    <td style="font-weight:bold; color:black ">Price</td>
-                                                                    <td style="font-weight:bold; color:black">Quantity</td>
+                                                                    <td style="font-weight:bold; color:black ">Quantity</td>
+                                                                    <td style="font-weight:bold; color:black">Price</td>
                                                                     <td style="font-weight:bold; color:black">VAT</td>
                                                                     <td style="font-weight:bold; color:black">Discount</td>
                                                                     <td style="font-weight:bold; color:black">Total</td>
@@ -632,22 +632,21 @@
                                                     {% for i in pitm %}
                                                     <div class="equal-length-container" style="color: black; font-size: small; word-wrap: break-word; margin-bottom: 1vh;">
                                                         <div class="equal-length-item"  style="text-align: center; margin-left: 2px;">
-                                                            {{i.product.item_name}}
+                                                            {{i.product.itm_name}}
                                                         </div>
                                                         <div class="equal-length-item" style="text-align: right;">
-                                                            {{i.product.item_hsn}}
+                                                            {{i.product.itm_hsn}}
                                                         </div>
-                                                        <div class="equal-length-item" style="text-align: center; ">
+                                                        <div class="equal-length-item" style="text-align: center;">
                                                             {{i.qty}}
                                                         </div>
                                                         <div class="equal-length-item" style="text-align: center; ">
-                                                            {{i.product.item_purchase_price}}
+                                                            {{i.product.itm_purchase_price}}
                                                         </div>
-                                                        <div class="equal-length-item" id="tax{{ forloop.counter }}" style="display: none;">
-                                                            {{i.tax}}
+                                                        <div class="equal-length-item" id="tax{{ forloop.counter }}" style="text-align: center;">
+                                                            {{i.VAT}}
                                                         </div>
-                                                        <div class="equal-length-item" id="taxval{{ forloop.counter }}" style="text-align: center; ">
-                                                        </div>
+                                                        
                                                         <div class="equal-length-item" style="text-align: center; ">
                                                             {{i.total}}
                                                         </div>
@@ -673,33 +672,6 @@
                                                             {{ pbill.subtotal }}
                                                         </div>
                                                     </div>
-                                                    {% if pbill.supplyplace != 'State' %}
-                                                    <div class="row ml-1">
-                                                        <div class="col-md-5 text-left " style=" color: black;">
-                                                            IGST
-                                                        </div>
-                                                        <div class="col-md-6 text-right ml-2" style="color: black;">
-                                                            {{ pbill.igst }}
-                                                        </div>
-                                                    </div>
-                                                    {% else %}
-                                                    <div class="row ml-1">
-                                                        <div class="col-md-5 text-left" style=" color: black;">
-                                                            CGST
-                                                        </div>
-                                                        <div class="col-md-6 text-right ml-2" style="color: black;">
-                                                            {{ pbill.cgst }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="row ml-1">
-                                                        <div class="col-md-5 text-left" style=" color: black;">
-                                                            SGST
-                                                        </div>
-                                                        <div class="col-md-6 text-right ml-2" style="color: black;">
-                                                            {{ pbill.sgst }}
-                                                        </div>
-                                                    </div>
-                                                    {% endif %}
 
                                                     {% if pbill.adjust != '0.00' %}
                                                     {% if pbill.adjust != '0' %}
