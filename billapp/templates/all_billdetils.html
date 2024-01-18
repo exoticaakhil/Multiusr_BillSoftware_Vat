@@ -173,7 +173,8 @@
                                 <div class="col-md-3" style="margin-left: 7vh;">
                                     <div class="form-group">
                                         <label for="fromDate" style="color: black; margin-bottom: 1vh;">From Date:</label>
-                                        <input type="date" class="form-control h-100 border-danger" id="fromDate" style="color: black; background-color: white;" onchange="filterDates()"> 
+                                        <input type="date" class="form-control h-100 border-danger" id="fromDate" style="color: black; background-color: white;" onchange="filterDates(this.value)">
+                                        
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -316,13 +317,12 @@
                                         <tr>
                                             <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.billdate | date:'d-m-Y'}}</td>
                                             <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.billno}}</td>
-                                            <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.party.party_name}}</td>
+                                            <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.party}}</td>
 
                                             <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.grandtotal}}</td>
                                             <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.balance}}</td>
-                                            <td class="clickable-row extra" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{ p.purchasebill.action }}</td>
-                                            
-                                            <td class="clickable-row extra" style="color: black;" data-href="details_purchasebill/{{ p.id }}"></td>
+                                            <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.action}}</td>
+                                            <td class="clickable-row extra" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.name}}</td>
                                             <td class="pt-3 m-0 extra">
                                                 <div class="btn-group">
                                                     <button style="border: none;background: none;" type="button" class="ropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
@@ -346,14 +346,12 @@
                                     <br><br><br>
                                     No Transactions to Show
                                 </p>
-
                                 <table id="excelbilltable" hidden>
                                     <thead >
                                         <tr class="fs-2 tb" >
                                             <th> DATE </th>
                                             <th> BILL NO </th>
                                             <th> PARTY NAME </th>
-                                            <th> PAYMENT TYPE </th>
                                             <th> AMOUNT </th>
                                             <th> BALANCE </th>
                                         </tr>
@@ -364,7 +362,6 @@
                                             <td>{{p.billdate | date:'d-m-Y'}}</td>
                                             <td>{{p.billno}}</td>
                                             <td>{{p.party.party_name}}</td>
-                                            <td>{{p.pay_method}}</td>
                                             <td>{{p.grandtotal}}</td>
                                             <td>{{p.balance}}</td>
                                         </tr>
@@ -375,14 +372,11 @@
                                 <table id="billtablemodel" hidden>
                                     <thead>
                                         <tr>
-                                            <th>Customer Name</th>
-                                            <th>Customer Email</th>
-                                            <th>Bill Date</th>
-                                            <th>Supply State</th>
-                                            <th>Payment Method</th>
-                                            <th>Payment No</th>
-                                            <th>Adjustment</th>
-                                            <th>Advance</th>
+                                            <th> DATE </th>
+                                            <th> BILL NO </th>
+                                            <th> PARTY NAME </th>
+                                            <th> AMOUNT </th>
+                                            <th> BALANCE </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -390,9 +384,6 @@
                                             <td></td>
                                             <td></td>
                                             <td></td>
-                                            <td>State/Other State</td>
-                                            <td>Cash/Cheque/UPI/Bank Name</td>
-                                            <td>Cheque ID/UPI ID/Bank no</td>
                                             <td></td>
                                             <td></td>
                                         </tr>
@@ -416,11 +407,14 @@
                                             <td></td>
                                             <td></td>
                                             <td></td>
-                                            <td>GST_[_%]/IGST_[_%]</td>
+                                            <td></td>
                                             <td></td>
                                         </tr>
                                     </tbody>
                                 </table>
+
+                                
+                                
                             </div>
                         </div>
                     </div>                        
@@ -676,7 +670,7 @@
 </script>
 
 <script>
-    function filterDates() {
+    function filterDates(selectedDate) {
         var fromDate = document.getElementById("fromDate").value;
         var selectedDate = new Date(fromDate);
         selectedDate.setDate(selectedDate.getDate() - 1);

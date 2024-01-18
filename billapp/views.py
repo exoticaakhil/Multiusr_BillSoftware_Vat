@@ -10,6 +10,13 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.utils import timezone
 from django.http.response import JsonResponse
+from xhtml2pdf import pisa
+from django.template.loader import get_template
+from django.core.mail import send_mail
+from django.core.mail import EmailMessage
+from django.template.loader import get_template
+from django.views.generic import View
+
 
 def home(request):
   return render(request, 'home.html')
@@ -337,8 +344,26 @@ def allbill(request):
           cmp = request.user.employee.company
     usr = CustomUser.objects.get(username=request.user) 
     print(cmp)
-    itm=PurchaseBill.objects.filter(company=cmp,staff=usr)
-    pbill = PurchaseBill.objects.filter(company=cmp,staff=usr)
+    itm=PurchaseBill.objects.filter(company=cmp)
+    pbill = PurchaseBill.objects.filter(company=cmp).values()
+    # pbilltransation = PurchaseBillTransactionHistory.filter(company=cmp,purchasebill=pbill.id)
+  #   party_histories = PurchaseBillTransactionHistory.objects.filter(
+  #   purchasebill__in=pbill,
+  #   company=cmp
+  # ).values('action' , 'staff__first_name' , 'staff__last_name').last()
+    # ,'party_histories':party_histories
+    # print(party_histories)
+    for i in pbill:
+      p_history= PurchaseBillTransactionHistory.objects.filter(purchasebill=i['id'],company=cmp).last()
+      i['action']=p_history.action
+      i['name']=p_history.staff.first_name+" "+p_history.staff.last_name
+      i['party']=p_history.purchasebill.party.party_name
+    print(pbill)
+    
+      
+
+
+   
     return render(request, 'all_billdetils.html',{'itm':itm,'pbill':pbill})
 def purchasebill(request):
     if request.user.is_company:
@@ -473,8 +498,9 @@ def delete_purchasebill(request,id):
     cmp = request.user.employee.company
   usr = CustomUser.objects.get(username=request.user) 
   pbill = PurchaseBill.objects.get(id=id)
-  PurchaseBillItem.objects.filter(purchasebill=pbill,company=cmp,staff=usr).delete()
+  PurchaseBillItem.objects.filter(purchasebill=pbill,company=cmp).delete()
   pbill.delete()
+  pbill.purchasebill.delete()
   return redirect('allbill')
 
 def details_purchasebill(request,id):
@@ -483,7 +509,7 @@ def details_purchasebill(request,id):
   else:
     cmp = request.user.employee.company
   usr = CustomUser.objects.get(username=request.user) 
-  pbill = PurchaseBill.objects.get(id=id,company=cmp,staff=usr)
+  pbill = PurchaseBill.objects.get(id=id,company=cmp)
   pitm = PurchaseBillItem.objects.filter(purchasebill=pbill,company=cmp)
   dis = 0
   for itm in pitm:
@@ -499,7 +525,7 @@ def history_purchasebill(request,id):
     cmp = request.user.employee.company 
   usr = CustomUser.objects.get(username=request.user) 
   pbill = PurchaseBill.objects.get(id=id)
-  hst= PurchaseBillTransactionHistory.objects.filter(purchasebill=pbill,company=cmp,staff=usr)
+  hst= PurchaseBillTransactionHistory.objects.filter(purchasebill=pbill,company=cmp)
 
   context = {'hst':hst,'pbill':pbill}
   return render(request,'purchasebillhistory.html',context)
@@ -516,7 +542,7 @@ def edit_purchasebill(request,id):
   item = Item.objects.filter(company=cmp,user=usr)
   item_units = Unit.objects.filter(company=cmp)
 
-  pbill = PurchaseBill.objects.get(id=id)
+  pbill = PurchaseBill.objects.get(id=id,company=cmp)
   billprd = PurchaseBillItem.objects.filter(purchasebill=pbill,company=cmp)
   bdate = pbill.billdate.strftime("%Y-%m-%d")
   context = { 'pbill':pbill, 'billprd':billprd,'tod':tod,
@@ -528,9 +554,14 @@ def save_purchasebill(request,id):
       cmp = request.user.company
     else:
       cmp = request.user.employee.company  
+    print(id)
     usr = CustomUser.objects.get(username=request.user) 
     part = Party.objects.get(id=request.POST.get('customername'))
-    pbill = PurchaseBill.objects.get(id=id,company=cmp)
+    pbill = PurchaseBill.objects.get(id=id, company=cmp)
+
+        # Access the related PurchaseBill instance through the ForeignKey
+
+
     pbill.party = part
     pbill.billdate = request.POST.get('billdate')
     pbill.subtotal =float(request.POST.get('subtotal'))
@@ -554,9 +585,53 @@ def save_purchasebill(request,id):
       mapped=list(mapped)
       for ele in mapped:
         itm = Item.objects.get(id=ele[0])
-        PurchaseBillItem.objects.create(product =itm,qty=ele[1], VAT=ele[2],discount=ele[3],total=ele[4],purchasebill=pbill,company=cmp,staff=usr)
+        PurchaseBillItem.objects.create(product =itm,qty=ele[1], VAT=ele[2],discount=ele[3],total=ele[4],purchasebill=pbill,company=cmp)
 
     PurchaseBillTransactionHistory.objects.create(purchasebill=pbill,action='Updated',company=cmp,staff=usr)
     return redirect('allbill')
 
   return redirect('allbill')
+def sharevatToEmail(request,id):
+    if request.user:
+        try:
+            if request.method == 'POST':
+                emails_string = request.POST['email_ids']
+
+                # Split the string by commas and remove any leading or trailing whitespace
+                emails_list = [email.strip() for email in emails_string.split(',')]
+                email_message = request.POST['email_message']
+                # print(emails_list)
+
+                if request.user.is_company:
+                  cmp = request.user.company
+                else:
+                  cmp = request.user.employee.company
+                usr = CustomUser.objects.get(username=request.user) 
+
+                pbill = PurchaseBill.objects.get(id=id,company=cmp)
+                pitm = PurchaseBillItem.objects.filter(purchasebill=pbill,company=cmp)
+                dis = 0
+                for itm in pitm:
+                  dis += int(itm.discount)
+                itm_len = len(pitm)
+                comp = Company.objects.get( user = request.user.id)
+                context={'pbill':pbill,'pitm':pitm,'itm_len':itm_len,'dis':dis}
+                template_path = 'vatpdf.html'
+                template = get_template(template_path)
+
+                html  = template.render(context)
+                result = BytesIO()
+                pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)#, link_callback=fetch_resources)
+                pdf = result.getvalue()
+                filename = f'salary details - {pbill.billno}.pdf'
+                subject = f"salary details - {pbill.billno}"
+                email = EmailMessage(subject, f"Hi,\nPlease find the attached salary details - Bill-{pbill.billno}. \n{email_message}\n\n--\nRegards,\n{comp.company_name}\n{comp.address}\n - {comp.country}\n{compy.contact_number}", from_email=settings.EMAIL_HOST_USER,to=emails_list)
+                email.attach(filename, pdf, "application/pdf")
+                email.send(fail_silently=False)
+
+                msg = messages.success(request, 'salary Details has been shared via email successfully..!')
+                return redirect(details_purchasebill,id)
+        except Exception as e:
+            print(e)
+            messages.error(request, f'{e}')
+            return redirect(details_purchasebill, id)

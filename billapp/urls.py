@@ -42,6 +42,7 @@ urlpatterns = [
     path('history_purchasebill/<int:id>',views.history_purchasebill,name='history_purchasebill'),
     path('edit_purchasebill/<int:id>',views.edit_purchasebill,name='edit_purchasebill'),
     path('save_purchasebill/<int:id>',views.save_purchasebill,name='save_purchasebill'),
+    path('sharevatToEmail/<int:id>',views.sharevatToEmail,name='sharevatToEmail'),
  
 
 ]
