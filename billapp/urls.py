@@ -42,7 +42,9 @@ urlpatterns = [
     path('history_purchasebill/<int:id>',views.history_purchasebill,name='history_purchasebill'),
     path('edit_purchasebill/<int:id>',views.edit_purchasebill,name='edit_purchasebill'),
     path('save_purchasebill/<int:id>',views.save_purchasebill,name='save_purchasebill'),
-    path('sharevatToEmail/<int:id>',views.sharevatToEmail,name='sharevatToEmail'),
+    path('save_item', views.save_item, name='save_item'),
+    path('save_party1', views.save_party1, name='save_party1'),
+    path('sharepdftomail/<int:id>',views.sharepdftomail, name='sharepdftomail'),
  
 
 ]

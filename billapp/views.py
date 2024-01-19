@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.models import auth
 from django.utils.crypto import get_random_string
 import random
+import json
 from datetime import date
 from django.db.models import F
 from django.conf import settings
@@ -14,8 +15,11 @@ from xhtml2pdf import pisa
 from django.template.loader import get_template
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
-from django.template.loader import get_template
 from django.views.generic import View
+from io import BytesIO
+from django.shortcuts import get_object_or_404
+from django.db import transaction
+from django.views.decorators.csrf import csrf_exempt
 
 
 def home(request):
@@ -346,13 +350,7 @@ def allbill(request):
     print(cmp)
     itm=PurchaseBill.objects.filter(company=cmp)
     pbill = PurchaseBill.objects.filter(company=cmp).values()
-    # pbilltransation = PurchaseBillTransactionHistory.filter(company=cmp,purchasebill=pbill.id)
-  #   party_histories = PurchaseBillTransactionHistory.objects.filter(
-  #   purchasebill__in=pbill,
-  #   company=cmp
-  # ).values('action' , 'staff__first_name' , 'staff__last_name').last()
-    # ,'party_histories':party_histories
-    # print(party_histories)
+
     for i in pbill:
       p_history= PurchaseBillTransactionHistory.objects.filter(purchasebill=i['id'],company=cmp).last()
       i['action']=p_history.action
@@ -392,6 +390,7 @@ def itemdetails(request):
   vat = itm.itm_vat
   price = itm.itm_purchase_price
   qty = itm.itm_stock_in_hand
+  print(vat)
   return JsonResponse({'hsn':hsn, 'vat':vat,  'price':price, 'qty':qty})
 def item_dropdown(request):
   options = {}
@@ -591,8 +590,91 @@ def save_purchasebill(request,id):
     return redirect('allbill')
 
   return redirect('allbill')
-def sharevatToEmail(request,id):
-    if request.user:
+
+    
+def save_item(request):
+    if request.user.is_company:
+      cmp = request.user.company
+    else:
+      cmp = request.user.employee.company  
+    usr = CustomUser.objects.get(username=request.user) 
+    if request.method == 'POST':
+        itm_type = request.POST.get('itm_type')
+        name = request.POST.get('name')
+        itm_hsn = request.POST.get('hsn')
+        itm_unit = request.POST.get('unit')
+        itm_taxable = request.POST.get('taxable_result')
+        itm_vat = request.POST.get('vat')
+        itm_sale_price = request.POST.get('sale_price')
+        itm_purchase_price = request.POST.get('purchase_price')
+        itm_stock_in_hand = request.POST.get('itm_stock_in_hand', 0)  # Default to 0 if not provided
+        itm_at_price = request.POST.get('itm_at_price', 0)  # Default to 0 if not provided
+        itm_date = request.POST.get('itm_date')
+      
+
+
+
+        
+        itm=Item(
+            user=usr,
+            company=cmp,
+            itm_type=itm_type,
+            itm_name=name,
+            itm_hsn=itm_hsn,
+            itm_unit=itm_unit,
+            itm_taxable=itm_taxable,
+            itm_vat=itm_vat,
+            itm_sale_price=itm_sale_price,
+            itm_purchase_price=itm_purchase_price,
+            itm_stock_in_hand=itm_stock_in_hand,
+            itm_at_price=itm_at_price,
+            itm_date=itm_date
+        )
+        itm.save()
+
+        # You can redirect to a success page or another view after saving
+        return redirect('createbill')  # Change 'success_page' to the actual URL or view name
+def save_party1(request):
+    if request.user.is_company:
+      cmp = request.user.company
+    else:
+      cmp = request.user.employee.company  
+    usr = CustomUser.objects.get(username=request.user)
+    if request.method == 'POST':
+        partyname = request.POST.get('partyname')
+        trn_no = request.POST.get('trn_no')
+        contact = request.POST.get('contact')
+        trn_type = request.POST.get('trn_type')
+        address = request.POST.get('address')
+        state = request.POST.get('state')
+        email = request.POST.get('email')
+        balance = request.POST.get('balance')
+        paymentType = request.POST.get('paymentType')
+        currentdate = request.POST.get('currentdate')
+        additionalfield1 = request.POST.get('additionalfield1')
+        additionalfield2 = request.POST.get('additionalfield2')
+        additionalfield3 = request.POST.get('additionalfield3')
+
+        Party.objects.create(
+            user=usr,
+            company=cmp,
+            party_name=partyname,
+            trn_no=trn_no,
+            contact=contact,
+            trn_type=trn_type,
+            address=address,
+            state=state,
+            email=email,
+            openingbalance=balance,
+            payment=paymentType,
+            current_date=currentdate,
+            additionalfield1=additionalfield1,
+            additionalfield2=additionalfield2,
+            additionalfield3=additionalfield3
+        )
+        return redirect('createbill')
+def sharepdftomail(request,id):
+ if request.user:
         try:
             if request.method == 'POST':
                 emails_string = request.POST['email_ids']
@@ -625,7 +707,7 @@ def sharevatToEmail(request,id):
                 pdf = result.getvalue()
                 filename = f'salary details - {pbill.billno}.pdf'
                 subject = f"salary details - {pbill.billno}"
-                email = EmailMessage(subject, f"Hi,\nPlease find the attached salary details - Bill-{pbill.billno}. \n{email_message}\n\n--\nRegards,\n{comp.company_name}\n{comp.address}\n - {comp.country}\n{compy.contact_number}", from_email=settings.EMAIL_HOST_USER,to=emails_list)
+                email = EmailMessage(subject, f"Hi,\nPlease find the attached salary details - Bill-{pbill.billno}. \n{email_message}\n\n--\nRegards,\n{pbill.company.company_name}\n{pbill.company.address}\n - {pbill.company.city}\n{pbill.company.contact}", from_email=settings.EMAIL_HOST_USER,to=emails_list)
                 email.attach(filename, pdf, "application/pdf")
                 email.send(fail_silently=False)
 
@@ -635,3 +717,6 @@ def sharevatToEmail(request,id):
             print(e)
             messages.error(request, f'{e}')
             return redirect(details_purchasebill, id)
+
+
+
