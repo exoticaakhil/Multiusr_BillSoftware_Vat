@@ -742,9 +742,8 @@
     <div class="modal-content">
         <span class="close" onclick="closeEmailModal()">&times;</span>
         <div class="modal-header" style="background: rgb(242, 242, 243);">
-            <h5 class="m-3 text-uppercase" id="shareBillEmailLabel">Share Sales Order Via Email</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                aria-hidden="true">&times;</span></button>
+            <h5 class="m-3 text-uppercase" id="shareBillEmailLabel">Share  vatbill Via Email</h5>
+           
           </div>
           <div class="modal-body" style="background: rgb(239, 242, 244);">
             <div class="card p-3 m-3">
@@ -761,6 +760,7 @@
                   <textarea name="email_message" id="email_message" class="text-dark form-control" cols=""
                     rows="4" placeholder="This message will be sent along with Bill details."></textarea>
                 </div>
+                <input type="hidden" name="selected_template_id" value="{{ selectedTemplateId }}">
               </form>
             </div>
             <div class="modal-footer d-flex justify-content-center" style="border-top: 1px solid #ffff;">
@@ -788,6 +788,11 @@
     $(document).ready(function () {
     $('#share_with_email').on('click', function () {
       var emailsInput = document.getElementById('emailIds');
+      var hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'selected_template_id';
+        hiddenInput.value = selectedTemplateId;
+        form.appendChild(hiddenInput);
       var emailsString = emailsInput.value.trim();
 
       var emails = emailsString.split(',').map(function (email) {
@@ -903,7 +908,10 @@
             $('#'+templateId).css('display','block');
             $('.templateToggleButtons').removeClass('active');
             $('#'+buttonId).addClass('active');
+            selectedTemplateId = templateId;
+            console.log("Selected Template ID:", selectedTemplateId);
             scrollToTop();
+       
             
         }
 

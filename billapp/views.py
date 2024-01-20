@@ -393,8 +393,12 @@ def itemdetails(request):
   print(vat)
   return JsonResponse({'hsn':hsn, 'vat':vat,  'price':price, 'qty':qty})
 def item_dropdown(request):
+  if request.user.is_company:
+      cmp = request.user.company
+  else:
+      cmp = request.user.employee.company
   options = {}
-  option_objects = Item.objects.all()
+  option_objects = Item.objects.all(company=cmp)
   for option in option_objects:
       options[option.id] = [option.item_name]
   return JsonResponse(options)
@@ -499,7 +503,7 @@ def delete_purchasebill(request,id):
   pbill = PurchaseBill.objects.get(id=id)
   PurchaseBillItem.objects.filter(purchasebill=pbill,company=cmp).delete()
   pbill.delete()
-  pbill.purchasebill.delete()
+  
   return redirect('allbill')
 
 def details_purchasebill(request,id):
@@ -537,8 +541,8 @@ def edit_purchasebill(request,id):
   else:
     cmp = request.user.employee.company
   usr = CustomUser.objects.get(username=request.user) 
-  cust = Party.objects.filter(company=cmp,user=usr)
-  item = Item.objects.filter(company=cmp,user=usr)
+  cust = Party.objects.filter(company=cmp)
+  item = Item.objects.filter(company=cmp)
   item_units = Unit.objects.filter(company=cmp)
 
   pbill = PurchaseBill.objects.get(id=id,company=cmp)

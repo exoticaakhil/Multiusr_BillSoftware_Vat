@@ -422,6 +422,37 @@
             </div>
         </div>
     </div>
+    <div class="modal" id="excelModal" tabindex="-1" role="dialog" aria-labelledby="excelModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="excelModalLabel">Upload File
+                    <label for="" style="color: red; font-size: x-small;" >* Refer Downloaded Sheet For Format </label><br></h5>
+                    <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" style="font-size: x-large;">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="excelForm" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="file" style="color: black;">Choose Excel File for Purchase Bill- </label> <br>
+                            <input type="file" class="form-control-file" id="billfile" name="billfile" accept=".xls, .xlsx"><br><br>
+                            
+
+                            <label for="file" style="color: black;">Choose Excel File for Purchase Bill Products- </label> <br>
+                            <input type="file" class="form-control-file" id="prdfile" name="prdfile" accept=".xls, .xlsx"><br>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-warning" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-outline-danger onclick="uploadFile()" data-dismiss="modal">Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% else %}
     <div class="body-wrapper" >
@@ -454,6 +485,38 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+
+    <script>
+        function uploadFile() {
+            const form = document.getElementById('excelForm');
+            const formData = new FormData(form);
+            fetch('import_purchase_bill', {
+                method: 'POST',
+                body: formData
+            })
+            .then(data => {
+                swal({
+                    title: "Imported !",
+                    text: "Purchase Bill Import Successfull!",
+                    icon: "success",
+                    buttons: false,
+                })
+            })
+            .then(response => {
+                setTimeout(function () {
+                    location.reload();
+                }, 1250);
+            })
+            .catch(error => {
+                swal({
+                    title: "Error !",
+                    text: "Purchase Bill Import Unuccessfull!",
+                    icon: "warning",
+                    buttons: false,
+                })
+            });
+        }
+    </script>
 
     <script>
   $(document).ready(function() {
