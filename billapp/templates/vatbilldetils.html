@@ -760,7 +760,6 @@
                   <textarea name="email_message" id="email_message" class="text-dark form-control" cols=""
                     rows="4" placeholder="This message will be sent along with Bill details."></textarea>
                 </div>
-                <input type="hidden" name="selected_template_id" value="{{ selectedTemplateId }}">
               </form>
             </div>
             <div class="modal-footer d-flex justify-content-center" style="border-top: 1px solid #ffff;">
@@ -788,11 +787,6 @@
     $(document).ready(function () {
     $('#share_with_email').on('click', function () {
       var emailsInput = document.getElementById('emailIds');
-      var hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'selected_template_id';
-        hiddenInput.value = selectedTemplateId;
-        form.appendChild(hiddenInput);
       var emailsString = emailsInput.value.trim();
 
       var emails = emailsString.split(',').map(function (email) {

@@ -20,6 +20,7 @@ from io import BytesIO
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt
+from openpyxl import load_workbook
 
 
 def home(request):
@@ -687,15 +688,8 @@ def sharepdftomail(request,id):
                 emails_list = [email.strip() for email in emails_string.split(',')]
                 email_message = request.POST['email_message']
                 # print(emails_list)
-
-                if request.user.is_company:
-                  cmp = request.user.company
-                else:
-                  cmp = request.user.employee.company
-                usr = CustomUser.objects.get(username=request.user) 
-
-                pbill = PurchaseBill.objects.get(id=id,company=cmp)
-                pitm = PurchaseBillItem.objects.filter(purchasebill=pbill,company=cmp)
+                pbill = PurchaseBill.objects.get(id=id)
+                pitm = PurchaseBillItem.objects.filter(purchasebill=pbill)
                 dis = 0
                 for itm in pitm:
                   dis += int(itm.discount)
@@ -709,9 +703,9 @@ def sharepdftomail(request,id):
                 result = BytesIO()
                 pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)#, link_callback=fetch_resources)
                 pdf = result.getvalue()
-                filename = f'salary details - {pbill.billno}.pdf'
-                subject = f"salary details - {pbill.billno}"
-                email = EmailMessage(subject, f"Hi,\nPlease find the attached salary details - Bill-{pbill.billno}. \n{email_message}\n\n--\nRegards,\n{pbill.company.company_name}\n{pbill.company.address}\n - {pbill.company.city}\n{pbill.company.contact}", from_email=settings.EMAIL_HOST_USER,to=emails_list)
+                filename = f'Purchase bill - {pbill.billno}.pdf'
+                subject = f"Purchase bill - {pbill.billno}"
+                email = EmailMessage(subject, f"Hi,\nPlease find the Purchase bill- Bill-{pbill.billno}. \n{email_message}\n\n--\nRegards,\n{pbill.company.company_name}\n{pbill.company.address}\n - {pbill.company.city}\n{pbill.company.contact}", from_email=settings.EMAIL_HOST_USER,to=emails_list)
                 email.attach(filename, pdf, "application/pdf")
                 email.send(fail_silently=False)
 
@@ -721,6 +715,77 @@ def sharepdftomail(request,id):
             print(e)
             messages.error(request, f'{e}')
             return redirect(details_purchasebill, id)
+def import_purchase_bill(request):
+  if request.method == 'POST' and request.FILES['billfile']  and request.FILES['prdfile']:
+    if request.user.is_company:
+      cmp = request.user.company
+    else:
+      cmp = request.user.employee.company  
+    usr = CustomUser.objects.get(username=request.user)
+    totval = int(PurchaseBill.objects.filter(company=cmp).last().tot_bill_no) + 1
+
+    excel_bill = request.FILES['billfile']
+    excel_b = load_workbook(excel_bill)
+    eb = excel_b['Sheet1']
+    excel_prd = request.FILES['prdfile']
+    excel_p = load_workbook(excel_prd)
+    ep = excel_p['Sheet1']
+
+    for row_number1 in range(2, eb.max_row + 1):
+      billsheet = [eb.cell(row=row_number1, column=col_num).value for col_num in range(1, eb.max_column + 1)]
+      part = Party.objects.get(party_name=billsheet[0],email=billsheet[1],company=cmp)
+      PurchaseBill.objects.create(party=part,billno=totval,
+                                  billdate=billsheet[2],
+                                  supplyplace =billsheet[3],
+                                  tot_bill_no = totval,
+                                  company=cmp,staff=usr)
+      
+      pbill = PurchaseBill.objects.last()
+
+      PurchaseBill.objects.filter(company=cmp).update(tot_bill_no=totval)
+      totval += 1
+      subtotal = 0
+      taxamount=0
+      for row_number2 in range(2, ep.max_row + 1):
+        prdsheet = [ep.cell(row=row_number2, column=col_num).value for col_num in range(1, ep.max_column + 1)]
+        if prdsheet[0] == row_number1:
+          itm = Item.objects.get(item_name=prdsheet[1],item_hsn=prdsheet[2])
+          total=int(prdsheet[3])*int(itm.item_purchase_price) - int(prdsheet[5])
+          PurchaseBillItem.objects.create(purchasebill=pbill,
+                                company=cmp,
+                                product=itm,
+                                qty=prdsheet[3],
+                                tax=prdsheet[4],
+                                discount=prdsheet[5],
+                                total=total)
+
+          temp = prdsheet[4].split('[')
+      
+          tax=int(temp[0][4:])
+
+          subtotal += total
+          tamount = total *(tax / 100)
+          taxamount += tamount
+                
+    
+
+      gtotal = subtotal + taxamount + float(billsheet[6])
+      balance = gtotal- float(billsheet[7])
+      gtotal = round(gtotal,2)
+      balance = round(balance,2)
+
+      pbill.subtotal=round(subtotal,2)
+      pbill.taxamount=round(taxamount,2)
+      pbill.adjust=round(billsheet[6],2)
+      pbill.grandtotal=gtotal
+      pbill.advance=round(billsheet[7],2)
+      pbill.balance=balance
+      pbill.save()
+
+      PurchaseBillTransactionHistory.objects.create(purchasebill=pbill,staff=pbill.staff,company=pbill.company,action='Created')
+      return JsonResponse({'message': 'File uploaded successfully!'})
+  else:
+    return JsonResponse({'message': 'File upload Failed!'})
 
 
 

@@ -21,6 +21,15 @@
                                 <br>
                             </h3>
                         </div>
+                        <section class="top-content ">
+                            <div class="top-left">
+                                <div class="position-relative" style="text-align: left;">
+                                    <p> Bill No: &nbsp; {{ pbill.billno }}</p>
+                                    <p>Bill Date: <span>{{pbill.billdate | date:'d-m-Y'}}</span></p>
+                                </div>
+                            </div>
+                        </section>
+
                         <div class="row col-12">
                             <div class="col-md-1"></div>
                             <div class="col-12">
@@ -28,13 +37,7 @@
                                 <p style="color:black;"> <span style=" font-weight: bold;">To: </span><br>
                                 {{pbill.party.party_name}}<br>
                                 {{pbill.party.address|linebreaksbr }}
-                                </p>
-                                <p style="color:black;text-align: right;"> <br>
-                                    Bill No :{{ pbill.billno }}<br>
-                                    Bill Date :{{pbill.billdate | date:'d-m-Y'}}
-                                </p>
-                                
-                                
+                                </p> 
                             </div>
                             
                         </div>
@@ -113,12 +116,12 @@
                     </section> 
                 </div>
             </div>
-                                                    <div class="ml-2 mt-2">
-                                                        <p>
-                                                            Created by : {{pbill.staff.first_name}}  {{pbill.staff.last_name}} <br>
-                                                            Printed by {{staff.first_name}}  {{staff.last_name}} On <span id="datetimedisplay"></span>
-                                                        </p>
-                                                    </div>
+            <div class="ml-2 mt-2">
+                <p>
+                    Created by : {{pbill.staff.first_name}}  {{pbill.staff.last_name}} <br>
+                    Printed by {{staff.first_name}}  {{staff.last_name}} On <span id="datetimedisplay"></span>
+                </p>
+            </div>
 </body>
 
 </html>
