@@ -176,11 +176,22 @@
     }
 </style>
 
+
 <div class="body-wrapper">
     <br><br><br>
     <div class="row p-0 m-0">
         <div class="col-12  p-0 m-0">
             <div class=" bg-light bg-light pb-0 mb-0 p-2" style="height:100%;width:100%">
+                            {% for message in messages %}
+            <h5>
+                <div class="alert alert-danger mt-5 message text-center" style="color: black;">
+                    {{ message }}
+                    <a type="button" class="close" data-dismiss="alert" aria-label="Close" style="float: right;">
+                        <span aria-hidden="true" style="font-size: large; color: #68020F;">&times;</span>
+                    </a>
+                </div>
+            </h5>
+            {% endfor %}
                 
                 <p></p>
                 <div class="page-content">

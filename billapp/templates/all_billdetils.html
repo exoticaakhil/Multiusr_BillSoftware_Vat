@@ -433,7 +433,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="excelForm" enctype="multipart/form-data">
+                    <form action="{% url 'import_purchase_bill' %}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="form-group">
                             <label for="file" style="color: black;">Choose Excel File for Purchase Bill- </label> <br>
@@ -443,12 +443,13 @@
                             <label for="file" style="color: black;">Choose Excel File for Purchase Bill Products- </label> <br>
                             <input type="file" class="form-control-file" id="prdfile" name="prdfile" accept=".xls, .xlsx"><br>
                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-warning" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-outline-danger"  data-dismiss="modal">Upload</button>
+                        </div>
                     </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-warning" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-outline-danger onclick="uploadFile()" data-dismiss="modal">Upload</button>
-                </div>
+                
             </div>
         </div>
     </div>
@@ -486,37 +487,7 @@
     <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
 
-    <script>
-        function uploadFile() {
-            const form = document.getElementById('excelForm');
-            const formData = new FormData(form);
-            fetch('import_purchase_bill', {
-                method: 'POST',
-                body: formData
-            })
-            .then(data => {
-                swal({
-                    title: "Imported !",
-                    text: "Purchase Bill Import Successfull!",
-                    icon: "success",
-                    buttons: false,
-                })
-            })
-            .then(response => {
-                setTimeout(function () {
-                    location.reload();
-                }, 1250);
-            })
-            .catch(error => {
-                swal({
-                    title: "Error !",
-                    text: "Purchase Bill Import Unuccessfull!",
-                    icon: "warning",
-                    buttons: false,
-                })
-            });
-        }
-    </script>
+ 
 
     <script>
   $(document).ready(function() {
@@ -574,37 +545,7 @@
     }
 </script>
 
-<script>
-    function uploadFile() {
-        const form = document.getElementById('excelForm');
-        const formData = new FormData(form);
-        fetch('import_purchase_bill', {
-            method: 'POST',
-            body: formData
-        })
-        .then(data => {
-            swal({
-                title: "Imported !",
-                text: "Purchase Bill Import Successfull!",
-                icon: "success",
-                buttons: false,
-            })
-        })
-        .then(response => {
-            setTimeout(function () {
-                location.reload();
-            }, 1250);
-        })
-        .catch(error => {
-            swal({
-                title: "Error !",
-                text: "Purchase Bill Import Unuccessfull!",
-                icon: "warning",
-                buttons: false,
-            })
-        });
-    }
-</script>
+
 
 <script>
     function printfunction(){

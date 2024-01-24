@@ -357,7 +357,7 @@ def allbill(request):
       i['action']=p_history.action
       i['name']=p_history.staff.first_name+" "+p_history.staff.last_name
       i['party']=p_history.purchasebill.party.party_name
-    print(pbill)
+ 
     
       
 
@@ -683,18 +683,23 @@ def sharepdftomail(request,id):
         try:
             if request.method == 'POST':
                 emails_string = request.POST['email_ids']
+                
 
                 # Split the string by commas and remove any leading or trailing whitespace
                 emails_list = [email.strip() for email in emails_string.split(',')]
                 email_message = request.POST['email_message']
+                if request.user.is_company:
+                  cmp = request.user.company
+                else:
+                  cmp = request.user.employee.company  
+                usr = CustomUser.objects.get(username=request.user)
                 # print(emails_list)
-                pbill = PurchaseBill.objects.get(id=id)
+                pbill = PurchaseBill.objects.get(id=id,company=cmp)
                 pitm = PurchaseBillItem.objects.filter(purchasebill=pbill)
                 dis = 0
                 for itm in pitm:
                   dis += int(itm.discount)
                 itm_len = len(pitm)
-                comp = Company.objects.get( user = request.user.id)
                 context={'pbill':pbill,'pitm':pitm,'itm_len':itm_len,'dis':dis}
                 template_path = 'vatpdf.html'
                 template = get_template(template_path)
@@ -709,7 +714,7 @@ def sharepdftomail(request,id):
                 email.attach(filename, pdf, "application/pdf")
                 email.send(fail_silently=False)
 
-                msg = messages.success(request, 'salary Details has been shared via email successfully..!')
+                msg = messages.success(request, 'purchase bill has been shared via email successfully..!')
                 return redirect(details_purchasebill,id)
         except Exception as e:
             print(e)
@@ -725,18 +730,21 @@ def import_purchase_bill(request):
     totval = int(PurchaseBill.objects.filter(company=cmp).last().tot_bill_no) + 1
 
     excel_bill = request.FILES['billfile']
+    print(excel_bill)
     excel_b = load_workbook(excel_bill)
     eb = excel_b['Sheet1']
     excel_prd = request.FILES['prdfile']
     excel_p = load_workbook(excel_prd)
+    print(excel_p)
     ep = excel_p['Sheet1']
+
+   
 
     for row_number1 in range(2, eb.max_row + 1):
       billsheet = [eb.cell(row=row_number1, column=col_num).value for col_num in range(1, eb.max_column + 1)]
       part = Party.objects.get(party_name=billsheet[0],email=billsheet[1],company=cmp)
       PurchaseBill.objects.create(party=part,billno=totval,
                                   billdate=billsheet[2],
-                                  supplyplace =billsheet[3],
                                   tot_bill_no = totval,
                                   company=cmp,staff=usr)
       
@@ -750,7 +758,7 @@ def import_purchase_bill(request):
         prdsheet = [ep.cell(row=row_number2, column=col_num).value for col_num in range(1, ep.max_column + 1)]
         if prdsheet[0] == row_number1:
           itm = Item.objects.get(item_name=prdsheet[1],item_hsn=prdsheet[2])
-          total=int(prdsheet[3])*int(itm.item_purchase_price) - int(prdsheet[5])
+          total=int(prdsheet[3])*int(itm.itm_purchase_price) - int(prdsheet[5])
           PurchaseBillItem.objects.create(purchasebill=pbill,
                                 company=cmp,
                                 product=itm,
@@ -758,11 +766,7 @@ def import_purchase_bill(request):
                                 tax=prdsheet[4],
                                 discount=prdsheet[5],
                                 total=total)
-
-          temp = prdsheet[4].split('[')
-      
-          tax=int(temp[0][4:])
-
+          tax=tax
           subtotal += total
           tamount = total *(tax / 100)
           taxamount += tamount
@@ -783,9 +787,9 @@ def import_purchase_bill(request):
       pbill.save()
 
       PurchaseBillTransactionHistory.objects.create(purchasebill=pbill,staff=pbill.staff,company=pbill.company,action='Created')
-      return JsonResponse({'message': 'File uploaded successfully!'})
+      return redirect('all_bill')
   else:
-    return JsonResponse({'message': 'File upload Failed!'})
+    return redirect('all_bill')
 
 
 
