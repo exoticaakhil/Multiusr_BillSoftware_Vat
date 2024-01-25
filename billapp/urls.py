@@ -45,7 +45,8 @@ urlpatterns = [
     path('save_item', views.save_item, name='save_item'),
     path('save_party1', views.save_party1, name='save_party1'),
     path('sharepdftomail/<int:id>',views.sharepdftomail, name='sharepdftomail'),
-    path('import_purchase_bill',views.import_purchase_bill,name='import_purchase_bill'), 
+    path('billex',views.billex,name='billex'), 
+    
  
 
 ]

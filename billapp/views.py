@@ -20,7 +20,7 @@ from io import BytesIO
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt
-from openpyxl import load_workbook
+import pandas as pd
 
 
 def home(request):
@@ -348,7 +348,7 @@ def allbill(request):
     else:
           cmp = request.user.employee.company
     usr = CustomUser.objects.get(username=request.user) 
-    print(cmp)
+   
     itm=PurchaseBill.objects.filter(company=cmp)
     pbill = PurchaseBill.objects.filter(company=cmp).values()
 
@@ -720,28 +720,50 @@ def sharepdftomail(request,id):
             print(e)
             messages.error(request, f'{e}')
             return redirect(details_purchasebill, id)
-def import_purchase_bill(request):
-  if request.method == 'POST' and request.FILES['billfile']  and request.FILES['prdfile']:
+def billex(request):
+  if request.method == 'POST':
     if request.user.is_company:
       cmp = request.user.company
     else:
       cmp = request.user.employee.company  
+    print(cmp)
     usr = CustomUser.objects.get(username=request.user)
+    
     totval = int(PurchaseBill.objects.filter(company=cmp).last().tot_bill_no) + 1
 
     excel_bill = request.FILES['billfile']
     print(excel_bill)
-    excel_b = load_workbook(excel_bill)
-    eb = excel_b['Sheet1']
+
+    df = pd.read_excel(excel_bill)
+    print(df)
     excel_prd = request.FILES['prdfile']
-    excel_p = load_workbook(excel_prd)
-    print(excel_p)
-    ep = excel_p['Sheet1']
+    print(excel_prd)
 
+    prd = pd.read_excel(excel_prd)
+    print(prd)
+    errors = []
+    count_rows = 0
+
+    for index, row in df.iterrows():
    
+        count_rows +=1
 
-    for row_number1 in range(2, eb.max_row + 1):
-      billsheet = [eb.cell(row=row_number1, column=col_num).value for col_num in range(1, eb.max_column + 1)]
+        party_name =row.get('Party Name').capitalize()
+        contact = str(row.get('Contact'))
+        
+
+      
+        party_obj = Party(
+            party_name = party_name, 
+            contact = contact,
+            gst_no = str(row.get('GST No.', '')),
+            gst_type = row.get('GST Type', ''),
+            email = row.get('Email'),
+            state = row.get('Supply State', ''),
+            address =  row.get('Billing Address', ''),
+      )
+    for row_number1 in range(2, df.max_row + 1):
+      billsheet = [df.cell(row=row_number1, column=col_num).value for col_num in range(1, df.max_column + 1)]
       part = Party.objects.get(party_name=billsheet[0],email=billsheet[1],company=cmp)
       PurchaseBill.objects.create(party=part,billno=totval,
                                   billdate=billsheet[2],
@@ -754,8 +776,8 @@ def import_purchase_bill(request):
       totval += 1
       subtotal = 0
       taxamount=0
-      for row_number2 in range(2, ep.max_row + 1):
-        prdsheet = [ep.cell(row=row_number2, column=col_num).value for col_num in range(1, ep.max_column + 1)]
+      for row_number2 in range(2, prd.max_row + 1):
+        prdsheet = [prd.cell(row=row_number2, column=col_num).value for col_num in range(1, prd.max_column + 1)]
         if prdsheet[0] == row_number1:
           itm = Item.objects.get(item_name=prdsheet[1],item_hsn=prdsheet[2])
           total=int(prdsheet[3])*int(itm.itm_purchase_price) - int(prdsheet[5])
@@ -790,6 +812,7 @@ def import_purchase_bill(request):
       return redirect('all_bill')
   else:
     return redirect('all_bill')
+
 
 
 
