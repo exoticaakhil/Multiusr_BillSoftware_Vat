@@ -741,78 +741,29 @@ def billex(request):
 
     prd = pd.read_excel(excel_prd)
     print(prd)
-    errors = []
-    count_rows = 0
-
-    for index, row in df.iterrows():
-   
-        count_rows +=1
-
-        party_name =row.get('Party Name').capitalize()
-        contact = str(row.get('Contact'))
-        
-
-      
-        party_obj = Party(
-            party_name = party_name, 
-            contact = contact,
-            gst_no = str(row.get('GST No.', '')),
-            gst_type = row.get('GST Type', ''),
-            email = row.get('Email'),
-            state = row.get('Supply State', ''),
-            address =  row.get('Billing Address', ''),
-      )
-    for row_number1 in range(2, df.max_row + 1):
-      billsheet = [df.cell(row=row_number1, column=col_num).value for col_num in range(1, df.max_column + 1)]
-      part = Party.objects.get(party_name=billsheet[0],email=billsheet[1],company=cmp)
-      PurchaseBill.objects.create(party=part,billno=totval,
-                                  billdate=billsheet[2],
-                                  tot_bill_no = totval,
-                                  company=cmp,staff=usr)
-      
-      pbill = PurchaseBill.objects.last()
-
-      PurchaseBill.objects.filter(company=cmp).update(tot_bill_no=totval)
-      totval += 1
-      subtotal = 0
-      taxamount=0
-      for row_number2 in range(2, prd.max_row + 1):
-        prdsheet = [prd.cell(row=row_number2, column=col_num).value for col_num in range(1, prd.max_column + 1)]
-        if prdsheet[0] == row_number1:
-          itm = Item.objects.get(item_name=prdsheet[1],item_hsn=prdsheet[2])
-          total=int(prdsheet[3])*int(itm.itm_purchase_price) - int(prdsheet[5])
-          PurchaseBillItem.objects.create(purchasebill=pbill,
-                                company=cmp,
-                                product=itm,
-                                qty=prdsheet[3],
-                                tax=prdsheet[4],
-                                discount=prdsheet[5],
-                                total=total)
-          tax=tax
-          subtotal += total
-          tamount = total *(tax / 100)
-          taxamount += tamount
-                
     
+    new_purchase_bill = PurchaseBill(company=cmp, tot_bill_no=totval, user=usr)
+    new_purchase_bill.save()
 
-      gtotal = subtotal + taxamount + float(billsheet[6])
-      balance = gtotal- float(billsheet[7])
-      gtotal = round(gtotal,2)
-      balance = round(balance,2)
+    excel_prd = request.FILES['prdfile']
+    print(excel_prd)
 
-      pbill.subtotal=round(subtotal,2)
-      pbill.taxamount=round(taxamount,2)
-      pbill.adjust=round(billsheet[6],2)
-      pbill.grandtotal=gtotal
-      pbill.advance=round(billsheet[7],2)
-      pbill.balance=balance
-      pbill.save()
+    prd = pd.read_excel(excel_prd)
+    print(prd)
 
-      PurchaseBillTransactionHistory.objects.create(purchasebill=pbill,staff=pbill.staff,company=pbill.company,action='Created')
-      return redirect('all_bill')
+    # Save Product data to the database
+    for index, row in prd.iterrows():
+        product = Item(
+            purchase_bill=new_purchase_bill,
+            # Assuming column names in the Excel file are 'product_name', 'quantity', etc.
+            product_name=row['product_name'],
+            quantity=row['quantity'],
+            # Add more fields as needed
+        )
+        product.save()
+    return redirect('all_bill')
   else:
     return redirect('all_bill')
 
-
-
+    # Add any additional processing or redirects as needed
 
