@@ -103,8 +103,6 @@ class PurchaseBill(models.Model):
     taxamount = models.CharField(max_length=100,default=0, null=True)
     adjust = models.CharField(max_length=100,default=0, null=True)
     grandtotal = models.FloatField(default=0, null=True)
-    advance=models.CharField(null=True,blank=True,max_length=255)
-    balance=models.CharField(null=True,blank=True,max_length=255)
     tot_bill_no = models.IntegerField(default=0, null=True)
 class PurchaseBillItem(models.Model):
     purchasebill = models.ForeignKey(PurchaseBill,on_delete=models.CASCADE)

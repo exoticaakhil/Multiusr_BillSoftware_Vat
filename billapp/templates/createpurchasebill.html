@@ -97,7 +97,7 @@
                                         <div class="col-md-4">
                                             <label class="col-form-label">Customer</label>
                                             <div class="d-flex">
-                                                <select name="customername" id="customer" class="form-control border-danger" >
+                                                <select name="customername" id="customer" class="form-control border-danger select2" >
                                                     <option value="" selected hidden>Select</option>
                                                     {% for c in party %}
                                                         {% if c.cid_id == cmp.cid %}
@@ -266,28 +266,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="row" style="margin-left: 2vh;" > 
-                                            <div class="col-md-5 table-responsive-md mt-3 " id="tab_logic_total" style="color: black; border: 1px solid #FFADB0; margin-left: -2vh; background-color: #FFADB0">
-                                                <div class="p-3">
-                                                    <div class="row container-fluid p-2 m-0">
-                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">Paid Off</label></div>
-                                                        <div class="col-sm-1 mt-2">:</div>
-                                                        <div class="col-sm-7">
-                                                            <input type="number" step="any" name='advance' id="advance" value=0.00 class="form-control border-danger" style="color: black; background-color: white;"/>
-                                                        </div>
-                                                        <div class="col-sm-4 m-0 p-0"></div>
-                                                    </div>
-                                                    <div class="row container-fluid p-2 m-0">
-                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">Balance</label></div>
-                                                        <div class="col-sm-1 mt-2">:</div>
-                                                        <div class="col-sm-7">
-                                                            <input type="number" name='balance' id="balance" value=0.00 readonly style="color: black; background-color: white;"  class="form-control border-danger" readonly />
-                                                        </div>
-                                                        <div class="col-sm-4 m-0 p-0"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+    
                                     </div>
                             
                                     <div class="row">
@@ -308,7 +287,7 @@
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header" style="background-color: rgba(144, 211, 117, 0.098);">
-                        <h3 class="text-secondary ms-3">ADD ITEM</h3>
+                        <h3 class="text-danger ms-3">ADD ITEM</h3>
                         <button type="button" class="btn-close me-3" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body" style="background-color: rgba(144, 211, 117, 0.098);" >
@@ -355,35 +334,9 @@
                                               <option value="{{ i.unit_name }}">{{ i.unit_name }}</option>
                                               {% endfor %}
                                             </select>
-                                            <button type="button" class="btn mt-2 button_border" data-bs-toggle="modal" data-bs-target="#unitmodal" data-bs-whatever="@mdo">
-                                              <span class="fa fa-plus" ></span>
-                                            </button>
+                                           
                                           </div>
-                                          <div class="modal fade" id="unitmodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                              <div class="modal-content">
-                                                <div class="modal-header">
-                                                  <h1 class="modal-title fs-5" id="exampleModalLabel" style="color: #68020F; font-weight: 900;">ADD UNIT</h1>
-                                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body mb-1 pb-1">
-                                                  <form class="mb-0" id="unitmodal">
-                                                    <div class="mb-3">
-                                                      <label for="unit_name" class="col-form-label">UNIT</label>
-                                                      <input type="text" class="form-control _border" id="unit_name" placeholder="Enter Unit" style="border: 2px solid #68020F;" name='unit_name'>
-                                                    </div>
-                                                    <div class="m-0 text-center">
-                                                      <label for="message-text" class="col-form-label  text-danger fw-lighter">Example : PCS/BOX/LITER</label>
-                                                    </div>
-                                                  </form>
-                                                </div>
-                                                <div class="modal-footer d-flex justify-content-center mt-1">
-                                                  <button type="button" class="btn ps-5 pe-5 button_border" data-bs-dismiss="modal">Close</button>
-                                                  <button type="button" class="btn ps-5 pe-5 button_border" id="unitmodalsubmit">ADD</button>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div>
+                                     
                                         </div>
                                       </div>
                                     </div>
@@ -457,15 +410,16 @@
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header" style="background-color: rgba(144, 211, 117, 0.098);">
-                        <h3 class="m-3 text-secondary">ADD PARTY</h3>
+                        <h3 class=" text-warning">ADD PARTY</h3>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body" style="background-color: rgba(144, 211, 117, 0.098);">
                         <form method="POST" action="{% url 'save_party1' %}" class="p-5" enctype="multipart/form-data" novalidate
                         id="forms" >
                         {% csrf_token %}
-                        <div class="body-wrapper" style="background-color: #FFADB0;">
-                            <div class="container-fluid" style="background-color: #FFADB0;">
+                        
+                        <div class="d-flex" style="background-color: #FFADB0;">
+                            <div class="container" style="background-color: #FFADB0;">
                                 <div class="col-md-2" >
                                     <a class="text-dark" style="font-size: 1.5rem;color: #68020F;">Add Party</a>
                                 </div>
@@ -485,8 +439,8 @@
                                     </div>  
                                     
                                     
-                                    <div class="options" style="margin-top: 5vw;">
-                                        <a href="javascript:void(0);" onclick="toggleSection('GST')" style="color: black;"><b>GST &
+                                    <div class="options d-flex" style="margin-top: 5vw;">
+                                        <a href="javascript:void(0);" onclick="toggleSection('GST')" style="color: black;"><b>VAT &
                                                 Address<b></a>
                                         <a href="javascript:void(0);" onclick="toggleSection('Credit')"
                                             style="color: black; margin-left: 3vw;"><b>Credit & Balances<b></a>
@@ -495,31 +449,31 @@
                                     </div>
                                 </div>
                                 <fieldset id="GST" class="GST">
-                                    <div style="background-color: white;" class="col-sm-5"><select class="form-control mt-4 " id="trn_type" name="trn_type">
+                                    <div style="background-color: white;" class="col-sm-12"><select class="form-control mt-4 " id="trn_type" name="trn_type">
                                             <option disabled selected>Select TRN Type</option>
                                             <option >Unregistered/Consumers</option>
                                             <option>Registered Business - Regular</option>
                                             <option>Registered Business - Composition</option>
                                         </select>
-                                    </div>
-                                    <div class="col-sm-5 ">
+                                    </div><br>
+                                    <div class="d-flex ">
                                         <textarea style="background-color: white;" class="form-control mt-4" name="address" id="" cols="56" rows="3"
                                             placeholder="&nbsp;Address"></textarea>
-                                    </div>
+                                    </div><br>
                             
-                                    <div class="col-sm-5 ">
+                                    <div class="d-flex ">
                                         <input style="background-color: white;" type="text" class="form-control mt-4" id="state" name="state" placeholder="State">
-                                    </div> 
+                                    </div> <br>
                                     
                     
                             
-                            <div class="col-sm-5 ">
+                            <div class="d-flex ">
                                 <input style="background-color: white;" type="email" class="form-control mt-4" id="email" name="email" placeholder="Email">
                             </div>
                             </fieldset>
                     
                             <fieldset id="Credit" class="Credit" style="display:none;">
-                                <div class="col-sm-5">
+                                <div class="d-flex">
                                     <input style="background-color: white;" type="number" class="form-control mt-4" id="balance" name="balance" placeholder="Opening Balance">
                                 </div>
                             
@@ -531,7 +485,7 @@
                                 </div>
                        
                             
-                                <div class="col-md-5 mt-4">
+                                <div class="d-flex">
                                     <input  type="date" class="form-control" id="current-date" name="currentdate" placeholder="Current Date" style="background-color: white;" >
                                 </div>
                             
@@ -539,15 +493,15 @@
                             </fieldset>
                             
                             <fieldset id="additionalfield" class="additionalfield" style="display:none;">
-                                <div class="col-md-5 mt-4">
+                                <div class="d-flex">
                                     <input type="text" class="form-control" name="additionalfield1" id="additionalfield1" placeholder="Additional Field" style="background-color: white;">
-                                </div>
+                                </div><br>
                         
-                                <div class="col-md-5 mt-4">
+                                <div class="d-flex">
                                     <input type="text" class="form-control" name="additionalfield2" id="additionalfield2" placeholder="Additional Field" style="background-color: white;">
-                                </div>
+                                </div><br>
                         
-                                <div class="col-md-5 mt-4">
+                                <div class="d-flex">
                                     <input type="text" class="form-control" name="additionalfield3" id="additionalfield3" placeholder="Additional Field" style="background-color: white;">
                                 </div>
                             </fieldset>
@@ -556,7 +510,7 @@
                             <div class="col-md-5 mt-4">
                                 <input type="submit" class="btn btn-primary save-button" name="save_and_new" value="Save&New">
                                 <input type="submit" class="btn btn-primary save-button" name="save" value="Save">
-                            </div>
+                            </div><br>
                     
                         </div>
                         </form>
@@ -574,7 +528,19 @@
 
 
 
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script>
+    // Initialize Select2
+    $(document).ready(function() {
+        $('.select2').select2({
+            placeholder: 'Select',
+            allowClear: true,
+            width: '100%',
+            // Add additional options as needed
+        });
+    });
+</script>
 <script>
     function changeprd(id){
         id_val = id.slice(7)

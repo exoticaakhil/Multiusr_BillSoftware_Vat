@@ -440,8 +440,6 @@ def createbill(request):
     pbill = PurchaseBill(party=part, 
                           billno=request.POST.get('bill_no'),
                           billdate=request.POST.get('billdate'),
-                          advance = request.POST.get("advance"),
-                          balance = request.POST.get("balance"),
                           subtotal=float(request.POST.get('subtotal')),
                           adjust = request.POST.get("adj"),
                           taxamount = request.POST.get("taxamount"),
@@ -572,8 +570,6 @@ def save_purchasebill(request,id):
     pbill.grandtotal = request.POST.get('grandtotal')
     pbill.taxamount = request.POST.get("taxamount")
     pbill.adjust = request.POST.get("adj")
-    pbill.advance = request.POST.get("advance")
-    pbill.balance = request.POST.get("balance")
     pbill.company=cmp
     pbill.save()
 
@@ -720,50 +716,7 @@ def sharepdftomail(request,id):
             print(e)
             messages.error(request, f'{e}')
             return redirect(details_purchasebill, id)
-def billex(request):
-  if request.method == 'POST':
-    if request.user.is_company:
-      cmp = request.user.company
-    else:
-      cmp = request.user.employee.company  
-    print(cmp)
-    usr = CustomUser.objects.get(username=request.user)
-    
-    totval = int(PurchaseBill.objects.filter(company=cmp).last().tot_bill_no) + 1
 
-    excel_bill = request.FILES['billfile']
-    print(excel_bill)
 
-    df = pd.read_excel(excel_bill)
-    print(df)
-    excel_prd = request.FILES['prdfile']
-    print(excel_prd)
-
-    prd = pd.read_excel(excel_prd)
-    print(prd)
-    
-    new_purchase_bill = PurchaseBill(company=cmp, tot_bill_no=totval, user=usr)
-    new_purchase_bill.save()
-
-    excel_prd = request.FILES['prdfile']
-    print(excel_prd)
-
-    prd = pd.read_excel(excel_prd)
-    print(prd)
-
-    # Save Product data to the database
-    for index, row in prd.iterrows():
-        product = Item(
-            purchase_bill=new_purchase_bill,
-            # Assuming column names in the Excel file are 'product_name', 'quantity', etc.
-            product_name=row['product_name'],
-            quantity=row['quantity'],
-            # Add more fields as needed
-        )
-        product.save()
-    return redirect('all_bill')
-  else:
-    return redirect('all_bill')
-
-    # Add any additional processing or redirects as needed
+   
 
