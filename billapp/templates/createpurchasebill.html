@@ -91,28 +91,34 @@
                                             <i class="fa fa-times mt-3" aria-hidden="true"></i>
                                         </a>
                                     </div>
-                                </div>
+                                
                                 <div id="customer_div" style="margin-left: .1px; margin-right: .51px;">
                                     <div class="row">
-                                        <div class="col-md-4">
-                                            <label class="col-form-label">Customer</label>
-                                            <div class="d-flex">
-                                                <select name="customername" id="customer" class="form-control border-danger select2" >
-                                                    <option value="" selected hidden>Select</option>
-                                                    {% for c in party %}
-                                                        {% if c.cid_id == cmp.cid %}
-                                                            <option value={{c.id}}> {{ c.party_name }}</option>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </select> &nbsp;&nbsp;&nbsp;
+                        <div class="col-md-4  custom-dropdown">
+                                        <label for="">  Coustomer</label>
+                                        <div class="input-group">
+                                            <input type="text" name="customername" class="dropdown-input form-control border-danger " id="customer" placeholder='Search Party' oninput="getEmail();"><br>
+                                            <div>&nbsp;&nbsp;
                                                 <button id="modal_closing" type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#customercreation" data-bs-whatever="@mdo">
                                                     <span class="fa fa-plus"></span>
                                                 </button>
                                             </div>
-                                            <div class="mt-1 d-flex" >
+                                        </div>
+                                <ul id="employee" class="dropdown-list">
+                                    {% for p in party %}
+                                      {% if c.cid_id == cmp.cid %}
+                                        <li class="dropdown-item"
+                                            data-value="{{ p.party_name }}"data-party-id="{{ p.id }}" data-phone="{{ p.contact }}" data-address="{{ p.address }}" data-balance="{{ p.openingbalance }}"onclick="selectItem(this);">
+                                            {{ p.party_name }}
+                                        </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                        </div>
+                        <div class="mt-1 d-flex" >
                                                 &nbsp;<span id="balancediv" style="display: none; color: black;"> Available Balance : <span id="balval"></span></span>
                                             </div>
-                                            <div id="billdiv">
+                                            <div id="billdiv"  class="col-md-4">
                                                 <label class="col-form-label">Bill No.</label>
                                                 <input type="text" class="form-control border-danger" name="bill_no"  id="bill_no" value="{{bill_no}}"  style="color: black;background-color: white;" readonly> <br>
                                             </div>
@@ -531,15 +537,82 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script>
-    // Initialize Select2
-    $(document).ready(function() {
-        $('.select2').select2({
-            placeholder: 'Select',
-            allowClear: true,
-            width: '100%',
-            // Add additional options as needed
-        });
-    });
+document.addEventListener('DOMContentLoaded', function () {
+                var input = document.querySelector('.dropdown-input');
+                var dropdownList = document.querySelector('#employee');
+        
+                input.addEventListener('focus', function () {
+                    dropdownList.style.display = 'block';
+                });
+        
+                document.addEventListener('mousedown', function (event) {
+                    if (!event.target.closest('.custom-dropdown')) {
+                        dropdownList.style.display = 'none';
+                    }
+                });
+        
+                dropdownList.addEventListener('click', function (event) {
+                    if (event.target.classList.contains('dropdown-item')) {
+                        input.value = event.target.textContent;
+                        dropdownList.style.display = 'none';
+                        fillEmployeeDetails();
+                        clearErrorMessage();
+                    }
+                });
+        
+                input.addEventListener('input', function () {
+                    var filterValue = input.value.toLowerCase();
+                    var items = dropdownList.querySelectorAll('.dropdown-item');
+        
+                    items.forEach(function (item) {
+                        var itemText = item.textContent.toLowerCase();
+                        if (itemText.includes(filterValue)) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+});
+function getEmail() {
+            var selectedElement = document.querySelector(".dropdown-item.selected");
+            
+            if (selectedElement) {
+                var phone_number = selectedElement.getAttribute("data-phone");
+                var billing_address = selectedElement.getAttribute("data-address");
+                var opening_balance = selectedElement.getAttribute("data-balance")
+        
+                // Assuming you have input fields with IDs "ph" and "ad" in your HTML
+                document.getElementById("cust_phno").value = phone_number;
+                document.getElementById("bname").value = billing_address;
+                document.getElementById("balval").value = opening_balance;
+                
+
+                // Show the Available Balance section
+                document.getElementById("balval").style.display = "inline-block";
+
+            }
+           
+                    }
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            var dropdownItems = document.querySelectorAll(".dropdown-item");
+        
+            dropdownItems.forEach(function(item) {
+                item.addEventListener("click", function() {
+                    // Remove the "selected" class from all items
+                    dropdownItems.forEach(function(dropdownItem) {
+                        dropdownItem.classList.remove("selected");
+                    });
+        
+                    // Add the "selected" class to the clicked item
+                    item.classList.add("selected");
+        
+                    // Trigger the getEmail function
+                    getEmail();
+                });
+            });
+           });
 </script>
 <script>
     function changeprd(id){
