@@ -89,63 +89,59 @@
                                     </div>
                                 </div>
 
-                                <div id="customer_div" style=" margin-left: .1px; margin-right: .51px;">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <label class="col-form-label">Customer</label>
-                                            <div class="d-flex">
-                                                <select name="customername" id="customer" class="form-control border-danger" style="color: black; background-color: white;">
-                                                    <option value="{{ pbill.party.id }}" selected hidden>{{pbill.party.party_name}}</option>
-                                                    {% for c in cust %}
-                                                        {% if c.cid_id == cmp.cid %}
-                                                        <option value={{c.id}}> {{ c.party_name }}</option>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </select> &nbsp;&nbsp;&nbsp;
-                                                   
+                                                                  <div id="customer_div" style="margin-left: .1px; margin-right: .51px;">
+                                   
+                                    <div class="col-md-4  custom-dropdown">
+                                        <label for="">  Coustomer</label>
+                                        <div class="input-group">
+                                            <input type="text"  class="dropdown-input form-control border-danger " id="customer" value="{{pbill.party.party_name}}" placeholder='Search Party' oninput="getEmail();"><br>
+                                            <input type="text" name="customername" id="customerid" value="{{pbill.party}}" hidden>
+                                            <div>&nbsp;&nbsp;
+                                                <button id="modal_closing" type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#customercreation" data-bs-whatever="@mdo">
+                                                    <span class="fa fa-plus"></span>
+                                                </button>
                                             </div>
-                                                <div class="mt-1 d-flex" >
-                                                    &nbsp;<span id="balancediv" style=" color: black;"> Available Balance : <span id="balval" style="color: green;">{{pbill.party.openingbalance}}</span></span>
-                                                </div> 
-                                            
+                                        </div>
+<ul id="employee" class="dropdown-list">
+{% for p in cust %}
+    {% if c.cid_id == cmp.cid %}
+    <li class="dropdown-item"
+        data-value="{{ p.party_name}}"data-party-id="{{ p.id }}" data-phone="{{ p.contact }}" data-address="{{ p.address }}" data-balance="{{ p.openingbalance }}"onclick="selectItem(this);">
+        {{ p.party_name }}
+    </li>
+    {% endif %}
+{% endfor %}
+</ul>
+                                    </div>
+                                    <div class="mt-1 d-flex" >
                                             <div id="billdiv">
                                                 <label class="col-form-label">Bill No.</label>
                                                 <input type="text" class="form-control border-danger" name="bill_no"  id="bill_no" value="{{pbill.billno}}"  style="color: black;background-color: white;" readonly> <br>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div id="phonediv">
-                                                <label class="col-form-label">Phone No. </label>
-                                                <input class="form-control border-danger" name="phno" required  id="cust_phno"  style="color: black;background-color: white;" value="{{pbill.party.contact}}" readonly>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div id="phonediv">
+                                                    <label class="col-form-label">Phone No. </label>
+                                                    <input class="form-control border-danger" name="phno" required  id="cust_phno"  style="color: black;background-color: white;" value="{{pbill.party.contact}}" readonly>
+                                                </div>
+                                                
+                                                
                                             </div>
-                                            <div id="dbilldiv" style="display: none;">
-                                                <label class="col-form-label">Bill No.</label>
-                                                <input type="text" class="form-control border-danger" value="{{pbill.billno}}"  style="color: black;background-color: white;" readonly> <br>
-                                            </div>
-                                            <div id="daddressdiv" style="display: none;">
+                                            <div class="col-md-4" id="addressdiv">
                                                 <label class="col-form-label">Billing Address</label>
-                                                <textarea class="form-control border-danger mb-3" name="dbname" id="dbname" rows="6" type="text" style="color: black;background-color: white;" readonly>{{ pbill.party.address }}</textarea>
+                                                <textarea class="form-control border-danger  mb-3" name="bname" id="bname" rows="6" type="text"style="color: black;background-color: white;">{{ pbill.party.address }}</textarea>
                                             </div>
+                                            <div class="col-md-4">
+                                                <label class="col-form-label">Bill Date:</label>
+                                                <input type="date" class="form-control border-danger" style="color: black; background-color: white;" name="billdate" id="billdate" value="{{bdate}}">
+                                                <br>
+                                            </div>
+                                            
                                         </div>
-                                        <div class="col-md-4" id="addressdiv">
-                                            <label class="col-form-label">Billing Address</label>
-                                            <textarea class="form-control border-danger  mb-3" name="bname" id="bname" rows="6" type="text"style="color: black;background-color: white;">{{ pbill.party.address }}</textarea>
-                                        </div>
-                                        <div class="col-md-4" id="ddbilldiv" style="display: none;">
-                                            <label class="col-form-label">Bill No.</label>
-                                            <input type="text" class="form-control border-danger" value="{{pbill.billno}}"  style="color: black;background-color: white;" readonly> <br>
-                                        </div>
-                                    </div>
                                     <br>
 
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <label class="col-form-label">Bill Date:</label>
-                                            <input type="date" class="form-control border-danger" style="color: black; background-color: white;" name="billdate" id="billdate" value="{{bdate}}">
-                                            <br>
-                                        </div>
-                                        
-                                    <br>
+                        
 
                                     <div class="row clearfix">
                                         <div class="col-md-12 table-responsive-md mt-3">
@@ -289,7 +285,94 @@
 
 
           
+        <script>
+document.addEventListener('DOMContentLoaded', function () {
+                var input = document.querySelector('.dropdown-input');
+                var dropdownList = document.querySelector('#employee');
         
+                input.addEventListener('focus', function () {
+                    dropdownList.style.display = 'block';
+                });
+        
+                document.addEventListener('mousedown', function (event) {
+                    if (!event.target.closest('.custom-dropdown')) {
+                        dropdownList.style.display = 'none';
+                    }
+                });
+        
+                dropdownList.addEventListener('click', function (event) {
+                    if (event.target.classList.contains('dropdown-item')) {
+                        input.value = event.target.textContent;
+                        dropdownList.style.display = 'none';
+                        fillEmployeeDetails();
+                        clearErrorMessage();
+                    }
+                });
+        
+                input.addEventListener('input', function () {
+                    var filterValue = input.value.toLowerCase();
+                    var items = dropdownList.querySelectorAll('.dropdown-item');
+        
+                    items.forEach(function (item) {
+                        var itemText = item.textContent.toLowerCase();
+                        if (itemText.includes(filterValue)) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+});
+function getEmail() {
+    var selectedElement = document.querySelector(".dropdown-item.selected");
+
+    if (selectedElement) {
+        var phone_number = selectedElement.getAttribute("data-phone");
+        var billing_address = selectedElement.getAttribute("data-address");
+        var opening_balance = selectedElement.getAttribute("data-balance");
+        var partyid = selectedElement.getAttribute("data-party-id");
+
+        // Assuming you have input fields with IDs "ph" and "ad" in your HTML
+        document.getElementById("cust_phno").value = phone_number;
+        
+        // Check if billing_address has data
+        if (billing_address) {
+            document.getElementById("bname").value = billing_address;
+            // Show the billing address section
+            document.getElementById("addressdiv").style.display = "inline-block";
+        } else {
+            // Hide the billing address section if no data
+            document.getElementById("addressdiv").style.display = "none";
+        }
+
+        document.getElementById("balval").value = opening_balance;
+        document.getElementById("customerid").value = partyid;
+
+        // Show the Available Balance section
+        document.getElementById("balval").style.display = "inline-block";
+    }
+}
+                    
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            var dropdownItems = document.querySelectorAll(".dropdown-item");
+        
+            dropdownItems.forEach(function(item) {
+                item.addEventListener("click", function() {
+                    // Remove the "selected" class from all items
+                    dropdownItems.forEach(function(dropdownItem) {
+                        dropdownItem.classList.remove("selected");
+                    });
+        
+                    // Add the "selected" class to the clicked item
+                    item.classList.add("selected");
+        
+                    // Trigger the getEmail function
+                    getEmail();
+                });
+            });
+           });
+</script>
 
         <script>
             function changeprd(id){
@@ -347,60 +430,7 @@
         
         
             
-            $(document).ready(function () {
-                $('#customer').on('change', function() {
-                    $.ajax({
-                        type : 'POST',
-                        url: "{% url 'custdata' %}",
-                        data: {
-                            id: $('#customer').val(),
-                            csrfmiddlewaretoken: '{{ csrf_token }}',
-                        },
-                      
-                        success: function(data){
-                            if (data.phno == ''){
-                                if(data.address == ''){
-                                    document.getElementById('daddressdiv').style.display = 'none';
-                                    document.getElementById('addressdiv').style.display = 'none';
-                                    document.getElementById('phonediv').style.display = 'none';
-                                    document.getElementById('dbilldiv').style.display = 'block';
-                                    document.getElementById('billdiv').style.display = 'none';
-                                    document.getElementById('ddbilldiv').style.display = 'none';
-                                }else{
-                                    document.getElementById('daddressdiv').style.display = 'block';
-                                    document.getElementById('addressdiv').style.display = 'none';
-                                    document.getElementById('phonediv').style.display = 'none';
-                                    document.getElementById('billdiv').style.display = 'block';
-                                    document.getElementById('dbilldiv').style.display = 'none';
-                                    document.getElementById('ddbilldiv').style.display = 'none';
-                                    document.getElementById('dbname').value = data.address;
-                                }
-                            }else{
-                                if(data.address == ''){
-                                    document.getElementById('daddressdiv').style.display = 'none';
-                                    document.getElementById('addressdiv').style.display = 'none';
-                                    document.getElementById('phonediv').style.display = 'block';
-                                    document.getElementById('cust_phno').value = data.phno;
-                                    document.getElementById('ddbilldiv').style.display = 'block';
-                                    document.getElementById('dbilldiv').style.display = 'none';
-                                    document.getElementById('billdiv').style.display = 'none';
-                                }else{
-                                    document.getElementById('daddressdiv').style.display = 'none';
-                                    document.getElementById('addressdiv').style.display = 'block';
-                                    document.getElementById('phonediv').style.display = 'block';
-                                    document.getElementById('bname').value = data.address;
-                                    document.getElementById('cust_phno').value = data.phno;
-                                    document.getElementById('ddbilldiv').style.display = 'none';
-                                    document.getElementById('dbilldiv').style.display = 'none';
-                                    document.getElementById('billdiv').style.display = 'block';
-                                }
-                            }
-        
-                            
-                        }
-                    });
-                });
-            });
+  
         
             $(document).ready(function(){
                 $('#add').click(function(){
