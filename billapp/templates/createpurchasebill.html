@@ -95,7 +95,7 @@
                                    <div id="customer_div" style="margin-left: .1px; margin-right: .51px;">
                                    
                                     <div class="col-md-4  custom-dropdown">
-                                        <label class="col-form-label">Coustomer.</label>
+                                        <label class="col-form-label">Coustomer</label>
                                         <div class="input-group">
                                             <input type="text"  class="dropdown-input form-control border-danger " id="customer" placeholder='Search Party' oninput="getEmail();"><br>
                                             <input type="text" name="customername" id="customerid" hidden>
@@ -116,35 +116,27 @@
 {% endfor %}
 </ul><br>
 <small id="availableBalanceSection" style='color:black'>
-                                
-    {% if party.to_pay == 1 %}
-    Available Balance:&nbsp;<input class=" border-danger"  id="balval" style='color:red' type="text" readonly>
-    {% else %}
     Available Balance:&nbsp;<input class=" border-danger" id="balval" style='color:green' type="text" readonly>
-    {% endif %}
+
    
 </small>
                         </div>
-                       
+                       <div class="row">
                                             <div id="billdiv"  class="col-md-4">
                                                 <label class="col-form-label">Bill No.</label>
                                                 <input type="text" class="form-control border-danger" name="bill_no"  id="bill_no" value="{{bill_no}}"  style="color: black;background-color: white;" readonly> <br>
                                             </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div id="phonediv">
-                                                <label class="col-form-label" >Phone No. </label>
-                                                <input class="form-control border-danger" name="phno"  id="cust_phno"  style="color: black;background-color: white;" readonly>
+                                            <div class="col-md-4">
+                                                <div id="phonediv">
+                                                    <label class="col-form-label" >Phone No. </label>
+                                                    <input class="form-control border-danger" name="phno"  id="cust_phno"  style="color: black;background-color: white;" readonly>
+                                                </div>
+                                                
                                             </div>
-                                            
-                                        </div>
-                                        <div class="col-md-4" id="addressdiv">
-                                            <label class="col-form-label">Billing Address</label>
-                                            <textarea class="form-control border-danger mb-3" name="bname" id="bname" rows="6" type="text" style="color: black;background-color: white;" readonly></textarea>
-                                        </div>
-                                        <div class="col-md-4" id="ddbilldiv" style="display: none;">
-                                            <label class="col-form-label">Bill No.</label>
-                                            <input type="text" class="form-control border-danger" value="{{bill_no}}"  style="color: black;background-color: white;" readonly> <br>
+                                            <div class="col-md-4" id="addressdiv">
+                                                <label class="col-form-label">Billing Address</label>
+                                                <textarea class="form-control border-danger mb-3" name="bname" id="bname" rows="6" type="text" style="color: black;background-color: white;" readonly></textarea>
+                                            </div>
                                         </div>
                                         <div class="col-md-4">
                                             <label class="col-form-label">Bill Date</label>
@@ -812,9 +804,10 @@ function getEmail() {
         var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
         for (var i = 0; i < rows.length; i++) {
             var cells = rows[i].getElementsByTagName('td');
-            cells[0].innerText = i + 1;
+            cells[0].innerText = i+1;
         }
         calc();
+        console.log()
     });
    
 

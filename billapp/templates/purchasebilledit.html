@@ -92,7 +92,7 @@
                                                                   <div id="customer_div" style="margin-left: .1px; margin-right: .51px;">
                                    
                                     <div class="col-md-4  custom-dropdown">
-                                        <label for="">  Coustomer</label>
+                                        <label class="col-form-label">Coustomer</label>
                                         <div class="input-group">
                                             <input type="text"  class="dropdown-input form-control border-danger " id="customer" value="{{pbill.party.party_name}}" placeholder='Search Party' oninput="getEmail();"><br>
                                             <input type="text" name="customername" id="customerid" value="{{pbill.party}}" hidden>
@@ -113,13 +113,13 @@
 {% endfor %}
 </ul>
                                     </div>
-                                    <div class="mt-1 d-flex" >
-                                            <div id="billdiv">
+                                    <div class="row">
+                                        <div id="billdiv"  class="col-md-4">
                                                 <label class="col-form-label">Bill No.</label>
                                                 <input type="text" class="form-control border-danger" name="bill_no"  id="bill_no" value="{{pbill.billno}}"  style="color: black;background-color: white;" readonly> <br>
                                             </div>
-                                        </div>
-                                        <div class="row">
+                                        
+                                       
                                             <div class="col-md-4">
                                                 <div id="phonediv">
                                                     <label class="col-form-label">Phone No. </label>
@@ -132,13 +132,15 @@
                                                 <label class="col-form-label">Billing Address</label>
                                                 <textarea class="form-control border-danger  mb-3" name="bname" id="bname" rows="6" type="text"style="color: black;background-color: white;">{{ pbill.party.address }}</textarea>
                                             </div>
+                                        
+                                    </div>
                                             <div class="col-md-4">
                                                 <label class="col-form-label">Bill Date:</label>
                                                 <input type="date" class="form-control border-danger" style="color: black; background-color: white;" name="billdate" id="billdate" value="{{bdate}}">
                                                 <br>
                                             </div>
                                             
-                                        </div>
+                                        
                                     <br>
 
                         
