@@ -111,7 +111,10 @@
     </li>
     {% endif %}
 {% endfor %}
-</ul>
+</ul><br>
+<div class="mt-1 d-flex" >
+    &nbsp;<span id="balancediv" style="display: none; color: black;"> Available Balance : <span id="balval"></span></span>
+</div>
                                     </div>
                                     <div class="row">
                                         <div id="billdiv"  class="col-md-4">
@@ -336,7 +339,7 @@ function getEmail() {
 
         // Assuming you have input fields with IDs "ph" and "ad" in your HTML
         document.getElementById("cust_phno").value = phone_number;
-        
+
         // Check if billing_address has data
         if (billing_address) {
             document.getElementById("bname").value = billing_address;
@@ -347,13 +350,20 @@ function getEmail() {
             document.getElementById("addressdiv").style.display = "none";
         }
 
-        document.getElementById("balval").value = opening_balance;
-        document.getElementById("customerid").value = partyid;
+        // Check if opening_balance has data
+        if (opening_balance == 'To Pay') {
+           document.getElementById('balancediv').style.display = 'block';
+                            document.getElementById('balval').innerText = opening_balance;
+                            document.getElementById('balval').style.color = 'red';
+                        }else{
+                            document.getElementById('balancediv').style.display = 'block';
+                            document.getElementById('balval').innerText = opening_balance;
+                            document.getElementById('balval').style.color = 'green';
+        }
 
-        // Show the Available Balance section
-        document.getElementById("balval").style.display = "inline-block";
+        document.getElementById("customerid").value = partyid;
     }
-}
+}         
                     
         
         document.addEventListener("DOMContentLoaded", function() {
@@ -433,14 +443,16 @@ function getEmail() {
         
             
   
-        
             $(document).ready(function(){
-                $('#add').click(function(){
-                    var roinc = $("#items-table-body tr").length;
-                    roinc++
-                    $('#items-table-body').append(
-                        `<tr id='addr0${roinc}'>
-                            <td class = 'nnum' style="text-align: center; width:2%"">${roinc}</td>
+        var roinc = 1
+        
+        $('#add').click(function(){
+            var roinc1 = $("#items-table-body tr").length;
+            roinc++
+            roinc1++
+            $('#items-table-body').append(
+                `<tr id='addr0${roinc}'>
+                    <td class = 'nnum' style="text-align: center; width:2%"">${roinc1}</td>
         
                             <td style="width:21%">
                                 <div class="d-flex">

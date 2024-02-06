@@ -108,18 +108,16 @@
 <ul id="employee" class="dropdown-list">
 {% for p in party %}
     {% if c.cid_id == cmp.cid %}
-    <li class="dropdown-item"
-        data-value="{{ p.party_name}}"data-party-id="{{ p.id }}" data-phone="{{ p.contact }}" data-address="{{ p.address }}" data-balance="{{ p.openingbalance }}"onclick="selectItem(this);">
+    <li class="dropdown-item" 
+        data-value="{{ p.party_name}}"data-party-id="{{ p.id }}" data-phone="{{ p.contact }}" data-address="{{ p.address }}" data-balance="{{ p.openingbalance }}"onclick="selectItem(this);" styl>
         {{ p.party_name }}
     </li>
     {% endif %}
 {% endfor %}
 </ul><br>
-<small id="availableBalanceSection" style='color:black'>
-    Available Balance:&nbsp;<input class=" border-danger" id="balval" style='color:green' type="text" readonly>
-
-   
-</small>
+<div class="mt-1 d-flex" >
+    &nbsp;<span id="balancediv" style="display: none; color: black;"> Available Balance : <span id="balval">{{pbill.party.opening_balance}}</span></span>
+</div>
                         </div>
                        <div class="row">
                                             <div id="billdiv"  class="col-md-4">
@@ -460,9 +458,7 @@
                                             placeholder="&nbsp;Address"></textarea>
                                     </div><br>
                             
-                                    <div class="d-flex ">
-                                        <input style="background-color: white;" type="text" class="form-control mt-4" id="state" name="state" placeholder="State">
-                                    </div> <br>
+                                    
                                     
                     
                             
@@ -589,19 +585,22 @@ function getEmail() {
         }
 
         // Check if opening_balance has data
-        if (opening_balance) {
-            document.getElementById("balval").value = opening_balance;
-            // Show the Available Balance section
-            document.getElementById("balval").style.display = "inline-block";
-        } else {
-            // Hide the Available Balance section if no data
-            document.getElementById("balval").style.display = "none";
+        if (opening_balance == 'To Pay') {
+           document.getElementById('balancediv').style.display = 'block';
+                            document.getElementById('balval').innerText = opening_balance;
+                            document.getElementById('balval').style.color = 'red';
+                        }else{
+                            document.getElementById('balancediv').style.display = 'block';
+                            document.getElementById('balval').innerText = opening_balance;
+                            document.getElementById('balval').style.color = 'green';
         }
 
         document.getElementById("customerid").value = partyid;
     }
 }         
         
+
+                            
         document.addEventListener("DOMContentLoaded", function() {
             var dropdownItems = document.querySelectorAll(".dropdown-item");
         
@@ -677,12 +676,15 @@ function getEmail() {
 
 
     $(document).ready(function(){
+        var roinc = 1
+        
         $('#add').click(function(){
-            var roinc = $("#items-table-body tr").length;
+            var roinc1 = $("#items-table-body tr").length;
             roinc++
+            roinc1++
             $('#items-table-body').append(
                 `<tr id='addr0${roinc}'>
-                    <td class = 'nnum' style="text-align: center; width:2%"">${roinc}</td>
+                    <td class = 'nnum' style="text-align: center; width:2%"">${roinc1}</td>
 
                     <td style="width:21%">
                         <div class="d-flex">
@@ -699,11 +701,11 @@ function getEmail() {
                         </div>
                     </td>
 
-                    <td tyle="width:12%">
-                        <input type="text" name='hsn[]' id="hsn${roinc}" class="form-control border-danger" style="color: black; background-color: white;" readonly />
+                    <td tyle="width:13%">
+                        <input type="text" name='hsn[]' id="hsn${roinc}" class="form-control border-danger px-1" style="color: black; background-color: white;" readonly />
                     </td>
 
-                    <td style="width:13%">
+                    <td style="width:10%">
                         <input type="number" name='qty[]' value=0 id="qty${roinc}" class="form-control border-danger qty mb-1" step=0 min=0 style="color: black; background-color: white;" />
                     </td>
 
@@ -715,17 +717,17 @@ function getEmail() {
                         <input type="number" name='vat[]' id="Vat${roinc}" value=0 class="form-control border-danger seltax" value="{{0}}" step="0.00" min="0" style="color: black; background-color: white;" readonly/>
                     </td>  
 
-                    <td tyle="width:10%">
+                    <td tyle="width:8%">
                         <input type="number" name='discount[]' placeholder='Enter Discount' value=0 id="disc${roinc}" class="form-control border-danger disc" step=0 min=0 style="color: black; background-color: white;">
                     </td>
 
-                    <td style="width:13%">
+                    <td style="width:10%">
                         <input type="number" name='total[]' id="total${roinc}" placeholder=0 class="form-control border-danger total" value=0 step="any" style="color: black; background-color: white;" readonly />
                     </td>
 
                     <td hidden><input type="number" step="any" name='taxamount1' id="taxamount${roinc}" class=" taxamount" /></td>
                     
-                    <td style="width:13%">
+                    <td style="width:10%">
                         <button type="button" id="${roinc}" class="btn btn-danger px-2 mx-1 py-1 remove_row fa fa-close">Delete</button>
                     </td>
                 </tr>`

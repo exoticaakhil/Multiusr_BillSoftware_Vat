@@ -647,7 +647,7 @@ def save_party1(request):
         contact = request.POST.get('contact')
         trn_type = request.POST.get('trn_type')
         address = request.POST.get('address')
-        state = request.POST.get('state')
+      
         email = request.POST.get('email')
         balance = request.POST.get('balance')
         paymentType = request.POST.get('paymentType')
@@ -664,7 +664,7 @@ def save_party1(request):
             contact=contact,
             trn_type=trn_type,
             address=address,
-            state=state,
+            
             email=email,
             openingbalance=balance,
             payment=paymentType,

@@ -82,7 +82,7 @@ class Party(models.Model):
     trn_no = models.CharField(max_length=100,null=True,blank=True)
     contact = models.CharField(max_length=255,null=True,blank=True)
     trn_type = models.CharField(max_length=255,null=True,blank=True)
-    state = models.CharField(max_length=100,null=True,blank=True)
+
     address = models.CharField(max_length=100,null=True,blank=True)
     email = models.EmailField(max_length=100,null=True,blank=True)
     openingbalance = models.CharField(max_length=100,default='0',null=True,blank=True)
