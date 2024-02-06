@@ -112,9 +112,11 @@
     {% endif %}
 {% endfor %}
 </ul><br>
-<div class="mt-1 d-flex" >
-    &nbsp;<span id="balancediv" style="display: none; color: black;"> Available Balance : <span id="balval"></span></span>
-</div>
+<small id="availableBalanceSection" style='color:black'>
+    Available Balance:&nbsp;<input class=" border-danger hidden" id="balval" style='color:green' type="text" value="{{pbill.party.openingbalance}}" readonly>
+
+   
+</small>
                                     </div>
                                     <div class="row">
                                         <div id="billdiv"  class="col-md-4">
@@ -351,14 +353,13 @@ function getEmail() {
         }
 
         // Check if opening_balance has data
-        if (opening_balance == 'To Pay') {
-           document.getElementById('balancediv').style.display = 'block';
-                            document.getElementById('balval').innerText = opening_balance;
-                            document.getElementById('balval').style.color = 'red';
-                        }else{
-                            document.getElementById('balancediv').style.display = 'block';
-                            document.getElementById('balval').innerText = opening_balance;
-                            document.getElementById('balval').style.color = 'green';
+        if (opening_balance) {
+            document.getElementById("balval").value = opening_balance;
+            // Show the Available Balance section
+            document.getElementById("availableBalanceSection").style.display = "inline-block";
+        } else {
+            // Hide the Available Balance section if no data
+            document.getElementById("availableBalanceSection").style.display = "none";
         }
 
         document.getElementById("customerid").value = partyid;
@@ -443,6 +444,7 @@ function getEmail() {
         
             
   
+        
             $(document).ready(function(){
         var roinc = 1
         
@@ -453,50 +455,54 @@ function getEmail() {
             $('#items-table-body').append(
                 `<tr id='addr0${roinc}'>
                     <td class = 'nnum' style="text-align: center; width:2%"">${roinc1}</td>
-        
-                            <td style="width:21%">
-                                <div class="d-flex">
-                                    <select name='product[]' id="product${roinc}" class="form-control border-danger product"  onchange="changeprd(this.id)" style="color: black; background-color: white;">
-                                        <option value="" selected hidden>Select Product</option>
-                                        {% for i in item %}
-                                                <option  value="{{ i.id  }}">{{ i.itm_name  }} </option>
-                                        {% endfor %}
-                                    </select>&nbsp;&nbsp;&nbsp;
-                                </div>
-                            </td>
-        
-                            <td tyle="width:12%">
-                                <input type="text" name='hsn[]' id="hsn${roinc}" class="form-control border-danger" style="color: black; background-color: white;" readonly />
-                            </td>
-        
-                            <td style="width:13%">
-                                <input type="number" name='qty[]' value=0 id="qty${roinc}" class="form-control border-danger qty mb-1" step=0 min=0 style="color: black; background-color: white;" />
-                            </td>
-        
-                            <td tyle="width:12%">
-                                <input type="number" name='price[]' id="unit${roinc}" value=0 class="form-control border-danger price" step="0.00" min="0" style="color: black; background-color: white;" readonly/>
-                            </td>
-        
-                            <td tyle="width:12%">
-                                <input type="number" name='vat[]' id="Vat${roinc}" value=0 class="form-control border-danger seltax" value="{{0}}" step="0.00" min="0" style="color: black; background-color: white;" readonly/>
-                            </td>  
-        
-                            <td tyle="width:10%">
-                                <input type="number" name='discount[]' placeholder='Enter Discount' value=0 id="disc${roinc}" class="form-control border-danger disc" step=0 min=0 style="color: black; background-color: white;">
-                            </td>
-        
-                            <td style="width:13%">
-                                <input type="number" name='total[]' id="total${roinc}" placeholder=0 class="form-control border-danger total" value=0 step="any" style="color: black; background-color: white;" readonly />
-                            </td>
-        
-                            <td hidden><input type="number" step="any" name='taxamount1' id="taxamount${roinc}" class=" taxamount" /></td>
-                            
-                            <td style="width:13%">
-                                <button type="button" id="${roinc}" class="btn btn-danger px-2 mx-1 py-1 remove_row fa fa-close">Delete</button>
-                            </td>
-                        </tr>`
-                    );
-                  
+
+                    <td style="width:21%">
+                        <div class="d-flex">
+                            <select name='product[]' id="product${roinc}" class="form-control border-danger product"  onchange="changeprd(this.id)" style="color: black; background-color: white;">
+                                <option value="" selected hidden>Select Product</option>
+                                {% for i in item %}
+                                        <option  value="{{ i.id  }}">{{ i.itm_name  }} </option>
+                                {% endfor %}
+                            </select>&nbsp;&nbsp;&nbsp;
+
+                            <button id="modal_closing" type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#newitem" data-bs-whatever="@mdo">
+                                <span class="fa fa-plus"></span>
+                            </button>
+                        </div>
+                    </td>
+
+                    <td tyle="width:13%">
+                        <input type="text" name='hsn[]' id="hsn${roinc}" class="form-control border-danger px-1" style="color: black; background-color: white;" readonly />
+                    </td>
+
+                    <td style="width:10%">
+                        <input type="number" name='qty[]' value=0 id="qty${roinc}" class="form-control border-danger qty mb-1" step=0 min=0 style="color: black; background-color: white;" />
+                    </td>
+
+                    <td tyle="width:12%">
+                        <input type="number" name='price[]' id="unit${roinc}" value=0 class="form-control border-danger price" step="0.00" min="0" style="color: black; background-color: white;" readonly/>
+                    </td>
+
+                    <td tyle="width:12%">
+                        <input type="number" name='vat[]' id="Vat${roinc}" value=0 class="form-control border-danger seltax" value="{{0}}" step="0.00" min="0" style="color: black; background-color: white;" readonly/>
+                    </td>  
+
+                    <td tyle="width:8%">
+                        <input type="number" name='discount[]' placeholder='Enter Discount' value=0 id="disc${roinc}" class="form-control border-danger disc" step=0 min=0 style="color: black; background-color: white;">
+                    </td>
+
+                    <td style="width:10%">
+                        <input type="number" name='total[]' id="total${roinc}" placeholder=0 class="form-control border-danger total" value=0 step="any" style="color: black; background-color: white;" readonly />
+                    </td>
+
+                    <td hidden><input type="number" step="any" name='taxamount1' id="taxamount${roinc}" class=" taxamount" /></td>
+                    
+                    <td style="width:10%">
+                        <button type="button" id="${roinc}" class="btn btn-danger px-2 mx-1 py-1 remove_row fa fa-close">Delete</button>
+                    </td>
+                </tr>`
+            );
+          
            
                 });
                
