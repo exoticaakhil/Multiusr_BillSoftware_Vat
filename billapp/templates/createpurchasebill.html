@@ -74,7 +74,13 @@
         <div class="col-12  p-0 m-0">
             <div class=" bg-light bg-light pb-0 mb-0 p-2" style="height:100%;width:100%">
                
-                <p></p>
+                {% for m in messages %}
+                <h5>
+                  <div class="alert alert-danger mt-4" style="width: 100%;">
+                    {{ m }}
+                  </div>
+                </h5>
+                  {% endfor %}
   
                 <form action="{% url 'createbill' %}" method="post" enctype="multipart/form-data" onsubmit="return validatepurchasebill()" novalidate>
                     {% csrf_token %}
@@ -193,7 +199,7 @@
                                                             <input type="number" name='price[]' id="unit1" class="form-control border-danger price" step="0.00" min="0" style="color: black; background-color: white;" value=0 readonly />
                                                         </td>
                                                         <td style="width:12%">
-                                                            <input type="number" name='vat[]' id="Vat1" class="form-control border-danger seltax"  step="0.00" min="0" style="color: black; background-color: white;" value=0 readonly />
+                                                            <input type="text" name='vat[]' id="Vat1" class="form-control border-danger seltax"  step="0.00" min="0" style="color: black; background-color: white;" value=0 readonly />
                                                         </td>
                                                        
     
@@ -287,6 +293,7 @@
                         <h3 class="text-danger ms-3">ADD ITEM</h3>
                         <button type="button" class="btn-close me-3" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
+            
                     <div class="modal-body" style="background-color: rgba(144, 211, 117, 0.098);" >
                         <form action="{% url 'save_item' %}" method="post" enctype="multipart/form-data"  onsubmit="return validate()">
                             {% csrf_token %}
@@ -379,22 +386,22 @@
                                     <div class="p-3" style="border: 2px solid #68020F; border-radius: 2.5vh; background-color: #FFD6D7;">
                                       <div class="mb-4 pt-4">
                                         <label class="tb fw-bold" for="opn_stock_">STOCK IN HAND</label><br>
-                                        <input id="opn_stock_" class="form-control fw-normal fs-3 mt-1 input_border text-black" type="number" placeholder="Enter Opening Stock" name="stock_in_hand" required>
+                                        <input id="opn_stock_" class="form-control fw-normal fs-3 mt-1 input_border text-black" type="number" placeholder="Enter Opening Stock" name="stock_in_hand" >
                                       </div>
                                       <div class="mb-4">
                                         <label class="tb fw-bold" for="at_price">AT PRICE</label><br>
-                                        <input id="at_price" class="form-control fw-normal fs-3 mt-1 input_border text-black" type="number" placeholder="Enter Price" name="at_price" required>
+                                        <input id="at_price" class="form-control fw-normal fs-3 mt-1 input_border text-black" type="number" placeholder="Enter Price" name="at_price" >
                                       </div>
                                       <div class="mb-4">
                                         <label class="tb fw-bold" for="date_">DATE</label><br>
-                                        <input id="date" class="form-control fw-normal fs-3 mt-1 input_border text-black" type="date" value="{{ tod }}" name="itm_date">
-                                      </div>
+                                        <input id="date" class="form-control fw-normal fs-3 mt-1 input_border text-black" type="date" name="itm_date">
+                                    </div>
                                     </div>
                                   </div>
                                   <div  class="col-sm-12 col-md-1"></div>
                                   <div class="text-start" style="margin-left: 9%;">
-                                    <button class="btn me-3 button_border" type="submit" value="save_and_next" name="save_and_next">Save</submit>
-                                    
+                                    <button class="btn me-3 button_border" type="submit" value="save_and_next" name="save_and_next">Save & Next</submit>
+                                    <button class="btn me-3 button_border" type="submit" value="save" name="save">Save</button>
                                   </div>
                                 </div>
                               </div>
@@ -503,8 +510,8 @@
                     
                            
                             <div class="col-md-5 mt-4">
-                                <input type="submit" class="btn btn-primary save-button" name="save_and_new" value="Save&New">
-                                <input type="submit" class="btn btn-primary save-button" name="save" value="Save">
+                                <input type="submit" class="btn btn-danger save-button" name="save_and_new" value="Save&New">
+                                <input type="submit" class="btn btn-danger save-button" name="save" value="Save">
                             </div><br>
                     
                         </div>
@@ -522,7 +529,18 @@
 
 
 
-
+        <script>
+            // Get today's date
+            var today = new Date();
+        
+            // Format date as YYYY-MM-DD
+            var year = today.getFullYear();
+            var month = (today.getMonth() + 1).toString().padStart(2, '0');
+            var day = today.getDate().toString().padStart(2, '0');
+        
+            // Set the value of the date input field to today's date
+            document.getElementById('date').value = year + '-' + month + '-' + day;
+        </script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -714,7 +732,7 @@ function getEmail() {
                     </td>
 
                     <td tyle="width:12%">
-                        <input type="number" name='vat[]' id="Vat${roinc}" value=0 class="form-control border-danger seltax" value="{{0}}" step="0.00" min="0" style="color: black; background-color: white;" readonly/>
+                        <input type="text" name='vat[]' id="Vat${roinc}" value=0 class="form-control border-danger seltax" value="{{0}}" step="0.00" min="0" style="color: black; background-color: white;" readonly/>
                     </td>  
 
                     <td tyle="width:8%">
@@ -830,7 +848,11 @@ function getEmail() {
                 var qty = $(this).find('.qty').val();
                 var price = $(this).find('.price').val();
                 var dis = $(this).find('.disc').val();
-                var tax = $(this).find('.seltax').val();
+                var taxString = $(this).find('.seltax').val(); // Get the value from the input field
+                var tax = parseInt(taxString.replace(/\D/g, ''), 10); // Extract integer part using regular expression
+
+                console.log(taxString)
+                console.log(tax)
                
        
                 $(this).find('.total').val((parseFloat(qty) *parseFloat(price))-parseFloat(dis));
@@ -898,13 +920,13 @@ function getEmail() {
     $(document).ready(function(){
       $('#item_tax_1').on('click',function(){
           $('#vatdiv').attr('hidden',false)
-          $('#vat').val('5')
+          $('#vat').val('vat 5')
       })
     })
     $(document).ready(function(){
       $('#item_tax_2').on('click',function(){
           $('#vatdiv').attr('hidden',false)
-          $('#vat').val('0')
+          $('#vat').val('vat 0')
       })
     })
   

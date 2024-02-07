@@ -21,6 +21,8 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt
 import pandas as pd
+from django.contrib import messages
+
 
 
 def home(request):
@@ -595,10 +597,11 @@ def save_purchasebill(request,id):
     
 def save_item(request):
     if request.user.is_company:
-      cmp = request.user.company
+        cmp = request.user.company
     else:
-      cmp = request.user.employee.company  
+        cmp = request.user.employee.company  
     usr = CustomUser.objects.get(username=request.user) 
+
     if request.method == 'POST':
         itm_type = request.POST.get('itm_type')
         name = request.POST.get('name')
@@ -611,12 +614,14 @@ def save_item(request):
         itm_stock_in_hand = request.POST.get('itm_stock_in_hand', 0)  # Default to 0 if not provided
         itm_at_price = request.POST.get('itm_at_price', 0)  # Default to 0 if not provided
         itm_date = request.POST.get('itm_date')
-      
 
+        # Check if the HSN number already exists in the database
+        if Item.objects.filter(itm_hsn=itm_hsn).exists():
+            # Send a message indicating that the HSN number already exists
+            messages.error(request, 'HSN number already exists!')
+            return redirect('createbill')
 
-
-        
-        itm=Item(
+        itm = Item(
             user=usr,
             company=cmp,
             itm_type=itm_type,
@@ -633,21 +638,20 @@ def save_item(request):
         )
         itm.save()
 
-        # You can redirect to a success page or another view after saving
-        return redirect('createbill')  # Change 'success_page' to the actual URL or view name
+        return redirect('createbill')
 def save_party1(request):
     if request.user.is_company:
-      cmp = request.user.company
+        cmp = request.user.company
     else:
-      cmp = request.user.employee.company  
+        cmp = request.user.employee.company  
     usr = CustomUser.objects.get(username=request.user)
+
     if request.method == 'POST':
         partyname = request.POST.get('partyname')
         trn_no = request.POST.get('trn_no')
         contact = request.POST.get('contact')
         trn_type = request.POST.get('trn_type')
         address = request.POST.get('address')
-      
         email = request.POST.get('email')
         balance = request.POST.get('balance')
         paymentType = request.POST.get('paymentType')
@@ -655,6 +659,18 @@ def save_party1(request):
         additionalfield1 = request.POST.get('additionalfield1')
         additionalfield2 = request.POST.get('additionalfield2')
         additionalfield3 = request.POST.get('additionalfield3')
+
+        # Check if the contact number already exists in the database
+        if Party.objects.filter(contact=contact).exists():
+            # Send a message indicating that the contact number already exists
+            messages.error(request, 'Phone number already exists!')
+            return redirect('createbill')
+
+        # Check if the transaction number already exists in the database
+        if Party.objects.filter(trn_no=trn_no).exists():
+            # Send a message indicating that the transaction number already exists
+            messages.error(request, 'Transaction number already exists!')
+            return redirect('createbill')
 
         Party.objects.create(
             user=usr,
@@ -664,7 +680,6 @@ def save_party1(request):
             contact=contact,
             trn_type=trn_type,
             address=address,
-            
             email=email,
             openingbalance=balance,
             payment=paymentType,
