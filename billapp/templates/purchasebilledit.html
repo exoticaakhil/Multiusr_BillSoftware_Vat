@@ -173,7 +173,7 @@
                                                             {{ forloop.counter }}<input type="text"  name='id[]' value="{{ j.id }}" hidden>
                                                         </td>
 
-                                                        <td style="width:21%" >
+                                                        <td style="width:18%" >
                                                             <div class="d-flex">
                                                                 <select name='product[]' id="product{{ forloop.counter }}" class="form-control product border-danger" onchange="changeprd(this.id)" style="color: black; background-color: white;">
                                                                     <option value="{{ j.product.id }}" selected hidden>{{ j.product.itm_name }}</option>
@@ -188,7 +188,7 @@
                                                             </div>
                                                         </td>
 
-                                                        <td style="width:12%">
+                                                        <td style="width:15%">
                                                             <input type="text" name='hsn[]'  value="{{ j.product.itm_hsn }}" id="hsn{{ forloop.counter }}" class="form-control border-danger" style="color: black; background-color: white;"/>
                                                         </td>
 
@@ -456,12 +456,14 @@ function getEmail() {
                 `<tr id='addr0${roinc}'>
                     <td class = 'nnum' style="text-align: center; width:2%"">${roinc1}</td>
 
-                    <td style="width:21%">
+                    <td style="width:18%">
                         <div class="d-flex">
                             <select name='product[]' id="product${roinc}" class="form-control border-danger product"  onchange="changeprd(this.id)" style="color: black; background-color: white;">
                                 <option value="" selected hidden>Select Product</option>
                                 {% for i in item %}
-                                        <option  value="{{ i.id  }}">{{ i.itm_name  }} </option>
+                                    {% if i.cid_id == cmp.cid %}
+                                        <option value="{{ i.id }}" >{{ i.itm_name  }} </option>
+                                    {% endif %}
                                 {% endfor %}
                             </select>&nbsp;&nbsp;&nbsp;
 
@@ -471,7 +473,7 @@ function getEmail() {
                         </div>
                     </td>
 
-                    <td tyle="width:13%">
+                    <td tyle="width:15%">
                         <input type="text" name='hsn[]' id="hsn${roinc}" class="form-control border-danger px-1" style="color: black; background-color: white;" readonly />
                     </td>
 

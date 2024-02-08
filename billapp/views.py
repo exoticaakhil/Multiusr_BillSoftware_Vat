@@ -359,12 +359,6 @@ def allbill(request):
       i['action']=p_history.action
       i['name']=p_history.staff.first_name+" "+p_history.staff.last_name
       i['party']=p_history.purchasebill.party.party_name
- 
-    
-      
-
-
-   
     return render(request, 'all_billdetils.html',{'itm':itm,'pbill':pbill})
 def purchasebill(request):
     if request.user.is_company:
@@ -379,6 +373,7 @@ def purchasebill(request):
         bill_no = last_bill.billno + 1
     else:
         bill_no = 1
+    print (bill_no)
     context = {
         'bill_no': bill_no,
         'party':party,
@@ -450,14 +445,15 @@ def createbill(request):
                           staff=usr
                           )
     pbill.save()
+    
         
     product = tuple(request.POST.getlist("product[]"))
     qty =  tuple(request.POST.getlist("qty[]"))
     discount =  tuple(request.POST.getlist("discount[]"))
     tax =  tuple(request.POST.getlist("vat[]"))
     total =  tuple(request.POST.getlist("total[]"))
-    billno = PurchaseBill.objects.get(billno=pbill.billno)
-
+    billno = PurchaseBill.objects.get(billno=pbill.billno,company=cmp)
+    print(billno)
     if len(product)==len(qty)==len(tax)==len(discount)==len(total):
         mapped=zip(product,qty,tax,discount,total)
         mapped=list(mapped)
@@ -469,6 +465,7 @@ def createbill(request):
     
     
     pbill.tot_bill_no = pbill.billno
+    print(pbill.tot_bill_no)
     pbill.save()
 
     PurchaseBillTransactionHistory.objects.create(purchasebill=pbill,action='Created',company=cmp,staff=usr)
@@ -616,7 +613,7 @@ def save_item(request):
         itm_date = request.POST.get('itm_date')
 
         # Check if the HSN number already exists in the database
-        if Item.objects.filter(itm_hsn=itm_hsn).exists():
+        if Item.objects.filter(itm_hsn=itm_hsn,company=cmp).exists():
             # Send a message indicating that the HSN number already exists
             messages.error(request, 'HSN number already exists!')
             return redirect('createbill')
@@ -661,13 +658,13 @@ def save_party1(request):
         additionalfield3 = request.POST.get('additionalfield3')
 
         # Check if the contact number already exists in the database
-        if Party.objects.filter(contact=contact).exists():
+        if Party.objects.filter(contact=contact,company=cmp).exists():
             # Send a message indicating that the contact number already exists
             messages.error(request, 'Phone number already exists!')
             return redirect('createbill')
 
         # Check if the transaction number already exists in the database
-        if Party.objects.filter(trn_no=trn_no).exists():
+        if Party.objects.filter(trn_no=trn_no,company=cmp).exists():
             # Send a message indicating that the transaction number already exists
             messages.error(request, 'Transaction number already exists!')
             return redirect('createbill')
