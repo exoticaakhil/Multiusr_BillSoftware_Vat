@@ -115,14 +115,14 @@
 {% for p in party %}
     {% if c.cid_id == cmp.cid %}
     <li class="dropdown-item" 
-        data-value="{{ p.party_name}}"data-party-id="{{ p.id }}" data-phone="{{ p.contact }}" data-address="{{ p.address }}" data-balance="{{ p.openingbalance }}"onclick="selectItem(this);" styl>
+        data-value="{{ p.party_name}}"data-party-id="{{ p.id }}" data-phone="{{ p.contact }}" data-address="{{ p.address }}" data-balance="{{ p.openingbalance }}" data-payment="{{ p.payment }}"onclick="selectItem(this);" styl>
         {{ p.party_name }}
     </li>
     {% endif %}
 {% endfor %}
 </ul><br>
 <div class="mt-1 d-flex" >
-    &nbsp;<span id="balancediv" style="display: none; color: black;"> Available Balance : <span id="balval">{{pbill.party.opening_balance}}</span></span>
+    &nbsp;<span id="balancediv" style="display: none; color: black;"> Available Balance : <span id="balval"></span></span>
 </div>
                         </div>
                        <div class="row">
@@ -589,7 +589,7 @@ function getEmail() {
         var billing_address = selectedElement.getAttribute("data-address");
         var opening_balance = selectedElement.getAttribute("data-balance");
         var partyid = selectedElement.getAttribute("data-party-id");
-
+        var payment = selectedElement.getAttribute("data-payment");
         // Assuming you have input fields with IDs "ph" and "ad" in your HTML
         document.getElementById("cust_phno").value = phone_number;
 
@@ -604,7 +604,7 @@ function getEmail() {
         }
 
         // Check if opening_balance has data
-        if (opening_balance == 'To Pay') {
+        if ( payment == 'To Pay') {
            document.getElementById('balancediv').style.display = 'block';
                             document.getElementById('balval').innerText = opening_balance;
                             document.getElementById('balval').style.color = 'red';

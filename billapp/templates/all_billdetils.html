@@ -222,10 +222,11 @@
                         </div>
                         <div class="col-md-6"></div>
                         <div class="col-md-2">
-                            <a class="btn btn-danger bg-gradient" href="{% url 'createbill' %}" style="color: white;"> 
-                                <i class="fa fa-plus border-dark " aria-hidden="true" style="color: white;"></i> &nbsp;Add Purchase Bill
+                            <a class="btn btn-danger bg-gradient w-90" href="{% url 'createbill' %}" style="color: white;"> 
+                                <i class="fa fa-plus border-dark" aria-hidden="true" style="color: white;"></i> &nbsp;Add Purchase Bill
                             </a>
                         </div>
+                        
                     </div>
 
                     <div class="row">
@@ -344,7 +345,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for p in pbill %}
+                                        {% for p in pbills %}
                                         <tr>
                                             <td>{{p.billdate | date:'d-m-Y'}}</td>
                                             <td>{{p.billno}}</td>

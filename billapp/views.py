@@ -4,7 +4,6 @@ from django.contrib import messages
 from django.contrib.auth.models import auth
 from django.utils.crypto import get_random_string
 import random
-import json
 from datetime import date
 from django.db.models import F
 from django.conf import settings
@@ -18,9 +17,7 @@ from django.core.mail import EmailMessage
 from django.views.generic import View
 from io import BytesIO
 from django.shortcuts import get_object_or_404
-from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt
-import pandas as pd
 from django.contrib import messages
 
 
@@ -353,13 +350,14 @@ def allbill(request):
    
     itm=PurchaseBill.objects.filter(company=cmp)
     pbill = PurchaseBill.objects.filter(company=cmp).values()
+    pbills = PurchaseBill.objects.filter(company=cmp)
 
     for i in pbill:
       p_history= PurchaseBillTransactionHistory.objects.filter(purchasebill=i['id'],company=cmp).last()
       i['action']=p_history.action
       i['name']=p_history.staff.first_name+" "+p_history.staff.last_name
       i['party']=p_history.purchasebill.party.party_name
-    return render(request, 'all_billdetils.html',{'itm':itm,'pbill':pbill})
+    return render(request, 'all_billdetils.html',{'itm':itm,'pbill':pbill,'pbills':pbills,'usr':request.user})
 def purchasebill(request):
     if request.user.is_company:
           cmp = request.user.company
@@ -378,6 +376,7 @@ def purchasebill(request):
         'bill_no': bill_no,
         'party':party,
         'item':item,
+        'usr':request.user
         # Add other context variables as needed
     }
     return render(request, 'createpurchasebill.html',context)
@@ -489,7 +488,7 @@ def billhistory(request):
   hst = PurchaseBillTransactionHistory.objects.filter(purchasebill=pbill,company=cmp).last()
   name = hst.staff.first_name + ' ' + hst.staff.last_name 
   action = hst.action
-  return JsonResponse({'name':name,'action':action,'pid':pid})
+  return JsonResponse({'name':name,'action':action,'pid':pid,'usr':request.user})
 
 
 def delete_purchasebill(request,id):
@@ -517,7 +516,7 @@ def details_purchasebill(request,id):
     dis += int(itm.discount)
   itm_len = len(pitm)
 
-  context={'pbill':pbill,'pitm':pitm,'itm_len':itm_len,'dis':dis}
+  context={'pbill':pbill,'pitm':pitm,'itm_len':itm_len,'dis':dis,'usr':request.user}
   return render(request,'vatbilldetils.html',context)
 def history_purchasebill(request,id):
   if request.user.is_company:
@@ -528,7 +527,7 @@ def history_purchasebill(request,id):
   pbill = PurchaseBill.objects.get(id=id)
   hst= PurchaseBillTransactionHistory.objects.filter(purchasebill=pbill,company=cmp)
 
-  context = {'hst':hst,'pbill':pbill}
+  context = {'hst':hst,'pbill':pbill,'usr':request.user}
   return render(request,'purchasebillhistory.html',context)
 def edit_purchasebill(request,id):
   toda = date.today()
@@ -547,7 +546,7 @@ def edit_purchasebill(request,id):
   billprd = PurchaseBillItem.objects.filter(purchasebill=pbill,company=cmp)
   bdate = pbill.billdate.strftime("%Y-%m-%d")
   context = { 'pbill':pbill, 'billprd':billprd,'tod':tod,
-             'cust':cust, 'item':item, 'item_units':item_units, 'bdate':bdate}
+             'cust':cust, 'item':item, 'item_units':item_units, 'bdate':bdate,'usr':request.user}
   return render(request,'purchasebilledit.html',context)
 def save_purchasebill(request,id):
   if request.method =='POST':
@@ -555,10 +554,14 @@ def save_purchasebill(request,id):
       cmp = request.user.company
     else:
       cmp = request.user.employee.company  
-    print(id)
+
     usr = CustomUser.objects.get(username=request.user) 
+    print('haiii')
+    print (request.POST.get('customername'))
     part = Party.objects.get(id=request.POST.get('customername'))
+    print(part)
     pbill = PurchaseBill.objects.get(id=id, company=cmp)
+    print(pbill)
 
         # Access the related PurchaseBill instance through the ForeignKey
 
@@ -666,7 +669,7 @@ def save_party1(request):
         # Check if the transaction number already exists in the database
         if Party.objects.filter(trn_no=trn_no,company=cmp).exists():
             # Send a message indicating that the transaction number already exists
-            messages.error(request, 'Transaction number already exists!')
+            messages.error(request, 'TRN number already exists!')
             return redirect('createbill')
 
         Party.objects.create(
