@@ -454,18 +454,23 @@ function getEmail() {
         
             
   
+        $(document).ready(function(){
         
-            $(document).ready(function(){
-        var roinc = 1
-        
+        var lastRowId = $('#tab_logic tr:last').attr('id');
+        var numericPart = lastRowId.replace('addr0', '');
+
+        // Increment the numeric part by one
+        var newNumericPart = parseInt(numericPart) + 1;
         $('#add').click(function(){
-            var roinc1 = $("#items-table-body tr").length;
+            var roinc=newNumericPart
+            // var roinc = $("#items-table-body tr").length;
+            
+            
             roinc++
-            roinc1++
+            
             $('#items-table-body').append(
                 `<tr id='addr0${roinc}'>
-                    <td class = 'nnum' style="text-align: center; width:2%"">${roinc1}</td>
-
+                    <td class = 'nnum' style="text-align: center; width:2%"">${roinc}</td>
                     <td style="width:18%">
                         <div class="d-flex">
                             <select name='product[]' id="product${roinc}" class="form-control border-danger product"  onchange="changeprd(this.id)" style="color: black; background-color: white;">
@@ -476,10 +481,6 @@ function getEmail() {
                                     {% endif %}
                                 {% endfor %}
                             </select>&nbsp;&nbsp;&nbsp;
-
-                            <button id="modal_closing" type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#newitem" data-bs-whatever="@mdo">
-                                <span class="fa fa-plus"></span>
-                            </button>
                         </div>
                     </td>
 
@@ -583,6 +584,7 @@ function getEmail() {
         
             $(document).on('click','.remove_row',function(){
                 var row_id = $(this).attr("id");
+                // $('#addr0'+row_id+'').css('display','none');
                 $('#addr0'+row_id+'').remove();
                 var table = document.getElementById('tab_logic');
                 var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');

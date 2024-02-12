@@ -659,6 +659,8 @@ def save_party1(request):
         additionalfield1 = request.POST.get('additionalfield1')
         additionalfield2 = request.POST.get('additionalfield2')
         additionalfield3 = request.POST.get('additionalfield3')
+        print(trn_no)
+        print(partyname)
 
         # Check if the contact number already exists in the database
         if Party.objects.filter(contact=contact,company=cmp).exists():
@@ -667,9 +669,18 @@ def save_party1(request):
             return redirect('createbill')
 
         # Check if the transaction number already exists in the database
-        if Party.objects.filter(trn_no=trn_no,company=cmp).exists():
-            # Send a message indicating that the transaction number already exists
-            messages.error(request, 'TRN number already exists!')
+        if request.POST.get('trn_no') is not None:
+            if Party.objects.filter(trn_no=trn_no, company=cmp).exists():
+                # Send a message indicating that the transaction number already exists
+                messages.error(request, 'TRN number already exists!')
+                return redirect('createbill')
+        else:
+            # Save the Party object since trn_no is null
+            # Assuming you have a Party model and want to create a new Party instance
+            # You need to replace 'Party' with the appropriate model name if it's different
+            party = Party.objects.create(trn_no=trn_no, company=cmp)
+            # Optionally, you can send a success message here
+            messages.success(request, 'Party saved successfully!')
             return redirect('createbill')
 
         Party.objects.create(
