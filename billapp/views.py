@@ -371,7 +371,7 @@ def purchasebill(request):
         bill_no = last_bill.billno + 1
     else:
         bill_no = 1
-    print (bill_no)
+    # print (bill_no)
     context = {
         'bill_no': bill_no,
         'party':party,
@@ -387,7 +387,7 @@ def itemdetails(request):
   vat = itm.itm_vat
   price = itm.itm_purchase_price
   qty = itm.itm_stock_in_hand
-  print(vat)
+  # print(vat)
   return JsonResponse({'hsn':hsn, 'vat':vat,  'price':price, 'qty':qty})
 def item_dropdown(request):
   if request.user.is_company:
@@ -452,7 +452,7 @@ def createbill(request):
     tax =  tuple(request.POST.getlist("vat[]"))
     total =  tuple(request.POST.getlist("total[]"))
     billno = PurchaseBill.objects.get(billno=pbill.billno,company=cmp)
-    print(billno)
+    # print(billno)
     if len(product)==len(qty)==len(tax)==len(discount)==len(total):
         mapped=zip(product,qty,tax,discount,total)
         mapped=list(mapped)
@@ -659,30 +659,39 @@ def save_party1(request):
         additionalfield1 = request.POST.get('additionalfield1')
         additionalfield2 = request.POST.get('additionalfield2')
         additionalfield3 = request.POST.get('additionalfield3')
-        print(trn_no)
-        print(partyname)
+        # print(trn_no)
+        # print(partyname)
 
         # Check if the contact number already exists in the database
         if Party.objects.filter(contact=contact,company=cmp).exists():
             # Send a message indicating that the contact number already exists
-            messages.error(request, 'Phone number already exists!')
+
             return redirect('createbill')
 
         # Check if the transaction number already exists in the database
-        if request.POST.get('trn_no') is not None:
-            if Party.objects.filter(trn_no=trn_no, company=cmp).exists():
-                # Send a message indicating that the transaction number already exists
-                messages.error(request, 'TRN number already exists!')
-                return redirect('createbill')
-        else:
-            # Save the Party object since trn_no is null
-            # Assuming you have a Party model and want to create a new Party instance
-            # You need to replace 'Party' with the appropriate model name if it's different
-            party = Party.objects.create(trn_no=trn_no, company=cmp)
+        if trn_type == "Unregistered/Consumers":
+            party = Party.objects.create(    user=usr,
+            company=cmp,
+            party_name=partyname,
+            trn_no=trn_no,
+            contact=contact,
+            trn_type=trn_type,
+            address=address,
+            email=email,
+            openingbalance=balance,
+            payment=paymentType,
+            current_date=currentdate,
+            additionalfield1=additionalfield1,
+            additionalfield2=additionalfield2,
+            additionalfield3=additionalfield3)
             # Optionally, you can send a success message here
-            messages.success(request, 'Party saved successfully!')
-            return redirect('createbill')
 
+            return redirect('createbill')
+        else:
+             if Party.objects.filter(trn_no=trn_no, company=cmp).exists():
+                # Send a message indicating that the transaction number already exists
+
+                return redirect('createbill')
         Party.objects.create(
             user=usr,
             company=cmp,
@@ -742,6 +751,20 @@ def sharepdftomail(request,id):
             print(e)
             messages.error(request, f'{e}')
             return redirect(details_purchasebill, id)
+def check_trn_no_exists(request):
+    trn_no = request.GET.get('trn_no')
+    trn_type = request.POST.get('trn_type')
+    print(trn_type)
+    if trn_type != "Unregistered/Consumers":
+      if Party.objects.filter(trn_no=trn_no).exists():
+          return JsonResponse({'exists': True})
+      return JsonResponse({'exists': False})
+
+def check_phone_number_exists(request):
+    phone_number = request.GET.get('phone_number')
+    if Party.objects.filter(contact=phone_number).exists():
+        return JsonResponse({'exists': True})
+    return JsonResponse({'exists': False})
 
 
    

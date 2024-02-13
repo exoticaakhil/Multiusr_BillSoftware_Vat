@@ -406,7 +406,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
 
  
-
+    <script>
+        document.getElementById('fromDate').addEventListener('change', updateMinDate);
+        function updateMinDate() {
+            var selectedDate = document.getElementById('fromDate').value;
+            document.getElementById('toDate').min = selectedDate;
+        }
+    </script>
    
 <script>
     var table = document.getElementById('billtable');

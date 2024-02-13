@@ -73,14 +73,14 @@
     <div class="row p-0 m-0">
         <div class="col-12  p-0 m-0">
             <div class=" bg-light bg-light pb-0 mb-0 p-2" style="height:100%;width:100%">
-               
+<!--                
                 {% for m in messages %}
                 <h5>
                   <div class="alert alert-danger mt-4" style="width: 100%;">
                     {{ m }}
                   </div>
                 </h5>
-                  {% endfor %}
+                  {% endfor %} -->
   
                 <form action="{% url 'createbill' %}" method="post" enctype="multipart/form-data" onsubmit="return validatepurchasebill()" novalidate>
                     {% csrf_token %}
@@ -433,15 +433,17 @@
                                         <input type="text" style="background-color: white;" class="form-control" id="partyname" name="partyname" placeholder="Party Name" required>
                                     </div>                
                                     <div class="col-md-4" style="position: relative;">
-                                        <input type="text" style="background-color: white;" class="form-control" id="trn_no" name="trn_no" placeholder="TRN NO" oninput="validateGSTIN(this)">
+                                        <input required type="text" style="background-color: white;" class="form-control" id="trn_no" name="trn_no" placeholder="TRN NO" oninput="validateGSTIN(this)">
                                         <span id="gstno-validation" style="position: absolute; right: 14px; top: 8px;"></span>
+                                        <label id="trn_no_error" style="color: rgb(101, 3, 3);"></label>
                                         <label style="color: rgb(101, 3, 3);">* 32AAQFR1222B1ZS</label>
                                     </div>
                                     
                                     <div class="col-md-4" style="position: relative;">
                                         <input required type="number" style="background-color: white;" class="form-control" id="contact" pattern="[0-9]{10}" name="contact" placeholder="Phone Number" oninput="validatePhoneNumber(this)">
                                         <span id="contact-validation" style="position: absolute; right: 15px; top: 8px;"></span>
-                                    </div>  
+                                        <label id="phone_number_error" style="color: rgb(101, 3, 3);"></label>
+                                    </div>
                                     
                                     
                                     <div class="options d-flex" style="margin-top: 5vw;">
@@ -786,6 +788,7 @@ function getEmail() {
             
         });
         calc();
+        
     });
     function reloadItem() {
         $.ajax({
@@ -1029,6 +1032,47 @@ if (regex.test(gstin)) {
     validationSpan.style.color = "red";
 }
 }
+$(document).ready(function() {
+    $('#trn_no').blur(function() {
+        var trn_no = $(this).val();
+        var trn_type = document.getElementById("trn_type").value;
+        $.ajax({
+            url: 'check_trn_no_exists',
+            data: {
+                'trn_no': trn_no,
+                'trn_type':trn_type
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data.exists) {
+                    $('#trn_no_error').text('TRN number already exists!');
+                } else {
+                    $('#trn_no_error').text('');
+                }
+            }
+        });
+    });
+
+    $('#contact').blur(function() {
+        var phone_number = $(this).val();
+        $.ajax({
+            url: 'check_phone_number_exists',
+            data: {
+                'phone_number': phone_number
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data.exists) {
+                    $('#phone_number_error').text('Phone number already exists!');
+                } else {
+                    $('#phone_number_error').text('');
+                }
+            }
+        });
+    });
+});
+
+
 
 </script>
 

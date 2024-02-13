@@ -96,11 +96,7 @@
                                         <div class="input-group">
                                             <input type="text"  class="dropdown-input form-control border-danger " id="customer" value="{{pbill.party.party_name}}" placeholder='Search Party' oninput="getEmail();"><br>
                                             <input type="text" name="customername" id="customerid" value="{{pbill.party.id}}"  hidden>
-                                            <div>&nbsp;&nbsp;
-                                                <button id="modal_closing" type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#customercreation" data-bs-whatever="@mdo">
-                                                    <span class="fa fa-plus"></span>
-                                                </button>
-                                            </div>
+                                            
                                         </div>
 <ul id="employee" class="dropdown-list">
 {% for p in cust %}
@@ -112,9 +108,15 @@
     {% endif %}
 {% endfor %}
 </ul><br>
-<div class="mt-1 d-flex" >
-    &nbsp;<span id="balancediv" style=" color: black;"> Available Balance : <span id="balval" style="color: rgb(0, 255, 128);">{{pbill.party.openingbalance}}</span></span>
-</div>
+{% if pbill.party.payment == 'To Pay' %}
+    <div class="mt-1 d-flex" >
+        &nbsp;<span id="balancediv" style=" color: black;"> Available Balance : <span id="balval" style="color: red;">{{pbill.party.openingbalance}}</span></span>
+    </div> 
+{% else %}
+    <div class="mt-1 d-flex" >
+        &nbsp;<span id="balancediv" style=" color: black;"> Available Balance : <span id="balval" style="color: green;">{{pbill.party.openingbalance}}</span></span>
+    </div> 
+{% endif %}
                                     </div>
                                     <div class="row">
                                         <div id="billdiv"  class="col-md-4">
@@ -462,7 +464,7 @@ function getEmail() {
         // Increment the numeric part by one
         var newNumericPart = parseInt(numericPart) + 1;
         $('#add').click(function(){
-            var roinc=newNumericPart
+            var roinc=newNumericPart;
             // var roinc = $("#items-table-body tr").length;
             
             
