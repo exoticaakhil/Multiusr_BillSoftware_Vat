@@ -5,6 +5,14 @@
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://unpkg.com/htmx.org@1.9.6" integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
 <style>
     .card-body{
@@ -96,7 +104,11 @@
                                         <div class="input-group">
                                             <input type="text"  class="dropdown-input form-control border-danger " id="customer" value="{{pbill.party.party_name}}" placeholder='Search Party' oninput="getEmail();"><br>
                                             <input type="text" name="customername" id="customerid" value="{{pbill.party.id}}"  hidden>
-                                            
+                                            <div>&nbsp;&nbsp;
+                                                <button id="modal_closing" type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#customercreation" data-bs-whatever="@mdo">
+                                                    <span class="fa fa-plus"></span>
+                                                </button>
+                                            </div>
                                         </div>
 <ul id="employee" class="dropdown-list">
 {% for p in cust %}
@@ -168,7 +180,7 @@
                                                 </thead>
                                                 <tbody id="items-table-body">
                                                 {% for j in billprd %}
-                                                    <tr id='addr0{{ forloop.counter }}'>
+                                                    <tr id='addr0{{ forloop.counter }}' data-rowno="{{ forloop.counter }}">
                                                         <td style="text-align: center; width:2%" class="nnum">
                                                             {{ forloop.counter }}<input type="text"  name='id[]' value="{{ j.id }}" hidden>
                                                         </td>
@@ -458,24 +470,26 @@ function getEmail() {
   
         $(document).ready(function(){
         
-        var lastRowId = $('#tab_logic tr:last').attr('id');
-        var numericPart = lastRowId.replace('addr0', '');
-
-        // Increment the numeric part by one
-        var newNumericPart = parseInt(numericPart) + 1;
+        
         $('#add').click(function(){
-            var roinc=newNumericPart;
+            var lastRowId = $('#items-table-body  tr:last').data('rowno');
+            console.log(lastRowId)
+          
+
+            // Increment the numeric part by one
+           
+            var roinc=lastRowId;
             // var roinc = $("#items-table-body tr").length;
             
             
             roinc++
             
             $('#items-table-body').append(
-                `<tr id='addr0${roinc}'>
+                `<tr id='addr0${roinc}' data-rowno=${roinc}>
                     <td class = 'nnum' style="text-align: center; width:2%"">${roinc}</td>
                     <td style="width:18%">
                         <div class="d-flex">
-                            <select name='product[]' id="product${roinc}" class="form-control border-danger product"  onchange="changeprd(this.id)" style="color: black; background-color: white;">
+                            <select name='product[]' id="product${roinc}" data-rowno=${roinc} class="form-control border-danger product"  onchange="changeprd(this.id)" style="color: black; background-color: white;">
                                 <option value="" selected hidden>Select Product</option>
                                 {% for i in item %}
                                     {% if i.cid_id == cmp.cid %}
@@ -517,14 +531,21 @@ function getEmail() {
                     </td>
                 </tr>`
             );
-          
+            var table = document.getElementById('tab_logic');
+            var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                for (var i = 0; i < rows.length; i++) {
+                    var cells = rows[i].getElementsByTagName('td');
+                    cells[0].innerText = i + 1;
+                    
+                }
            
                 });
                
         
             });
             $(document).on('change', '.product',function(){ 
-                var n = $(this).attr("id").slice(7);
+                var n = $(this).data("rowno");
+                console.log(n,'jhgjhg')
                 $.ajax({
                     url: "{% url 'itemdetails' %}",
                     type : 'GET',
@@ -593,6 +614,7 @@ function getEmail() {
                 for (var i = 0; i < rows.length; i++) {
                     var cells = rows[i].getElementsByTagName('td');
                     cells[0].innerText = i + 1;
+                    
                 }
                 calc();
             });
