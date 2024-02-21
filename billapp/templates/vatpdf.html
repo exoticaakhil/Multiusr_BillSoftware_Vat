@@ -7,6 +7,18 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
  
 </head>
+<style>
+    .bill-info {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 20px; /* Adjust the margin as needed */
+}
+
+.bill-info p {
+  margin: 0;
+}
+
+</style>
 <body>
   <div class="my-5 page" size="A4">
     <div class="p-5">
@@ -22,25 +34,26 @@
                             </h3>
                         </div>
                         <section class="top-content ">
-                            <div class="top-left">
-                                <div class="position-relative" style="text-align: left;">
-                                    <p> Bill No: &nbsp; {{ pbill.billno }}</p>
-                                    <p>Bill Date: <span>{{pbill.billdate | date:'d-m-Y'}}</span></p>
+                            <div>
+                                <div class="col-12">
+                                    <h6> Bill No: &nbsp; {{ pbill.billno }}</h6>
+                                    <h6>Bill Date: <span>{{ pbill.billdate | date:'d-m-Y' }}</span></h6>
+                                    <div class="col-5" style="text-align: right;">
+                                    </h6 style="color:black;"> <span style=" font-weight: bold;">To: 
+                                      {{ pbill.party.party_name }}<br>
+                                      {{ pbill.party.address | linebreaksbr }}
+                                    </h6>
+                                  </div>
                                 </div>
+                                  
+                                
                             </div>
+                          
                         </section>
+                    
+                          
 
-                        <div class="row col-12">
-                            <div class="col-md-1"></div>
-                            <div class="col-12">
-                                <br><br><br>
-                                <p style="color:black;"> <span style=" font-weight: bold;">To: </span><br>
-                                {{pbill.party.party_name}}<br>
-                                {{pbill.party.address|linebreaksbr }}
-                                </p> 
-                            </div>
-                            
-                        </div>
+                     
                         <div class="col-md-1"></div>
                         <div class="col-md-10"><br>
                             <table class="table table-hover table-borderless " id="table3">
