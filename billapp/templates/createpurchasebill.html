@@ -6,6 +6,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous"/>
 
 <style>
     .card-body{
@@ -103,6 +104,15 @@
                                    
                                     <div class="col-md-4  custom-dropdown">
                                         <label class="col-form-label">Coustomer</label>
+                                        <select name="customername" id="customer" class="form-control border-secondary" oninput="getEmail();" >
+                                            <option value="" selected hidden>Select</option>
+                                            {% for p in party %}
+                                                {% if c.cid_id == cmp.cid %}
+                                                    <option data-value="{{ p.party_name}}"data-party-id="{{ p.id }}" data-phone="{{ p.contact }}" data-address="{{ p.address }}" data-balance="{{ p.openingbalance }}" data-payment="{{ p.payment }}" onclick="selectItem(this);">{{ p.party_name}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select> &nbsp;&nbsp;&nbsp;
+
                                         
                                         <div class="input-group">
                                             <input type="text"  class="dropdown-input form-control border-danger " id="customer" placeholder='Search Party' oninput="getEmail();"><br>
@@ -516,7 +526,7 @@
                            
                             <div class="col-md-5 mt-4">
                                 <input type="submit" class="btn btn-danger save-button" name="save_and_new" value="Save&New">
-                                <input type="submit" class="btn btn-danger save-button" name="save" value="Save">
+                                <input type="submit" class="btn btn-danger save-button" name="save" value="Save" id="Coustomersave">
                             </div><br>
                     
                         </div>
@@ -674,6 +684,7 @@ function getEmail() {
 </script>
 
 <script>
+
 
     function reloadCustomer() {
         $.ajax({
@@ -943,6 +954,7 @@ function getEmail() {
         $('#taxable_result').val('Taxable')
       })
     })
+
     $(document).ready(function(){
       $('#item_tax_2').on('click',function(){
         $('#taxable_result').val('Non Taxable')
@@ -960,6 +972,7 @@ function getEmail() {
         $('#itm_type').val('Service')
       })
     })
+    reloadItem();
   
    
   </script>
@@ -1077,7 +1090,20 @@ $(document).ready(function() {
     
 });
 
-
+$(document).ready(function () {
+        $('#customer').selectize({
+            sortField: 'value',
+            items: [''],
+            render: {
+                item: function (item, escape) {
+                    if (item.value === '') {
+                        return '';
+                    }
+                    return '<div>' + escape(item.text) + '</div>';
+                }
+            }
+        });
+    });
 
 </script>
 
