@@ -395,9 +395,9 @@ def item_dropdown(request):
   else:
       cmp = request.user.employee.company
   options = {}
-  option_objects = Item.objects.all(company=cmp)
+  option_objects = Item.objects.filter(company=cmp)
   for option in option_objects:
-      options[option.id] = [option.item_name]
+      options[option.id] = [option.itm_name]
   return JsonResponse(options)
 
 def cust_dropdown(request):
@@ -603,42 +603,45 @@ def save_item(request):
     usr = CustomUser.objects.get(username=request.user) 
 
     if request.method == 'POST':
-        itm_type = request.POST.get('itm_type')
-        name = request.POST.get('name')
-        itm_hsn = request.POST.get('hsn')
-        itm_unit = request.POST.get('unit')
-        itm_taxable = request.POST.get('taxable_result')
-        itm_vat = request.POST.get('vat')
-        itm_sale_price = request.POST.get('sale_price')
-        itm_purchase_price = request.POST.get('purchase_price')
-        itm_stock_in_hand = request.POST.get('itm_stock_in_hand', 0)  # Default to 0 if not provided
-        itm_at_price = request.POST.get('itm_at_price', 0)  # Default to 0 if not provided
-        itm_date = request.POST.get('itm_date')
+      itm_type = request.POST.get('itm_type')
+      name = request.POST.get('name')
+      itm_hsn = request.POST.get('hsn')
+      itm_unit = request.POST.get('unit')
+      itm_taxable = request.POST.get('taxref')
+      itm_vat = request.POST.get('vat')
+      itm_sale_price = request.POST.get('sell_price')
+      itm_purchase_price = request.POST.get('cost_price')
+      itm_stock_in_hand = request.POST.get('stock ', 0)  # Default to 0 if not provided
+      itm_at_price = request.POST.get('itmprice ', 0)  # Default to 0 if not provided
+      itm_date = request.POST.get('itmdate')
 
-        # Check if the HSN number already exists in the database
-        if Item.objects.filter(itm_hsn=itm_hsn,company=cmp).exists():
-            # Send a message indicating that the HSN number already exists
-            messages.error(request, 'HSN number already exists!')
-            return redirect('createbill')
+      # Check if the HSN number already exists in the database
+      if Item.objects.filter(itm_hsn=itm_hsn,company=cmp).exists():
+          # Send a message indicating that the HSN number already exists
+          messages.error(request, 'HSN number already exists!')
+          return redirect('createbill')
+      print(name)
+      print(itm_type)
+      print(itm_hsn)
+      print(itm_taxable)
+      itm = Item(
+          user=usr,
+          company=cmp,
+          itm_type=itm_type,
+          itm_name=name,
+          itm_hsn=itm_hsn,
+          itm_unit=itm_unit,
+          itm_taxable=itm_taxable,
+          itm_vat=itm_vat,
+          itm_sale_price=itm_sale_price,
+          itm_purchase_price=itm_purchase_price,
+          itm_stock_in_hand=itm_stock_in_hand,
+          itm_at_price=itm_at_price,
+          itm_date=itm_date
+      )
+      itm.save()
 
-        itm = Item(
-            user=usr,
-            company=cmp,
-            itm_type=itm_type,
-            itm_name=name,
-            itm_hsn=itm_hsn,
-            itm_unit=itm_unit,
-            itm_taxable=itm_taxable,
-            itm_vat=itm_vat,
-            itm_sale_price=itm_sale_price,
-            itm_purchase_price=itm_purchase_price,
-            itm_stock_in_hand=itm_stock_in_hand,
-            itm_at_price=itm_at_price,
-            itm_date=itm_date
-        )
-        itm.save()
-
-        return redirect('createbill')
+      return JsonResponse({'success': True})
 def save_party1(request):
     if request.user.is_company:
         cmp = request.user.company

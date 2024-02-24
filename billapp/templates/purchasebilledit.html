@@ -1,13 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous"/>
 
 <style>
     .card-body{
@@ -91,68 +90,69 @@
                                         </a>
                                     </div>
                                 </div>
-
-                                                                  <div id="customer_div" style="margin-left: .1px; margin-right: .51px;">
-                                   
-                                    <div class="col-md-4  custom-dropdown">
-                                        <label class="col-form-label">Coustomer</label>
-                                        <div class="input-group">
-                                            <input type="text"  class="dropdown-input form-control border-danger " id="customer" value="{{pbill.party.party_name}}" placeholder='Search Party' oninput="getEmail();"><br>
-                                            <input type="text" name="customername" id="customerid" value="{{pbill.party.id}}"  hidden>
-                                            <div>&nbsp;&nbsp;
-                                                <button id="modal_closing" type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#customercreation" data-bs-whatever="@mdo">
-                                                    <span class="fa fa-plus"></span>
-                                                </button>
-                                            </div>
-                                        </div>
-<ul id="employee" class="dropdown-list">
-{% for p in cust %}
-    {% if c.cid_id == cmp.cid %}
-    <li class="dropdown-item" 
-        data-value="{{ p.party_name}}"data-party-id="{{ p.id }}" data-phone="{{ p.contact }}" data-address="{{ p.address }}" data-balance="{{ p.openingbalance }}" data-payment="{{ p.payment }}"onclick="selectItem(this);" styl>
-        {{ p.party_name }}
-    </li>
-    {% endif %}
-{% endfor %}
-</ul><br>
-{% if pbill.party.payment == 'To Pay' %}
-    <div class="mt-1 d-flex" >
-        &nbsp;<span id="balancediv" style=" color: black;"> Available Balance : <span id="balval" style="color: red;">{{pbill.party.openingbalance}}</span></span>
-    </div> 
-{% else %}
-    <div class="mt-1 d-flex" >
-        &nbsp;<span id="balancediv" style=" color: black;"> Available Balance : <span id="balval" style="color: green;">{{pbill.party.openingbalance}}</span></span>
-    </div> 
-{% endif %}
-                                    </div>
+                                <div id="customer_div" style=" margin-left: .1px; margin-right: .51px;">
                                     <div class="row">
-                                        <div id="billdiv"  class="col-md-4">
+                                        <div class="col-md-4">
+                                            <label class="col-form-label">Customer</label>
+                                            <div class="d-flex">
+                                                <select name="customername" id="customer" class="form-control border-danger" style="color: black; background-color: white;">
+                                                    <option value="{{ pbill.party.id }}" selected hidden>{{pbill.party.party_name}}</option>
+                                                    {% for c in cust %}
+                                                        {% if c.cid_id == cmp.cid %}
+                                                        <option value={{c.id}}> {{ c.party_name }}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select> &nbsp;&nbsp;&nbsp;
+                                                    
+                                            </div>
+                                            {% if pbill.party.payment == 'To Pay' %}
+                                                <div class="mt-1 d-flex" >
+                                                    &nbsp;<span id="balancediv" style=" color: black;"> Available Balance : <span id="balval" style="color: red;">{{pbill.party.openingbalance}}</span></span>
+                                                </div> 
+                                            {% else %}
+                                                <div class="mt-1 d-flex" >
+                                                    &nbsp;<span id="balancediv" style=" color: black;"> Available Balance : <span id="balval" style="color: green;">{{pbill.party.openingbalance}}</span></span>
+                                                </div> 
+                                            {% endif %}
+                                            <div id="billdiv">
                                                 <label class="col-form-label">Bill No.</label>
                                                 <input type="text" class="form-control border-danger" name="bill_no"  id="bill_no" value="{{pbill.billno}}"  style="color: black;background-color: white;" readonly> <br>
                                             </div>
-                                        
-                                       
-                                            <div class="col-md-4">
-                                                <div id="phonediv">
-                                                    <label class="col-form-label">Phone No. </label>
-                                                    <input class="form-control border-danger" name="phno" required  id="cust_phno"  style="color: black;background-color: white;" value="{{pbill.party.contact}}" readonly>
-                                                </div>
-                                                
-                                                
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div id="phonediv">
+                                                <label class="col-form-label">Phone No. </label>
+                                                <input class="form-control border-danger" name="phno" required  id="cust_phno"  style="color: black;background-color: white;" value="{{pbill.party.contact}}" readonly>
                                             </div>
-                                            <div class="col-md-4" id="addressdiv">
+                                            <div id="dbilldiv" style="display: none;">
+                                                <label class="col-form-label">Bill No.</label>
+                                                <input type="text" class="form-control border-danger" value="{{pbill.billno}}"  style="color: black;background-color: white;" readonly> <br>
+                                            </div>
+                                            <div id="daddressdiv" style="display: none;">
                                                 <label class="col-form-label">Billing Address</label>
-                                                <textarea class="form-control border-danger  mb-3" name="bname" id="bname" rows="6" type="text"style="color: black;background-color: white;">{{ pbill.party.address }}</textarea>
+                                                <textarea class="form-control border-danger mb-3" name="dbname" id="dbname" rows="6" type="text" style="color: black;background-color: white;" readonly>{{ pbill.party.address }}</textarea>
                                             </div>
+                                        </div>
+                                        <div class="col-md-4" id="addressdiv">
+                                            <label class="col-form-label">Billing Address</label>
+                                            <textarea class="form-control border-danger  mb-3" name="bname" id="bname" rows="6" type="text"style="color: black;background-color: white;">{{ pbill.party.address }}</textarea>
+                                        </div>
+                                        <div class="col-md-4" id="ddbilldiv" style="display: none;">
+                                            <label class="col-form-label">Bill No.</label>
+                                            <input type="text" class="form-control border-danger" value="{{pbill.billno}}"  style="color: black;background-color: white;" readonly> <br>
+                                        </div>
+                                    </div>
+                                    <br>
+
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label class="col-form-label">Bill Date:</label>
+                                            <input type="date" class="form-control border-danger" style="color: black; background-color: white;" name="billdate" id="billdate" value="{{bdate}}">
+                                            <br>
+                                        </div>
                                         
                                     </div>
-                                            <div class="col-md-4">
-                                                <label class="col-form-label">Bill Date:</label>
-                                                <input type="date" class="form-control border-danger" style="color: black; background-color: white;" name="billdate" id="billdate" value="{{bdate}}">
-                                                <br>
-                                            </div>
-                                            
-                                        
+                                    <br>
                                     <br>
 
                         
