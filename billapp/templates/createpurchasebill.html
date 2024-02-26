@@ -885,7 +885,7 @@ $(document).ready(function () {
                     </td>
                 </tr>`
             );
-          
+            productsearch(roinc)
    
         });
        
@@ -1184,6 +1184,39 @@ $(document).ready(function() {
             sortField: 'text'
         });
     });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#customer').selectize({
+            sortField: 'value',
+            items: [''],
+            render: {
+                item: function (item, escape) {
+                    if (item.value === '') {
+                        return '';
+                    }
+                    return '<div>' + escape(item.text) + '</div>';
+                }
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $('.product').selectize({
+            sortField: 'value',
+            items: [''],
+            render: {
+                item: function (item, escape) {
+                    if (item.value === '') {
+                        return '';
+                    }
+                    return '<div>' + escape(item.text) + '</div>';
+                }
+            }
+        });
+    });
+
+  
 </script>
 
 
