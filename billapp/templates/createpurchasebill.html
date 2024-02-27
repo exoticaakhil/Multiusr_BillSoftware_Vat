@@ -7,14 +7,9 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous"/>
-<!-- Include Selectize.js CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.min.css">
-
-<!-- Include jQuery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-<!-- Include Selectize.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/standalone/selectize.min.js"></script>
 
 <style>
     .card-body{
@@ -566,7 +561,32 @@
        
 
    
+        <script>
+            function validatepurchasebill() {
+                var customer = document.getElementById('customer').value;
 
+        
+                if (customer === '') {
+                    alert('Please select a customer');
+                    return false;
+                } 
+                var table = document.getElementById('tab_logic');
+                var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                for (var i = 1; i <= rows.length; i++) {
+                    var product = document.getElementById('product'+i).value;
+                    var qty = document.getElementById('qty'+i).value;
+                    if(product === ''){
+                        alert('Select a product on row '+ i);
+                        return false;
+                    }
+                    if(qty === '' || qty =='0'){
+                        alert('Add quantity in row '+ i);
+                        return false;
+                    }
+                }
+                return true; 
+            }
+        </script>
 
 
         <script>
@@ -757,6 +777,7 @@ $(document).ready(function () {
                 },
             
                 success: function(response) {
+                    console.log(response)
                     document.getElementById("modalItem").reset();
                     $('#newitem').modal('hide');
                     console.log("hello")
@@ -776,6 +797,7 @@ $(document).ready(function () {
             csrfmiddlewaretoken: '{{ csrf_token }}',
 
             success: function(data) {
+                console.log(data)
                 var table = document.getElementById('tab_logic');
                 var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
                 for (var i = 1; i <= rows.length; i++) {
@@ -1216,7 +1238,16 @@ $(document).ready(function() {
         });
     });
 
-  
+    function productsearch(roinc){
+        $(`#product${roinc}`).selectize({
+            sortField: 'text', // Changed from 'value' to 'text'
+            render: {
+                option: function (item, escape) {
+                    return '<div>' + escape(item.text) + '</div>';
+                }
+            }
+        });
+    }
 </script>
 
 
