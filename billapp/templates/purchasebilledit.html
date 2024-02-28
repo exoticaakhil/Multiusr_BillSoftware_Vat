@@ -6,7 +6,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous"/>
 
 <style>
     .card-body{
@@ -52,7 +51,7 @@
 
     .selectize-input {
         height: 5vh;
-        border-color: #54B4D3;
+        border-color:  #FFADB0;
         border-radius: 5px;
     }
 
@@ -337,64 +336,69 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 });
 });
-function getEmail() {
-    var selectedElement = document.querySelector(".dropdown-item.selected");
-
-    if (selectedElement) {
-        var phone_number = selectedElement.getAttribute("data-phone");
-        var billing_address = selectedElement.getAttribute("data-address");
-        var opening_balance = selectedElement.getAttribute("data-balance");
-        var partyid = selectedElement.getAttribute("data-party-id");
-        var payment = selectedElement.getAttribute("data-payment");
-        // Assuming you have input fields with IDs "ph" and "ad" in your HTML
-        document.getElementById("cust_phno").value = phone_number;
-
-        // Check if billing_address has data
-        if (billing_address) {
-            document.getElementById("bname").value = billing_address;
-            // Show the billing address section
-            document.getElementById("addressdiv").style.display = "inline-block";
-        } else {
-            // Hide the billing address section if no data
-            document.getElementById("addressdiv").style.display = "none";
-        }
-
-        // Check if opening_balance has data
-        if ( payment == 'To Pay') {
-           document.getElementById('balancediv').style.display = 'block';
-                            document.getElementById('balval').innerText = opening_balance;
-                            document.getElementById('balval').style.color = 'red';
+$(document).ready(function () {
+        $('#customer').on('change', function() {
+            $.ajax({
+                type : 'POST',
+                url: "{% url 'custdata' %}",
+                data: {
+                    id: $('#customer').val(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+              
+                success: function(data){
+                    if (data.phno == ''){
+                        if(data.address == ''){
+                            document.getElementById('daddressdiv').style.display = 'none';
+                            document.getElementById('addressdiv').style.display = 'none';
+                            document.getElementById('phonediv').style.display = 'none';
+                            document.getElementById('dbilldiv').style.display = 'block';
+                            document.getElementById('billdiv').style.display = 'none';
+                            document.getElementById('ddbilldiv').style.display = 'none';
                         }else{
-                            document.getElementById('balancediv').style.display = 'block';
-                            document.getElementById('balval').innerText = opening_balance;
-                            document.getElementById('balval').style.color = 'green';
-        }
+                            document.getElementById('daddressdiv').style.display = 'block';
+                            document.getElementById('addressdiv').style.display = 'none';
+                            document.getElementById('phonediv').style.display = 'none';
+                            document.getElementById('billdiv').style.display = 'block';
+                            document.getElementById('dbilldiv').style.display = 'none';
+                            document.getElementById('ddbilldiv').style.display = 'none';
+                            document.getElementById('dbname').value = data.address;
+                        }
+                    }else{
+                        if(data.address == ''){
+                            document.getElementById('daddressdiv').style.display = 'none';
+                            document.getElementById('addressdiv').style.display = 'none';
+                            document.getElementById('phonediv').style.display = 'block';
+                            document.getElementById('cust_phno').value = data.phno;
+                            document.getElementById('ddbilldiv').style.display = 'block';
+                            document.getElementById('dbilldiv').style.display = 'none';
+                            document.getElementById('billdiv').style.display = 'none';
+                        }else{
+                            document.getElementById('daddressdiv').style.display = 'none';
+                            document.getElementById('addressdiv').style.display = 'block';
+                            document.getElementById('phonediv').style.display = 'block';
+                            document.getElementById('bname').value = data.address;
+                            document.getElementById('cust_phno').value = data.phno;
+                            document.getElementById('ddbilldiv').style.display = 'none';
+                            document.getElementById('dbilldiv').style.display = 'none';
+                            document.getElementById('billdiv').style.display = 'block';
+                        }
+                    }
 
-        document.getElementById("customerid").value = partyid;
-    }
-}    
-                    
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            var dropdownItems = document.querySelectorAll(".dropdown-item");
-        
-            dropdownItems.forEach(function(item) {
-                item.addEventListener("click", function() {
-                    // Remove the "selected" class from all items
-                    dropdownItems.forEach(function(dropdownItem) {
-                        dropdownItem.classList.remove("selected");
-                    });
-        
-                    // Add the "selected" class to the clicked item
-                    item.classList.add("selected");
-        
-                    // Trigger the getEmail function
-                    getEmail();
-                });
-            });
-           });
+                    if(data.pay == 'To Pay'){
+                        document.getElementById('balancediv').style.display = 'block';
+                        document.getElementById('balval').innerText = data.bal;
+                        document.getElementById('balval').style.color = 'red';
+                    }else{
+                        document.getElementById('balancediv').style.display = 'block';
+                        document.getElementById('balval').innerText = data.bal;
+                        document.getElementById('balval').style.color = 'green';
+                    }
+                }
+            });
+        });
+    });
 </script>
-
         <script>
             function changeprd(id){
                 id_val = id.slice(7)
@@ -535,8 +539,6 @@ function getEmail() {
                 }
            
                 });
-               
-        
             });
             $(document).on('change', '.product',function(){ 
                 var n = $(this).data("rowno");
@@ -681,6 +683,24 @@ function getEmail() {
           
            
         </script>
+  <script>
+    $(document).ready(function () {
+        cust_name = '{{cust_name}}'
+        $('#customer').selectize({
+            sortField: 'value',
+            render: {
+                item: function (item, escape) {
+                    if (item.value === '') {
+                        return '';
+                    }
+                    return '<div>' + escape(item.text) + '</div>';
+                }
+            }
+
+        });
+    });
+</script>
+
         
         
 

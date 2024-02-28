@@ -44,6 +44,7 @@ urlpatterns = [
     path('save_purchasebill/<int:id>',views.save_purchasebill,name='save_purchasebill'),
     path('save_item', views.save_item, name='save_item'),
     path('save_party1', views.save_party1, name='save_party1'),
+    path('getPartyDetails', views.getPartyDetails, name='getPartyDetails'),
     path('sharepdftomail/<int:id>',views.sharepdftomail, name='sharepdftomail'),
     path('check_trn_no_exists', views.check_trn_no_exists, name='check_trn_no_exists'),
     path('check_phone_number_exists', views.check_phone_number_exists, name='check_phone_number_exists'),

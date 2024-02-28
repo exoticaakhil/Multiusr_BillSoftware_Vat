@@ -6,9 +6,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 
 
 <style>
@@ -59,7 +57,7 @@
 
     .selectize-input {
         height: 5vh;
-        border-color: #68020F;
+        border-color:#FFADB0;
         border-radius: 5px;
     }
 
@@ -777,12 +775,9 @@ $(document).ready(function () {
                 },
             
                 success: function(response) {
-                    console.log(response)
                     document.getElementById("modalItem").reset();
                     $('#newitem').modal('hide');
-                    console.log("hello")
                     reloadItem();
-                    console.log("hi")
                 },
             });  
         }      
@@ -790,14 +785,13 @@ $(document).ready(function () {
 
     function reloadItem() {
         $.ajax({
-            url: "item_dropdown", // Replace this with the actual URL path to your item_dropdown view
+            url: "{% url 'item_dropdown' %}",
             type: "GET",
             dataType: "json",
             data: $(this).serialize(),
             csrfmiddlewaretoken: '{{ csrf_token }}',
 
             success: function(data) {
-                console.log(data)
                 var table = document.getElementById('tab_logic');
                 var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
                 for (var i = 1; i <= rows.length; i++) {
@@ -820,6 +814,7 @@ $(document).ready(function () {
             }
         });
     }
+
 </script>
 
 <script>
@@ -1220,35 +1215,11 @@ $(document).ready(function() {
                     return '<div>' + escape(item.text) + '</div>';
                 }
             }
+
         });
     });
-
-    $(document).ready(function () {
-        $('.product').selectize({
-            sortField: 'value',
-            items: [''],
-            render: {
-                item: function (item, escape) {
-                    if (item.value === '') {
-                        return '';
-                    }
-                    return '<div>' + escape(item.text) + '</div>';
-                }
-            }
-        });
-    });
-
-    function productsearch(roinc){
-        $(`#product${roinc}`).selectize({
-            sortField: 'text', // Changed from 'value' to 'text'
-            render: {
-                option: function (item, escape) {
-                    return '<div>' + escape(item.text) + '</div>';
-                }
-            }
-        });
-    }
 </script>
+
 
 
 {% endblock %}

@@ -399,6 +399,24 @@ def item_dropdown(request):
   for option in option_objects:
       options[option.id] = [option.itm_name]
   return JsonResponse(options)
+def getPartyDetails(request):
+    if request.user.is_company:
+        cmp = request.user.company
+    else:
+        cmp = request.user.employee.company 
+    party_id = request.POST.get('id')
+    item_details = Item.objects.get(id = party_id)
+
+    list = []
+    dict = {
+      'contact': item_details.contact,
+      'address':item_details.address,
+      'state': item_details.state,
+      'balance':item_details.openingbalance,
+      'payment':item_details.payment,
+    }
+    list.append(dict)
+    return JsonResponse(json.dumps(list), content_type="application/json",safe=False)
 
 def cust_dropdown(request):
     if request.user.is_company:
