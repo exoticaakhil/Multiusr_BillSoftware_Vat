@@ -9,6 +9,7 @@
 
 
 
+
 <style>
     .card-body{
         box-shadow: 2px 2px 10px 3px rgba(0, 0, 0, 0.397);
@@ -204,7 +205,7 @@
                                                         <td style="width:18%">
                                                             <div class="d-flex">
                                                                 
-                                                                <select name='product[]' id="product1" class="form-control border-danger product"  onchange="changeprd(this.id)" style="color: black; background-color: white;">
+                                                                <select name='product[]' id="product1" class="form-control border-danger product select2"  onchange="changeprd(this.id)" style="color: black; background-color: white;">
                                                                     <option value="" selected hidden>Select Product</option>
                                                                     {% for i in item %}
                                                                         {% if i.cid_id == cmp.cid %}
@@ -544,7 +545,7 @@
                            
                             <div class="col-md-5 mt-4">
                                 <input type="submit" class="btn btn-danger save-button" name="save_and_new" value="Save&New">
-                                <input type="submit" class="btn btn-danger save-button" name="save" value="Save"  onclick="reloadCustomer()">
+                                <input type="submit" class="btn btn-danger save-button" name="save" value="Save"  id="customersave">
                             </div><br>
                     
                         </div>
@@ -743,6 +744,8 @@ $(document).ready(function () {
 </script>
 
     <script>
+   
+
     $(document).on("click","#itemsave",function(){
         var item_name = document.getElementById('item_name').value;
 
@@ -819,30 +822,6 @@ $(document).ready(function () {
 
 <script>
 
-
-    function  reloadCustomer() {
-        $.ajax({
-            url: "{% url 'cust_dropdown' %}",
-            type: "GET",
-            dataType: "json",
-            data: $(this).serialize(),
-            csrfmiddlewaretoken: '{{ csrf_token }}',
-
-            success: function(response) {
-                id_list = response.id_list
-                party_list = response.party_list
-                console.log(party_list)
-                var $select = $(document.getElementById('customer'));
-                var selectize = $select[0].selectize;
-                for(let i=0; i<id_list.length;i++){
-                    selectize.addOption({value:id_list[i],text:party_list[i]});
-                }
-                selectize.setValue("");
-            },
-        });
-    }
-
-
     $(document).ready(function(){
         var roinc = 1
         
@@ -902,7 +881,6 @@ $(document).ready(function () {
                     </td>
                 </tr>`
             );
-            productsearch(roinc)
    
         });
        
@@ -937,6 +915,28 @@ $(document).ready(function () {
         calc();
         
     });
+    function  reloadCustomer() {
+        $.ajax({
+            url: "{% url 'cust_dropdown' %}",
+            type: "GET",
+            dataType: "json",
+            data: $(this).serialize(),
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+
+            success: function(response) {
+                id_list = response.id_list
+                party_list = response.party_list
+                console.log(party_list)
+                var $select = $(document.getElementById('customer'));
+                var selectize = $select[0].selectize;
+                for(let i=0; i<id_list.length;i++){
+                    selectize.addOption({value:id_list[i],text:party_list[i]});
+                }
+                selectize.setValue("");
+            },
+        });
+    }
+
 
 
 
@@ -1195,12 +1195,7 @@ $(document).ready(function() {
 });
 
 
-    $(document).ready(function() {
-        $('#customer').selectize({
-            create: true,
-            sortField: 'text'
-        });
-    });
+
 </script>
 <script>
     $(document).ready(function () {
@@ -1218,6 +1213,9 @@ $(document).ready(function() {
 
         });
     });
+    
+
+
 </script>
 
 

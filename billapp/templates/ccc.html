@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
+<br>
+<br><br><br><br><br><br>
+    <table class="table table-bordered table-hover  mt-3" id="tab_logic" >
+        <thead>
+            <tr style="color: black;">
+                <th class="text-center">#</th>
+                <th class="text-center">PRODUCT</th>
+                <th class="text-center">HSN</th>
+                <th class="text-center">QTY</th>
+                <th class="text-center">PRICE</th>
+                <th class="text-center">VAT (%)</th>
+                <th class="text-center">DISCOUNT</th>
+                <th class="text-center">TOTAL</th>
+                <th class="text-center">FIELD</th>
+            </tr>
+        </thead>
+      
+<tbody id="items-table-body">
+    <!-- First row -->
+    <tr id='addr01'>
+        <!-- Columns omitted for brevity -->
+        <td></td>
+        <td style="width:18%">
+            <div class="d-flex">
+                <select name='product[]' id="product1" class="form-control border-danger product select2" onchange="changeprd(this.id)" style="color: black; background-color: white;">
+                    <option value="" selected hidden>Select Product</option>
+                    {% for i in item %}
+                        
+                            <option value="{{ i.id }}">{{ i.itm_name }}</option>
+                        
+                    {% endfor %}
+                </select> &nbsp;&nbsp;&nbsp;
+                <button id="modal_closing" type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#newitem" data-bs-whatever="@mdo">
+                    <span class="fa fa-plus"></span>
+                </button>
+            </div>
+        </td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <!-- Columns omitted for brevity -->
+
+        <td style="width:5%">
+            <button type="button" class="btn btn-danger remove_row px-2 py-1 mx-1 fa fa-close" title="Remove Row"> Delete</button>
+        </td>
+    </tr>
+
+    <!-- Add row button -->
+    <tr>
+        <td style="border: none;"><a class="btn btn-outline-danger ml-1" role="button" id="add"><span class="fa fa-plus"></span></a></td>
+    </tr>
+</tbody>
+</table>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Link to Select2 CSS -->
+    
+    <!-- Link to Select2 JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
+<script>
+    // Initialize Select2 for existing select elements
+    $(document).ready(function() {
+        $('.select2').select2();
+    });
+
+    // Add row dynamically
+    $('#add').on('click', function() {
+        var rowCount = $('#items-table-body tr').length;
+        var newRow = '<tr id="addr' + (rowCount + 1) + '">' +
+            // Repeat the same structure as the first row
+            '</tr>';
+        $('#items-table-body').append(newRow);
+        $('.select2').select2(); // Reinitialize Select2 for new row
+    });
+
+    // Delete row dynamically
+    $(document).on('click', '.remove_row', function() {
+        $(this).closest('tr').remove();
+    });
+</script>
+
+
+{% endblock %}
+
