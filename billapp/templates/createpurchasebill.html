@@ -61,7 +61,16 @@
         border-color:#FFADB0;
         border-radius: 5px;
     }
-
+   
+    .select2-search {   height: 5vh;
+        border-color:#FFADB0;
+        border-radius: 5px;
+     }
+     .product{
+        width: 150px !important; 
+        height: 20px;
+        border-color:#FFADB0;
+     }
     .option:hover {
         background-color: #FFADB0;
         color: white;
@@ -205,7 +214,7 @@
                                                         <td style="width:18%">
                                                             <div class="d-flex">
                                                                 
-                                                                <select name='product[]' id="product1" class="form-control border-danger product select2"  onchange="changeprd(this.id)" style="color: black; background-color: white;">
+                                                                <select name='product[]' id="product" class="form-control border-danger product select2 itemselect"  onchange="changeprd1()" style="color: black; background-color: white;">
                                                                     <option value="" selected hidden>Select Product</option>
                                                                     {% for i in item %}
                                                                         {% if i.cid_id == cmp.cid %}
@@ -220,29 +229,29 @@
                                                         </td>
     
                                                         <td style="width:15%">
-                                                            <input type="text" name='hsn[]' id="hsn1" class="form-control border-danger HSNCODE" style="color: black; background-color: white;" readonly />
+                                                            <input type="text" name='hsn[]' id="hsn" class="form-control border-danger HSNCODE" style="color: black; background-color: white;" readonly />
                                                         </td>
     
                                                         <td style="width:13%">
-                                                            <input type="number" name='qty[]' id="qty1"  class="form-control border-danger qty mb-1" step=0 min=0 style="color: black; background-color: white;" value=0 />
+                                                            <input type="number" name='qty[]' id="qty"  class="form-control border-danger qty mb-1" step=0 min=0 style="color: black; background-color: white;" value=0 />
                                                         </td>
                                                     
                                                         <td style="width:12%">
-                                                            <input type="number" name='price[]' id="unit1" class="form-control border-danger price" step="0.00" min="0" style="color: black; background-color: white;" value=0 readonly />
+                                                            <input type="number" name='price[]' id="unit" class="form-control border-danger price" step="0.00" min="0" style="color: black; background-color: white;" value=0 readonly />
                                                         </td>
                                                         <td style="width:12%">
-                                                            <input type="text" name='vat[]' id="Vat1" class="form-control border-danger seltax"  step="0.00" min="0" style="color: black; background-color: white;" value=0 readonly />
+                                                            <input type="text" name='vat[]' id="Vat" class="form-control border-danger seltax"  step="0.00" min="0" style="color: black; background-color: white;" value=0 readonly />
                                                         </td>
                                                        
     
                                                         <td style="width: 10%;">
-                                                            <input type="number" name='discount[]'  placeholder='Enter Discount' id="disc1" value=0 class="form-control border-danger disc" step=0 min=0 style="  color: black; background-color: white;"  />
+                                                            <input type="number" name='discount[]'  placeholder='Enter Discount' id="disc" value=0 class="form-control border-danger disc" step=0 min=0 style="  color: black; background-color: white;"  />
                                                         </td>
                                     
                                                         <td style="width:13%">
-                                                            <input type="number" name='total[]' id="total1" class="form-control border-danger total" value=0 readonly style="color: black; background-color: white;"  />
+                                                            <input type="number" name='total[]' id="total" class="form-control border-danger total" value=0 readonly style="color: black; background-color: white;"  />
                                                         </td>
-                                                        <td hidden><input type="number" name='taxamount1' id="taxamount1" class="taxamount" /></td>
+                                                        <td hidden><input type="number" name='taxamount1' id="taxamount" class="taxamount" /></td>
                                                         
                                                         <td style="width:5%">
                                                             <button type="button" id="1" class="btn btn-danger remove_row px-2 py-1 mx-1 fa fa-close" title="Remove Row"> Delete</button>
@@ -355,7 +364,7 @@
                                       <div class="d-flex mt-2">
                                         <div class=" me-3 w-50">
                                           <label class="fw-bold tb fs-3 " for="">HSN </label><br>
-                                          <input style="color: black;" class="form-control mt-2 input_border text-black" type="number" placeholder="Enter HSN value" name="hsn" id="hsn" >
+                                          <input style="color: black;" class="form-control mt-2 input_border text-black" type="number" placeholder="Enter HSN value" name="hsn" id="hsn1" >
                                         </div>
                                         <br>
                                         <div class="mb-3 w-50">
@@ -714,18 +723,86 @@ $(document).ready(function () {
     });
 </script>
 <script>
-    function changeprd(id){
-        id_val = id.slice(7)
-        document.getElementById(`qty${id_val}`).value = 0
-        document.getElementById(`total1`).value = 0
-        document.getElementById(`Vat1${id_val}`).value = 0
-        document.getElementById(`disc${id_val}`).value = 0
-        document.getElementById(`taxamount${id_val}`).value = 0
+    function changeprd(d){
+        const itemselect = document.querySelector(`.itemselect2${d}`)
+        const selectedOption =itemselect.options[itemselect.selectedIndex]
+        const selectedvalue = selectedOption.value
+        console.log(selectedvalue)
+        document.getElementById(`qty${d}`).value = 0
+        document.getElementById(`total${d}`).value = 0
+        document.getElementById(`Vat${d}`).value = 0
+        document.getElementById(`disc${d}`).value = 0
+        document.getElementById(`taxamount${d}`).value = 0
        
-        calc()
+        $.ajax({
+            url: "{% url 'itemdetails' %}",
+            type : 'GET',
+            data:{
+                id : selectedvalue,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+            
+            success: function(response) {
+                data = response.hsn
+                data3 = response.price
+                data4 = response.vat
+                
+                
+                document.getElementById(`hsn${d}`).value = data;
+                document.getElementById(`unit${d}`).value = data3;
+                document.getElementById(`Vat${d}`).value = data4;
+                
+
+                
+                
+            },
+        
+        });
+        calc();
     }
 </script>
- 
+<script>
+    function changeprd1(){
+        const itemselect = document.querySelector(".itemselect")
+        const selectedOption =itemselect.options[itemselect.selectedIndex]
+        const selectedvalue = selectedOption.value
+        console.log(selectedvalue)
+        // id_val = id.slice(7)
+        // console.log(id_val)
+        document.getElementById('qty').value = 0
+        document.getElementById('total').value = 0
+        document.getElementById('Vat').value = 0
+        document.getElementById('disc').value = 0
+        document.getElementById('taxamount').value = 0
+        $.ajax({
+            url: "{% url 'itemdetails' %}",
+            type : 'GET',
+            data:{
+                id : selectedvalue,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+            
+            success: function(response) {
+                data = response.hsn
+                data3 = response.price
+                data4 = response.vat
+                
+                
+                document.getElementById('hsn').value = data;
+                document.getElementById('unit').value = data3;
+                document.getElementById('Vat').value = data4;
+                
+
+                
+                
+            },
+        
+        });
+        calc();
+       
+       
+    }
+</script>
 <script>
     $(document).ready(function() {
         $("#advance").change(function() {
@@ -759,6 +836,7 @@ $(document).ready(function () {
         if (item_name === ''){
             alert('Please provide an Item Name');
         }else{
+            console.log($("#hsn").val())
             $.ajax({
                 type : 'POST',
                 url:"save_item", // Replace this with the actual URL path to your save_item view
@@ -766,7 +844,7 @@ $(document).ready(function () {
                     itm_type :$("#itm_type").val(),
                     name : $("#item_name").val(),
                     unit : $("#unit").val(),
-                    hsn : $("#hsn").val(),
+                    hsn : $("#hsn1").val(),
                     taxref : tax,
                     sell_price : $("#sal_price").val(),
                     cost_price : $("#pur_price").val(),
@@ -775,8 +853,9 @@ $(document).ready(function () {
                     stock : $("#opn_stock_").val(),
                     itmprice : $("#at_price").val(),
                     csrfmiddlewaretoken: '{{ csrf_token }}',
+                    
                 },
-            
+                
                 success: function(response) {
                     document.getElementById("modalItem").reset();
                     $('#newitem').modal('hide');
@@ -835,7 +914,7 @@ $(document).ready(function () {
 
                     <td style="width:18%">
                         <div class="d-flex">
-                            <select name='product[]' id="product${roinc}" class="form-control border-danger product"  onchange="changeprd(this.id)" style="color: black; background-color: white;">
+                            <select name='product[]' id="product${roinc}" class="form-control border-danger product select2 itemselect2${roinc}"  onchange="changeprd(${roinc})" style="color: black; background-color: white;">
                                 <option value="" selected hidden>Select Product</option>
                                 {% for i in item %}
                                     {% if i.cid_id == cmp.cid %}
@@ -881,40 +960,20 @@ $(document).ready(function () {
                     </td>
                 </tr>`
             );
+            $(`.itemselect2${roinc}`).select2()
    
         });
        
 
     });
-    $(document).on('change', '.product',function(){ 
+    $(document).ready(function(){
+    $('.select2').select2();
+    $(document).on('change', '.itemselect2',function(){ 
         var n = $(this).attr("id").slice(7);
-        $.ajax({
-            url: "{% url 'itemdetails' %}",
-            type : 'GET',
-            data:{
-                id : $(this).val(),
-                csrfmiddlewaretoken: '{{ csrf_token }}'
-                },
-            
-            success: function(response) {
-                data = response.hsn
-                data3 = response.price
-                data4 = response.vat
-                
-                
-                document.getElementById('hsn'+n).value = data;
-                document.getElementById('unit'+n).value = data3;
-                document.getElementById('Vat'+n).value = data4;
-                
-
-                
-                
-            },
-            
-        });
-        calc();
+        console.log(n,'hhhh')
         
     });
+});
     function  reloadCustomer() {
         $.ajax({
             url: "{% url 'cust_dropdown' %}",
@@ -1214,10 +1273,13 @@ $(document).ready(function() {
         });
     });
     
-
+ 
+  
 
 </script>
 
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet"  defer/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" defer></script>
 
 
 {% endblock %}
