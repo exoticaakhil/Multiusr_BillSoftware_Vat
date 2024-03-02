@@ -397,7 +397,7 @@ def item_dropdown(request):
   options = {}
   option_objects = Item.objects.filter(company=cmp)
   for option in option_objects:
-      options[option.id] = [option.itm_name]
+      options[option.id] = [option.id, option.itm_name]
   return JsonResponse(options)
 
 
@@ -619,8 +619,7 @@ def save_item(request):
       # Check if the HSN number already exists in the database
       if Item.objects.filter(itm_hsn=itm_hsn,company=cmp).exists():
           # Send a message indicating that the HSN number already exists
-          messages.error(request, 'HSN number already exists!')
-          return redirect('createbill')
+          return JsonResponse({'success': False})
       print(name)
       print(itm_type)
       print(itm_hsn)
@@ -643,6 +642,7 @@ def save_item(request):
       itm.save()
 
       return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
     
 def save_party1(request):
     if request.user.is_company:
@@ -768,6 +768,12 @@ def check_trn_no_exists(request):
 def check_phone_number_exists(request):
     phone_number = request.GET.get('phone_number')
     if Party.objects.filter(contact=phone_number).exists():
+        return JsonResponse({'exists': True})
+    return JsonResponse({'exists': False})
+
+def check_hsn_number_exists(request):
+    hsn = request.GET.get('hsn1')
+    if Item.objects.filter(itm_hsn=hsn).exists():
         return JsonResponse({'exists': True})
     return JsonResponse({'exists': False})
 

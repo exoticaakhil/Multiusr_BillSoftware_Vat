@@ -68,9 +68,13 @@
      }
      .product{
         width: 150px !important; 
-        height: 20px;
-        border-color:#FFADB0;
+        height: 50px !important;
+        
      }
+     .select2-selection {
+      border-color: #FFADB0 !important;
+     
+    }
     .option:hover {
         background-color: #FFADB0;
         color: white;
@@ -169,24 +173,7 @@
                                             
                                         </div>
     
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <div style="display:none;"  id="chequediv">
-                                                    <label class="col-form-label" >Cheque ID</label>
-                                                    <input type="text" class="form-control border-danger" name="cheque_id" id="cheque_id" placeholder="Enter Cheque ID" style="color: black;background-color: white;">
-                                                </div>
-                
-                                                <div style="display:none;" id="upidiv">
-                                                    <label class="col-form-label" >UPI ID</label>
-                                                    <input type="text" class="form-control border-danger" name="upi_id" id="upi_id" placeholder="Enter UPI ID" style="color: black;background-color: white;">
-                                                </div>
-                
-                                                <div style="display:none;" id="bnkdiv">
-                                                    <label class="col-form-label" >Bank Account</label>
-                                                    <input type="text" class="form-control border-danger" name="bnk_id" id="bnk_id" style="color: black;background-color: white;" readonly>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        
                                     
 
 
@@ -214,11 +201,11 @@
                                                         <td style="width:18%">
                                                             <div class="d-flex">
                                                                 
-                                                                <select name='product[]' id="product" class="form-control border-danger product select2 itemselect"  onchange="changeprd1()" style="color: black; background-color: white;">
+                                                                <select name='product[]' id="product" class="form-control  product select2 itemselect"  onchange="changeprd1()" style="color: black; background-color: white; ">
                                                                     <option value="" selected hidden>Select Product</option>
                                                                     {% for i in item %}
                                                                         {% if i.cid_id == cmp.cid %}
-                                                                            <option value="{{ i.id }}" >{{ i.itm_name  }} </option>
+                                                                            <option style="border-color: #FFADB0;" value="{{ i.id }}" >{{ i.itm_name  }} </option>
                                                                         {% endif %}
                                                                     {% endfor %}
                                                                 </select> &nbsp;&nbsp;&nbsp;
@@ -254,6 +241,7 @@
                                                         <td hidden><input type="number" name='taxamount1' id="taxamount" class="taxamount" /></td>
                                                         
                                                         <td style="width:5%">
+                                                            
                                                             <button type="button" id="1" class="btn btn-danger remove_row px-2 py-1 mx-1 fa fa-close" title="Remove Row"> Delete</button>
                                                         </td>
                                                     </tr>
@@ -336,7 +324,7 @@
                     </div>
             
                     <div class="modal-body" style="background-color: rgba(144, 211, 117, 0.098);" >
-                        <form action="" method="post" enctype="multipart/form-data" id="modalItem">
+                        <form method="post" enctype="multipart/form-data" id="modalItem">
                             {% csrf_token %}
                               <div class="bs p-4 rounded mb-5">
                                 <br>
@@ -365,6 +353,9 @@
                                         <div class=" me-3 w-50">
                                           <label class="fw-bold tb fs-3 " for="">HSN </label><br>
                                           <input style="color: black;" class="form-control mt-2 input_border text-black" type="number" placeholder="Enter HSN value" name="hsn" id="hsn1" >
+                                          <span id="hsn-validation" style="position: absolute; right: 14px; top: 8px;"></span>
+                                          <label id="hsnerror" style="color: rgb(101, 3, 3);"></label>
+                                          
                                         </div>
                                         <br>
                                         <div class="mb-3 w-50">
@@ -442,7 +433,7 @@
                                   <div  class="col-sm-12 col-md-1"></div>
                                   <div class="text-start" style="margin-left: 9%;">
                                     <button class="btn me-3 button_border" type="submit" value="save_and_next" name="save_and_next">Save & Next</submit>
-                                    <button class="btn me-3 button_border" type="submit" value="save" name="save" id="itemsave">Save</button>
+                                    <button class="btn me-3 button_border" type="button" value="save" name="save" id="itemsave">Save</button>
                                   </div>
                                 </div>
                               </div>
@@ -836,7 +827,7 @@ $(document).ready(function () {
         if (item_name === ''){
             alert('Please provide an Item Name');
         }else{
-            console.log($("#hsn").val())
+            console.log($("#hsn1").val())
             $.ajax({
                 type : 'POST',
                 url:"save_item", // Replace this with the actual URL path to your save_item view
@@ -874,22 +865,26 @@ $(document).ready(function () {
             csrfmiddlewaretoken: '{{ csrf_token }}',
 
             success: function(data) {
-                var table = document.getElementById('tab_logic');
-                var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-                for (var i = 1; i <= rows.length; i++) {
-                    itmdropdown = document.getElementById('product'+i)
-                    var selectedIndex = itmdropdown.selectedIndex;
-                    var selectedOption = itmdropdown.options[selectedIndex];
-                    var selectedValue = selectedOption.value;
-                    var selectedText = selectedOption.text;
-                    
-                    var dropdown = $(`#product${i}`);
-                    dropdown.empty();
-                    dropdown.append(`<option ${selectedValue} selected hidden>${selectedText}</option>`);
+                $('#tab_logic tbody tr').each(function(){
+                    var row = $(this);
+                    var drop = row.find('.product');
+                    var existingVal = drop.val();
+                    drop.empty();
+                    // dropdown.append(`<option ${selectedValue} selected hidden>${selectedText}</option>`);
                     $.each(data, function(key, value) {
-                        dropdown.append($('<option></option>').attr('value', key).text(value).val(key));
+                        // dropdown.append($('<option></option>').attr('value', key).text(value).val(key));
+                        console.log(value);
+                        var newOption = new Option(value[1], value[0], false, false);
+                        console.log('appended',value[0]);
+                        drop.append(newOption);
+                        console.log('done...');
                     });
-                }
+
+                    if(existingVal != ""){
+                        drop.val(existingVal);
+                    }
+                })
+                
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);
@@ -1252,6 +1247,25 @@ $(document).ready(function() {
     });
     
 });
+$('#hsn1').blur(function() {
+        var hsn1 = $(this).val();
+        $.ajax({
+            url: 'check_hsn_number_exists',
+            data: {
+                'hsn1': hsn1
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data.exists) {
+                    $('#hsnerror').text('HSN number already exists!');
+                } else {
+                    $('#hsnerror').text('');
+                }
+            }
+        });
+        
+    });
+    
 
 
 
