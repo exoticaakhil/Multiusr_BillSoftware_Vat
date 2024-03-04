@@ -48,6 +48,8 @@ urlpatterns = [
     path('check_trn_no_exists', views.check_trn_no_exists, name='check_trn_no_exists'),
     path('check_hsn_number_exists', views.check_hsn_number_exists, name='check_hsn_number_exists'),
     path('check_phone_number_exists', views.check_phone_number_exists, name='check_phone_number_exists'),
+    path('unit_reload_modal', views.unit_reload_modal, name='unit_reload_modal'),
+    path('save_unit', views.save_unit, name='save_unit'),
 
    
     

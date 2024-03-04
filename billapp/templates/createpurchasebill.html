@@ -352,8 +352,9 @@
                                       <div class="d-flex mt-2">
                                         <div class=" me-3 w-50">
                                           <label class="fw-bold tb fs-3 " for="">HSN </label><br>
-                                          <input style="color: black;" class="form-control mt-2 input_border text-black" type="number" placeholder="Enter HSN value" name="hsn" id="hsn1" >
+                                          <input style="color: black;" class="form-control mt-2 input_border text-black" type="number" placeholder="Enter HSN value" name="hsn" id="hsn1" onchange="checkhsn(this)" >
                                           <span id="hsn-validation" style="position: absolute; right: 14px; top: 8px;"></span>
+                                          <div class="text-danger m-2" id="warnhsn"></div>
                                           <label id="hsnerror" style="color: rgb(101, 3, 3);"></label>
                                           
                                         </div>
@@ -361,7 +362,7 @@
                                         <div class="mb-3 w-50">
                                           <label class="fw-bold tb fs-3" for="">UNIT</label><br>
                                           <div class="d-flex">
-                                            <select style="color: black;" class="form-control me-3 mt-2 input_border text-black" id="unit" name="unit" >
+                                            <select style="color: black;" class="form-control me-3 mt-2 input_border text-black" id="unit_list_drp" name="unit" >
                                               <option value="" hidden>Select an option</option>
                                               <option value="Numbers">Numbers</option>
                                               <option value="Packages">Packages</option>
@@ -369,7 +370,11 @@
                                               {% for i in unit %}
                                               <option value="{{ i.unit_name }}">{{ i.unit_name }}</option>
                                               {% endfor %}
-                                            </select>
+                                            </select>&nbsp;&nbsp;&nbsp;
+                                          
+                                            <a href="#">
+                                                <button type="button" class="btn btn-outline-danger ml-1" data-toggle="modal" data-target="#createNewUnit">+</button>
+                                            </a>
                                            
                                           </div>
                                      
@@ -418,7 +423,7 @@
                                     <div class="p-3" style="border: 2px solid #68020F; border-radius: 2.5vh; background-color: #FFD6D7;">
                                       <div class="mb-4 pt-4">
                                         <label class="tb fw-bold" for="opn_stock_">STOCK IN HAND</label><br>
-                                        <input id="opn_stock_" class="form-control fw-normal fs-3 mt-1 input_border text-black" type="number" placeholder="Enter Opening Stock" name="stock_in_hand" >
+                                        <input id="opn_stock_" class="form-control fw-normal fs-3 mt-1 input_border text-black" type="number" placeholder="Enter Opening Stock" name="stock_in_hand" required >
                                       </div>
                                       <div class="mb-4">
                                         <label class="tb fw-bold" for="at_price">AT PRICE</label><br>
@@ -437,11 +442,72 @@
                                   </div>
                                 </div>
                               </div>
+                              <div class="modal fade" id="createNewUnit">
+                                <div class="modal-dialog">
+                                    <div class="modal-content" style="background-color:#FFADB0;">
+                                        <div class="modal-header">
+                                            <h5 class="m-3">New Item Unit</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="card p-3">
+                                                <form method="post" id="newUnitForm">
+                                                    {% csrf_token %}
+                                                    <div class="row mt-2">
+                                                        <div class="col-12">
+                                                            <label for="name">Unit Name</label>
+                                                            <input name="name" id="unit_name" class="form-control text-uppercase w-100">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mt-4">
+                                                        <div class="col-12 d-flex justify-content-center">
+                                                            <button class="btn btn-outline-danger text-grey" data-dismiss="modal" type="submit" id="saveItemUnit">Save</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>   
+                                </div>
+                            </div> 
                           </form>
                     </div> 
                 </div> 
             </div>
         </div>
+        <div class="modal fade" id="createNewUnit">
+            <div class="modal-dialog">
+                <div class="modal-content" style="background-color:#FFADB0;">
+                    <div class="modal-header">
+                        <h5 class="m-3">New Item Unit</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card p-3">
+                            <form method="post" id="newUnitForm">
+                                {% csrf_token %}
+                                <div class="row mt-2">
+                                    <div class="col-12">
+                                        <label for="name">Unit Name</label>
+                                        <input name="name" id="unit_name" class="form-control text-uppercase w-100">
+                                    </div>
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="col-12 d-flex justify-content-center">
+                                        <button class="btn btn-outline-info text-grey" data-dismiss="modal" type="submit" id="saveItemUnit">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>   
+            </div>
+        </div> 
+        
         <div class="modal fade" id="customercreation">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
@@ -506,7 +572,13 @@
                             <div class="d-flex ">
                                 <input style="background-color: white;" type="email" class="form-control mt-4" id="email" name="email" placeholder="Email">
                             </div>
+                            <br>
+                            <button  type="button" class="btn btn-outline-danger"  data-bs-target="#Credit" data-bs-whatever="@mdo"><a href="javascript:void(0);" onclick="toggleSection('Credit')" style="color: black;"><b>next<b></a>
+                                
+                            </button>
+
                             </fieldset>
+                            
                     
                             <fieldset id="Credit" class="Credit" style="display:none;">
                                 <div class="d-flex">
@@ -524,7 +596,13 @@
                                 <div class="d-flex">
                                     <input  type="date" class="form-control" id="current-date" name="currentdate" placeholder="Current Date" style="background-color: white;" >
                                 </div>
-                            
+                                <br>
+                                <button  type="button" class="btn btn-outline-danger"  data-bs-target="#Credit" data-bs-whatever="@mdo"><a href="javascript:void(0);" onclick="toggleSection('GST')" style="color: black;"><b> previous <b></a>
+                                
+                                </button>
+                                <button  type="button" class="btn btn-outline-danger"  data-bs-target="#Credit" data-bs-whatever="@mdo"><a href="javascript:void(0);" onclick="toggleSection('additionalfield')" style="color: black;"><b>next<b></a>
+                                
+                                </button>
                     
                             </fieldset>
                             
@@ -540,20 +618,28 @@
                                 <div class="d-flex">
                                     <input type="text" class="form-control" name="additionalfield3" id="additionalfield3" placeholder="Additional Field" style="background-color: white;">
                                 </div>
+                                <br>
+                                <button  type="button" class="btn btn-outline-danger"  data-bs-target="#Credit" data-bs-whatever="@mdo"><a href="javascript:void(0);" onclick="toggleSection('Credit')" style="color: black;"><b> previous <b></a>
+                                
+                                </button>
                             </fieldset>
                     
                            
                             <div class="col-md-5 mt-4">
-                                <input type="submit" class="btn btn-danger save-button" name="save_and_new" value="Save&New">
+                                
+                               
                                 <input type="submit" class="btn btn-danger save-button" name="save" value="Save"  id="customersave">
                             </div><br>
                     
                         </div>
                         </form>
+                        
                     </div>
                 </div>
             </div>
         </div>
+        
+        
 
   
 
@@ -650,6 +736,65 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 });
 });
+$(document).on("click","#saveItemUnit",function(){
+        var name = $("#unit_name").val();
+        if (name !=""){
+            $.ajax({
+                type : 'POST',
+                url:"{% url 'save_unit' %}",
+                data:{
+                    'name' : name,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                
+                success: function(response) {
+                    if(response.success){
+                        document.getElementById("newUnitForm").reset();
+                        console.log('success')
+                        reloadUnits();
+                    }else{
+                        // alert(response.message)
+                        console.log('error')
+                    }
+                },         
+            });
+        }
+        else{
+            alert('Invalid')
+        }
+    });
+
+    function reloadUnits() {
+    $.ajax({
+        url: "{% url 'unit_reload_modal' %}",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            console.log("AJAX Success - Dropdown Data:", data);
+            var dropdown = $('#unit_list_drp');
+            dropdown.empty();
+            dropdown.append('<option selected disabled value="">Select an option</option>'); // Added quotes around the HTML
+            dropdown.append('<option  value="Box">Box</option>'); // Added quotes around the HTML
+            dropdown.append('<option   value="Numbers">Numbers</option>'); // Added quotes around the HTML
+            dropdown.append('<option   value="Packages">Packages</option>'); // Added quotes around the HTML
+            console.log(dropdown);
+            if (data.success) {
+                        // Iterate over the units array and append options to the dropdown
+                        data.unitsobj.forEach(function(unit) {
+                            var option = '<option value="' + unit.name + '">' + unit.name + '</option>';
+                            dropdown.append(option); // Assuming 'name' is a field in your model
+                        });
+            } else {
+                console.error("unitsobj data is not an array:", data.unitsobj);
+                // Handle the case when data.unitsobj is not an array
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX Error:", xhr.responseText);
+            // Add additional error handling code if needed
+        }
+    });
+}
 $(document).ready(function () {
         $('#customer').on('change', function() {
             $.ajax({
@@ -751,6 +896,16 @@ $(document).ready(function () {
         });
         calc();
     }
+    function checkhsn(element){
+        var hsninput = element.value;
+        var gstregexp = "[0-9]{6}";
+        if (hsninput.match(gstregexp)) {
+            document.getElementById('warnhsn').innerHTML = '';
+        } else {
+            document.getElementById('warnhsn').innerHTML = 'Please provide a valid HSN Number';
+            alert('Please provide a valid HSN Number');
+        }
+    }
 </script>
 <script>
     function changeprd1(){
@@ -834,7 +989,7 @@ $(document).ready(function () {
                 data:{
                     itm_type :$("#itm_type").val(),
                     name : $("#item_name").val(),
-                    unit : $("#unit").val(),
+                    unit : $("#unit_list_drp").val(),
                     hsn : $("#hsn1").val(),
                     taxref : tax,
                     sell_price : $("#sal_price").val(),

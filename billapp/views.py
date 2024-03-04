@@ -19,6 +19,7 @@ from io import BytesIO
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
+from django.core.serializers import serialize
 
 
 
@@ -366,6 +367,7 @@ def purchasebill(request):
     usr = CustomUser.objects.get(username=request.user) 
     party=Party.objects.filter(company=cmp)
     item=Item.objects.filter(company=cmp)
+    unit=Unit.objects.filter(company=cmp)
     last_bill = PurchaseBill.objects.filter(company=cmp).order_by('-billno').first()
     if last_bill:
         bill_no = last_bill.billno + 1
@@ -376,6 +378,7 @@ def purchasebill(request):
         'bill_no': bill_no,
         'party':party,
         'item':item,
+        'unit':unit,
         'usr':request.user
         # Add other context variables as needed
     }
@@ -399,6 +402,25 @@ def item_dropdown(request):
   for option in option_objects:
       options[option.id] = [option.id, option.itm_name]
   return JsonResponse(options)
+
+def unit_reload_modal(request):
+    if request.user.is_authenticated:
+        if request.user.is_company:
+            cmp = request.user.company
+        else :
+            cmp = request.user.employee.company
+        units = Unit.objects.filter(company=cmp)
+        
+        units_list = [{'name': unlist.unit_name} for unlist in units]
+        success = True
+        data = {'unitsobj': units_list,'success': success}
+        return JsonResponse(data,safe=False)
+       
+    else:
+        # Handle the case when the user is not authenticated
+        return JsonResponse({'error': 'User is not authenticated'},status=401)
+    
+   
 
 
 def cust_dropdown(request):
@@ -594,6 +616,24 @@ def save_purchasebill(request,id):
     return redirect('allbill')
 
   return redirect('allbill')
+def save_unit(request):
+    if request.user.is_company:
+        cmp = request.user.company
+    else:
+        cmp = request.user.employee.company  
+    usr = CustomUser.objects.get(username=request.user) 
+
+    if request.method == 'POST':
+      unit_name = request.POST.get('name')
+      itm = Unit(
+          company=cmp,
+          unit_name=unit_name,
+       
+      )
+      itm.save()
+
+      return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
 
     
 def save_item(request):
@@ -776,6 +816,7 @@ def check_hsn_number_exists(request):
     if Item.objects.filter(itm_hsn=hsn).exists():
         return JsonResponse({'exists': True})
     return JsonResponse({'exists': False})
+    
 
 
 
