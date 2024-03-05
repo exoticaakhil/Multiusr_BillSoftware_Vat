@@ -715,7 +715,7 @@ def save_party1(request):
 
         # Check if the transaction number already exists in the database
         if trn_type == "Unregistered/Consumers":
-            party = Party.objects.create(    user=usr,
+            Party.objects.create(    user=usr,
             company=cmp,
             party_name=partyname,
             trn_no=trn_no,

@@ -118,7 +118,7 @@
                                     <div id="customer_div" style="margin-left: .1px; margin-right: .51px;">
                                         <div class="row">
                                             <div class="col-md-4">
-                                                <label class="col-form-label">Customer</label>
+                                                <label class="col-form-label">PARTY</label>
                                                 <div class="d-flex">
                                                     <select name="customername" id="customer" class="form-control border-danger" >
                                                         <option value="" selected hidden>Select</option>
@@ -135,10 +135,18 @@
                                                 <div class="mt-1 d-flex" >
                                                     &nbsp;<span id="balancediv" style="display: none; color: black;"> Available Balance : <span id="balval"></span></span>
                                                 </div>
+                                                
                                                 <div id="billdiv">
                                                     <label class="col-form-label">Bill No.</label>
                                                     <input type="text" class="form-control border-danger" name="bill_no"  id="bill_no" value="{{bill_no}}"  style="color: black;background-color: white;" readonly> <br>
                                                 </div>
+                                                <div >
+                                                    <label class="col-form-label">Bill Date</label>
+                                                    <input type="date" class="form-control border-danger" name="billdate" id="billdate"  style="color: black;background-color: white;" >
+                                                    <br>
+                                                </div>
+                                                
+
                                             </div>
                                             <div class="col-md-4">
                                                 <div id="phonediv">
@@ -162,16 +170,10 @@
                                                 <label class="col-form-label">Bill No.</label>
                                                 <input type="text" class="form-control border-danger" value="{{bill_no}}"  style="color: black;background-color: white;" readonly> <br>
                                             </div>
-                                        </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <label class="col-form-label">Bill Date</label>
-                                                <input type="date" class="form-control border-danger" name="billdate" id="billdate"  style="color: black;background-color: white;" >
-                                                <br>
-                                            </div>
                                             
                                         </div>
+                                        
+                                        
     
                                         
                                     
@@ -364,19 +366,15 @@
                                           <div class="d-flex">
                                             <select style="color: black;" class="form-control me-3 mt-2 input_border text-black" id="unit_list_drp" name="unit" >
                                               <option value="" hidden>Select an option</option>
-                                              <option value="Numbers">Numbers</option>
-                                              <option value="Packages">Packages</option>
-                                              <option value="Box">Box</option>
+                                              <option value="Numbers">NUMBERS</option>
+                                              <option value="Packages">PACKETS</option>
+                                              <option value="Box">BOX</option>
                                               {% for i in unit %}
                                               <option value="{{ i.unit_name }}">{{ i.unit_name }}</option>
                                               {% endfor %}
                                             </select>&nbsp;&nbsp;&nbsp;
-                                          
-                                            <a href="#">
-                                                <button type="button" class="btn btn-outline-danger ml-1" data-toggle="modal" data-target="#createNewUnit">+</button>
-                                            </a>
-                                           
-                                          </div>
+                                          <button type="button" class="btn btn-outline-danger " data-toggle="modal" data-target="#createNewUnit">+</button>
+                                            </div>
                                      
                                         </div>
                                       </div>
@@ -423,7 +421,7 @@
                                     <div class="p-3" style="border: 2px solid #68020F; border-radius: 2.5vh; background-color: #FFD6D7;">
                                       <div class="mb-4 pt-4">
                                         <label class="tb fw-bold" for="opn_stock_">STOCK IN HAND</label><br>
-                                        <input id="opn_stock_" class="form-control fw-normal fs-3 mt-1 input_border text-black" type="number" placeholder="Enter Opening Stock" name="stock_in_hand" required >
+                                        <input id="opn_stock_" class="form-control fw-normal fs-3 mt-1 input_border text-black" type="number" placeholder="Enter Opening Stock" name="stock_in_hand" required>
                                       </div>
                                       <div class="mb-4">
                                         <label class="tb fw-bold" for="at_price">AT PRICE</label><br>
@@ -573,7 +571,7 @@
                                 <input style="background-color: white;" type="email" class="form-control mt-4" id="email" name="email" placeholder="Email">
                             </div>
                             <br>
-                            <button  type="button" class="btn btn-outline-danger"  data-bs-target="#Credit" data-bs-whatever="@mdo"><a href="javascript:void(0);" onclick="toggleSection('Credit')" style="color: black;"><b>next<b></a>
+                            <button  type="button" class="btn btn-danger"  data-bs-target="#Credit" data-bs-whatever="@mdo"><a href="javascript:void(0);" onclick="toggleSection('Credit')" style="color: rgb(249, 247, 247);"><b>next<b></a>
                                 
                             </button>
 
@@ -597,10 +595,10 @@
                                     <input  type="date" class="form-control" id="current-date" name="currentdate" placeholder="Current Date" style="background-color: white;" >
                                 </div>
                                 <br>
-                                <button  type="button" class="btn btn-outline-danger"  data-bs-target="#Credit" data-bs-whatever="@mdo"><a href="javascript:void(0);" onclick="toggleSection('GST')" style="color: black;"><b> previous <b></a>
+                                <button  type="button" class="btn btn-danger"  data-bs-target="#Credit" data-bs-whatever="@mdo"><a href="javascript:void(0);" onclick="toggleSection('GST')" style="color: rgb(250, 248, 248);"><b> previous <b></a>
                                 
                                 </button>
-                                <button  type="button" class="btn btn-outline-danger"  data-bs-target="#Credit" data-bs-whatever="@mdo"><a href="javascript:void(0);" onclick="toggleSection('additionalfield')" style="color: black;"><b>next<b></a>
+                                <button  type="button" class="btn btn-danger"  data-bs-target="#Credit" data-bs-whatever="@mdo"><a href="javascript:void(0);" onclick="toggleSection('additionalfield')" style="color: rgb(247, 243, 243);"><b>next<b></a>
                                 
                                 </button>
                     
@@ -619,17 +617,18 @@
                                     <input type="text" class="form-control" name="additionalfield3" id="additionalfield3" placeholder="Additional Field" style="background-color: white;">
                                 </div>
                                 <br>
-                                <button  type="button" class="btn btn-outline-danger"  data-bs-target="#Credit" data-bs-whatever="@mdo"><a href="javascript:void(0);" onclick="toggleSection('Credit')" style="color: black;"><b> previous <b></a>
                                 
-                                </button>
+                                <div class="col-md-5 mt-4">
+                                    <button  type="button" class="btn btn-danger"  data-bs-target="#Credit" data-bs-whatever="@mdo"><a href="javascript:void(0);" onclick="toggleSection('Credit')" style="color: rgb(255, 255, 255);"><b> previous <b></a>
+                                
+                                    </button>
+                               
+                                    <input type="submit" class="btn btn-danger save-button" name="save" value="Save"  id="customersave">
+                                </div><br>
                             </fieldset>
                     
                            
-                            <div class="col-md-5 mt-4">
-                                
-                               
-                                <input type="submit" class="btn btn-danger save-button" name="save" value="Save"  id="customersave">
-                            </div><br>
+                           
                     
                         </div>
                         </form>
@@ -774,9 +773,9 @@ $(document).on("click","#saveItemUnit",function(){
             var dropdown = $('#unit_list_drp');
             dropdown.empty();
             dropdown.append('<option selected disabled value="">Select an option</option>'); // Added quotes around the HTML
-            dropdown.append('<option  value="Box">Box</option>'); // Added quotes around the HTML
-            dropdown.append('<option   value="Numbers">Numbers</option>'); // Added quotes around the HTML
-            dropdown.append('<option   value="Packages">Packages</option>'); // Added quotes around the HTML
+            dropdown.append('<option  value="BOX">BOX</option>'); // Added quotes around the HTML
+            dropdown.append('<option   value="NUMBERS">NUMBERS</option>'); // Added quotes around the HTML
+            dropdown.append('<option   value="PACKETS">PACKETS</option>'); // Added quotes around the HTML
             console.log(dropdown);
             if (data.success) {
                         // Iterate over the units array and append options to the dropdown
@@ -1252,13 +1251,13 @@ $(document).ready(function () {
     $(document).ready(function(){
       $('#item_tax_1').on('click',function(){
           $('#vatdiv').attr('hidden',false)
-          $('#vat').val('vat 5')
+          $('#vat').val('VAT 5%')
       })
     })
     $(document).ready(function(){
       $('#item_tax_2').on('click',function(){
           $('#vatdiv').attr('hidden',false)
-          $('#vat').val('vat 0')
+          $('#vat').val('VAT 0%')
       })
     })
   
