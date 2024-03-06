@@ -421,7 +421,7 @@
                                     <div class="p-3" style="border: 2px solid #68020F; border-radius: 2.5vh; background-color: #FFD6D7;">
                                       <div class="mb-4 pt-4">
                                         <label class="tb fw-bold" for="opn_stock_">STOCK IN HAND</label><br>
-                                        <input id="opn_stock_" class="form-control fw-normal fs-3 mt-1 input_border text-black" type="number" placeholder="Enter Opening Stock" name="stock_in_hand" required>
+                                        <input id="opn_stock_" class="form-control fw-normal fs-3 mt-1 input_border text-black" type="number" placeholder="Enter Opening Stock" name="stock_in_hand" required >
                                       </div>
                                       <div class="mb-4">
                                         <label class="tb fw-bold" for="at_price">AT PRICE</label><br>
@@ -970,6 +970,7 @@ $(document).ready(function () {
 
     $(document).on("click","#itemsave",function(){
         var item_name = document.getElementById('item_name').value;
+        var qty =document.getElementById('opn_stock_').value;
 
         if ($('#item_tax_1').prop('checked')) {
             tax= $('#taxable_result').val();
@@ -978,9 +979,11 @@ $(document).ready(function () {
             tax = $('#taxable_result').val();
         }
 
-        if (item_name === ''){
-            alert('Please provide an Item Name');
-        }else{
+       if (qty === ''){
+            alert('Please provide a quantity');
+        } else if (item_name === ''){
+            alert('Please provide an item name');
+        } else{
             console.log($("#hsn1").val())
             $.ajax({
                 type : 'POST',
@@ -1003,6 +1006,14 @@ $(document).ready(function () {
                 
                 success: function(response) {
                     document.getElementById("modalItem").reset();
+                    var today = new Date();
+                    // Format date as YYYY-MM-DD
+                    var year = today.getFullYear();
+                    var month = (today.getMonth() + 1).toString().padStart(2, '0');
+                    var day = today.getDate().toString().padStart(2, '0');
+                
+                    // Set the value of the date input field to today's date
+                    document.getElementById('date').value = year + '-' + month + '-' + day;
                     $('#newitem').modal('hide');
                     reloadItem();
                 },
@@ -1024,6 +1035,7 @@ $(document).ready(function () {
                     var drop = row.find('.product');
                     var existingVal = drop.val();
                     drop.empty();
+                    console.log(row,'sdsg')
                     // dropdown.append(`<option ${selectedValue} selected hidden>${selectedText}</option>`);
                     $.each(data, function(key, value) {
                         // dropdown.append($('<option></option>').attr('value', key).text(value).val(key));
@@ -1230,23 +1242,7 @@ $(document).ready(function () {
 </script>
 
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-      // Function to format the date as YYYY-MM-DD
-      function formatDate(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      }
-  
-      // Get the current date
-      const currentDate = new Date();
-  
-      // Set the formatted current date in the text box
-      document.getElementById("currentDateTextbox").value = formatDate(currentDate);
-    });
-  </script>
+
   <script>
     $(document).ready(function(){
       $('#item_tax_1').on('click',function(){

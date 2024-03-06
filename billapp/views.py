@@ -683,7 +683,7 @@ def save_item(request):
 
       return JsonResponse({'success': True})
     return JsonResponse({'success': False})
-    
+
 def save_party1(request):
     if request.user.is_company:
         cmp = request.user.company
