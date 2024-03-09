@@ -270,9 +270,19 @@
                                                     &nbsp;<a class="btn btn-danger" onclick="filterTable(2)">Apply</a>
                                                 </div>
                                             </th>
-                                            
                                             <th style="background-color: #FFD6D7;" class=" border-danger text-black">
                                                 AMOUNT
+                                                <a class="extra text-black" onclick="toggleDropdown(3)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
+                                                <div class="dropdown-content" id="dropdownContent3">
+                                                    <label for="filterInput3" style="color: black; text-align: left;">Equal To</label>
+                                                    <input type="text" id="filterInput3"  />
+                                                    <a class="btn btn-danger" onclick="cleardropdown(3)">Clear</a> 
+                                                    &nbsp;<a class="btn btn-danger" onclick="filterTable(3)">Apply</a>
+                                                </div>
+                                            </th>
+                                            
+                                            <th style="background-color: #FFD6D7;" class=" border-danger text-black">
+                                               ACTION
                                                 <a class="extra text-black" onclick="toggleDropdown(4)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
                                                 <div class="dropdown-content" id="dropdownContent4">
                                                     <label for="filterInput4" style="color: black; text-align: left;">Equal To</label>
@@ -281,9 +291,10 @@
                                                     &nbsp;<a class="btn btn-danger" onclick="filterTable(4)">Apply</a>
                                                 </div>
                                             </th>
+                                            
                                            
                                             <th style="background-color: #FFD6D7;" class=" border-danger text-black extra">
-                                                ACTION
+                                              BY
                                                 &nbsp; <a onclick="toggleDropdown(6)"><i class="fa fa-filter" aria-hidden="true"></i></a>
                                                 <div class="dropdown-content" id="dropdownContent6">
                                                     <label for="filterInput6" style="color: black; text-align: left;">Equal To</label>
@@ -292,16 +303,7 @@
                                                     &nbsp;<a class="btn btn-danger" onclick="filterTable(6)">Apply</a>
                                                 </div>
                                             </th>
-                                            <th style="background-color: #FFD6D7;" class=" border-danger text-black extra">
-                                                BY
-                                                &nbsp; <a onclick="toggleDropdown(7)"><i class="fa fa-filter" aria-hidden="true"></i></a>
-                                                <div class="dropdown-content" id="dropdownContent7">
-                                                    <label for="filterInput7" style="color: black; text-align: left;">Equal To</label>
-                                                    <input type="text" id="filterInput7" />
-                                                    <a class="btn btn-danger" onclick="cleardropdown(7)">Clear</a> 
-                                                    &nbsp;<a class="btn btn-danger" onclick="filterTable(7)">Apply</a>
-                                                </div>
-                                            </th>
+                                            
                                             <th style="background-color: #FFD6D7;" class=" border-danger text-black extra"></th>
                                         </tr>
                                     </thead>

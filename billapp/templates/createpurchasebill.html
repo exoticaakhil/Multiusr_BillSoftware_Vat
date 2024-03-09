@@ -135,7 +135,7 @@
                                                 <div class="mt-1 d-flex" >
                                                     &nbsp;<span id="balancediv" style="display: none; color: black;"> Available Balance : <span id="balval"></span></span>
                                                 </div>
-                                                
+                                                <div class="row">
                                                 <div id="billdiv">
                                                     <label class="col-form-label">Bill No.</label>
                                                     <input type="text" class="form-control border-danger" name="bill_no"  id="bill_no" value="{{bill_no}}"  style="color: black;background-color: white;" readonly> <br>
@@ -143,8 +143,9 @@
                                                 <div >
                                                     <label class="col-form-label">Bill Date</label>
                                                     <input type="date" class="form-control border-danger" name="billdate" id="billdate"  style="color: black;background-color: white;" >
-                                                    <br>
+                                                 
                                                 </div>
+                                            </div>
                                                 
 
                                             </div>
@@ -170,6 +171,7 @@
                                                 <label class="col-form-label">Bill No.</label>
                                                 <input type="text" class="form-control border-danger" value="{{bill_no}}"  style="color: black;background-color: white;" readonly> <br>
                                             </div>
+                                        
                                             
                                         </div>
                                         
@@ -551,7 +553,7 @@
                                     </div>
                                 </div>
                                 <fieldset id="GST" class="GST">
-                                    <div style="background-color: white;" class="col-sm-12"><select class="form-control mt-4 " id="trn_type" name="trn_type">
+                                    <div style="background-color: white;" class="col-sm-12"><select class="form-control mt-4 " id="trn_type" name="trn_type" onchange="trn()">
                                             <option disabled selected>Select TRN Type</option>
                                             <option >Unregistered/Consumers</option>
                                             <option>Registered Business - Regular</option>
@@ -571,7 +573,7 @@
                                 <input style="background-color: white;" type="email" class="form-control mt-4" id="email" name="email" placeholder="Email">
                             </div>
                             <br>
-                            <button  type="button" class="btn btn-danger"  data-bs-target="#Credit" data-bs-whatever="@mdo"><a href="javascript:void(0);" onclick="toggleSection('Credit')" style="color: rgb(249, 247, 247);"><b>next<b></a>
+                            <button  type="button" class="btn btn-danger" id="click12"  data-bs-target="#Credit" data-bs-whatever="@mdo"><a href="javascript:void(0);" onclick="toggleSection('Credit')" style="color: rgb(249, 247, 247);"><b>next<b></a>
                                 
                             </button>
 
@@ -669,6 +671,20 @@
                     }
                 }
                 return true; 
+            }
+        </script>
+         <script>
+            
+            function trn() {
+                var trn = document.getElementById('trn_type').value;
+                var trnno = document.getElementById('trn_no').value;
+        
+                if ((trn === 'Registered Business - Regular' && trnno === '') || (trn === 'Registered Business - Composition' && trnno === '')) {
+
+                    
+                    alert('Please provide trn no');
+                   
+                }
             }
         </script>
 
@@ -981,6 +997,8 @@ $(document).ready(function () {
 
        if (qty === ''){
             alert('Please provide a quantity');
+        } else if (qty == 0){
+            alert('Please provide a quantity');
         } else if (item_name === ''){
             alert('Please provide an item name');
         } else{
@@ -1021,6 +1039,7 @@ $(document).ready(function () {
         }      
     });
 
+
     function reloadItem() {
         $.ajax({
             url: "{% url 'item_dropdown' %}",
@@ -1037,6 +1056,9 @@ $(document).ready(function () {
                     drop.empty();
                     console.log(row,'sdsg')
                     // dropdown.append(`<option ${selectedValue} selected hidden>${selectedText}</option>`);
+                    var defaultOption = new Option("Select Item", "", true, true);
+        defaultOption.disabled = true;
+        drop.append(defaultOption);
                     $.each(data, function(key, value) {
                         // dropdown.append($('<option></option>').attr('value', key).text(value).val(key));
                         console.log(value);
