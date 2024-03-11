@@ -625,6 +625,10 @@ def save_unit(request):
 
     if request.method == 'POST':
       unit_name = request.POST.get('name')
+      if unit_name == 'NUMBERS' or unit_name == 'BOX' or unit_name == 'PACKETS' or unit_name == 'numbers' or unit_name == 'box'  or unit_name == 'packets':
+        return JsonResponse({'success': False})
+      if Unit.objects.filter(unit_name=unit_name,company=cmp).exists():
+         return JsonResponse({'success': False})
       itm = Unit(
           company=cmp,
           unit_name=unit_name,
@@ -754,6 +758,7 @@ def save_party1(request):
             additionalfield3=additionalfield3
         )
         return redirect('createbill')
+    
 def sharepdftomail(request,id):
  if request.user:
         try:

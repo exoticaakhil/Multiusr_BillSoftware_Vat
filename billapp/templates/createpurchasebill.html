@@ -140,11 +140,7 @@
                                                     <label class="col-form-label">Bill No.</label>
                                                     <input type="text" class="form-control border-danger" name="bill_no"  id="bill_no" value="{{bill_no}}"  style="color: black;background-color: white;" readonly> <br>
                                                 </div>
-                                                <div >
-                                                    <label class="col-form-label">Bill Date</label>
-                                                    <input type="date" class="form-control border-danger" name="billdate" id="billdate"  style="color: black;background-color: white;" >
-                                                 
-                                                </div>
+                                                
                                             </div>
                                                 
 
@@ -154,10 +150,16 @@
                                                     <label class="col-form-label" >Phone No. </label>
                                                     <input class="form-control border-danger" name="phno"  id="cust_phno"  style="color: black;background-color: white;" readonly>
                                                 </div>
+                                                <div  style="margin-top: 7%;" >
+                                                    <label class="col-form-label">Bill Date</label>
+                                                    <input type="date" class="form-control border-danger" name="billdate" id="billdate"  style="color: black;background-color: white;" >
+                                                 
+                                                </div>
                                                 <div id="dbilldiv" style="display: none;">
                                                     <label class="col-form-label">Bill No.</label>
                                                     <input type="text" class="form-control border-danger" value="{{bill_no}}"  style="color: black;background-color: white;" readonly> <br>
                                                 </div>
+                                           
                                                 <div id="daddressdiv" style="display: none;">
                                                     <label class="col-form-label">Billing Address</label>
                                                     <textarea class="form-control border-danger mb-3" name="dbname" id="dbname" rows="6" type="text" style="color: black;background-color: white;" readonly></textarea>
@@ -171,6 +173,7 @@
                                                 <label class="col-form-label">Bill No.</label>
                                                 <input type="text" class="form-control border-danger" value="{{bill_no}}"  style="color: black;background-color: white;" readonly> <br>
                                             </div>
+                                    
                                         
                                             
                                         </div>
@@ -224,7 +227,7 @@
                                                         </td>
     
                                                         <td style="width:13%">
-                                                            <input type="number" name='qty[]' id="qty"  class="form-control border-danger qty mb-1" step=0 min=0 style="color: black; background-color: white;" value=0 />
+                                                            <input type="number" name='qty[]' id="qty"  class="form-control border-danger qty mb-1" step=0 min=0 style="color: black; background-color: white;" value=0  required />
                                                         </td>
                                                     
                                                         <td style="width:12%">
@@ -650,9 +653,14 @@
         <script>
             function validatepurchasebill() {
                 var customer = document.getElementById('customer').value;
-
-        
-                if (customer === '') {
+                var qty =document.querySelector('.qty').value;
+                if (qty === ''){
+                    alert('Please provide a quantity');
+                    return false;
+                } else if (qty == 0){
+                    alert('Please provide a quantity');
+                    return false;
+                } else if (customer === '') {
                     alert('Please select a customer');
                     return false;
                 } 
@@ -986,7 +994,7 @@ $(document).ready(function () {
 
     $(document).on("click","#itemsave",function(){
         var item_name = document.getElementById('item_name').value;
-        var qty =document.getElementById('opn_stock_').value;
+
 
         if ($('#item_tax_1').prop('checked')) {
             tax= $('#taxable_result').val();
@@ -995,11 +1003,7 @@ $(document).ready(function () {
             tax = $('#taxable_result').val();
         }
 
-       if (qty === ''){
-            alert('Please provide a quantity');
-        } else if (qty == 0){
-            alert('Please provide a quantity');
-        } else if (item_name === ''){
+        if (item_name === ''){
             alert('Please provide an item name');
         } else{
             console.log($("#hsn1").val())
@@ -1117,7 +1121,7 @@ $(document).ready(function () {
                     </td>
 
                     <td style="width:10%">
-                        <input type="number" name='qty[]' value=0 id="qty${roinc}" class="form-control border-danger qty mb-1" step=0 min=0 style="color: black; background-color: white;" />
+                        <input type="number" name='qty[]' value=0 id="qty${roinc}" class="form-control border-danger qty mb-1" step=0 min=0 style="color: black; background-color: white;" required />
                     </td>
 
                     <td tyle="width:12%">

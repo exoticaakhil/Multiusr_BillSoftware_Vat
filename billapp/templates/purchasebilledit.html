@@ -111,6 +111,7 @@
                                                         {% endif %}
                                                     {% endfor %}
                                                 </select> &nbsp;&nbsp;&nbsp;
+                                                
       
                                             </div>
                                             {% if pbill.party.payment == 'To Pay' %}
@@ -136,6 +137,11 @@
                                                 <label class="col-form-label">Bill No.</label>
                                                 <input type="text" class="form-control border-danger" value="{{pbill.billno}}"  style="color: black;background-color: white;" readonly> <br>
                                             </div>
+                                            <div  style="margin-top: 7%;" >
+                                                <label class="col-form-label">Bill Date:</label>
+                                                <input type="date" class="form-control border-danger" style="color: black; background-color: white;" name="billdate" id="billdate" value="{{bdate}}">
+                                                <br>
+                                            </div>
                                             <div id="daddressdiv" style="display: none;">
                                                 <label class="col-form-label">Billing Address</label>
                                                 <textarea class="form-control border-danger mb-3" name="dbname" id="dbname" rows="6" type="text" style="color: black;background-color: white;" readonly>{{ pbill.party.address }}</textarea>
@@ -151,15 +157,6 @@
                                         </div>
                                     </div>
                                     <br>
-
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <label class="col-form-label">Bill Date:</label>
-                                            <input type="date" class="form-control border-danger" style="color: black; background-color: white;" name="billdate" id="billdate" value="{{bdate}}">
-                                            <br>
-                                        </div>
-                                        
-                                    </div>
                                     <br>
                                     <br>
 
