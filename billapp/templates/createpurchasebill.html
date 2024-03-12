@@ -99,7 +99,7 @@
                 </h5>
                   {% endfor %}
   
-                <form action="{% url 'createbill' %}" method="post" enctype="multipart/form-data" onsubmit="return validatepurchasebill()" novalidate>
+                <form action="{% url 'createbill' %}" method="post" enctype="multipart/form-data" onsubmit="return validatepurchasebill()" novalidate id="pbillForm">
                     {% csrf_token %}
                     <div class="page-content">
                         <div class="card radius-15">
@@ -653,34 +653,67 @@
         <script>
             function validatepurchasebill() {
                 var customer = document.getElementById('customer').value;
-                var qty =document.querySelector('.qty').value;
-                if (qty === ''){
-                    alert('Please provide a quantity');
-                    return false;
-                } else if (qty == 0){
-                    alert('Please provide a quantity');
-                    return false;
-                } else if (customer === '') {
+                if (customer === '') {
                     alert('Please select a customer');
                     return false;
                 } 
-                var table = document.getElementById('tab_logic');
-                var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-                for (var i = 1; i <= rows.length; i++) {
-                    var product = document.getElementById('product'+i).value;
-                    var qty = document.getElementById('qty'+i).value;
-                    if(product === ''){
-                        alert('Select a product on row '+ i);
-                        return false;
-                    }
-                    if(qty === '' || qty =='0'){
-                        alert('Add quantity in row '+ i);
-                        return false;
-                    }
-                }
+                
                 return true; 
             }
         </script>
+        
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#pbillForm').submit(function(event) {
+        // Prevent the form from submitting by default
+        event.preventDefault();
+        console.log("jjhfgjsgd")
+        
+        // Flag to check if all input fields have values
+        var allFieldsFilled = true;
+        
+        // Iterate over each row in the table
+        $('#pbillForm tr').each(function() {
+            
+            $(this).find('input.qty').each(function() {
+                
+                if (($(this).val() === '')||($(this).val() == 0)) {
+                    // Empty input field found, set flag to false and alert the user
+                    console.log($(this).val())
+                    allFieldsFilled = false;
+                    alert('Please fill quanty.');
+                    // Optionally, you can add further validation logic or UI feedback here
+                    return false; // Exit the loop after the first empty input field is found
+                }
+            });
+            $(this).find('select.product').each(function() {
+                
+                if ($(this).val() === '') {
+                    // Empty input field found, set flag to false and alert the user
+                    console.log($(this).val())
+                    allFieldsFilled = false;
+                    alert('Please fill item name.');
+                    // Optionally, you can add further validation logic or UI feedback here
+                    return false; // Exit the loop after the first empty input field is found
+                }
+            });
+            
+            // Exit the loop if any empty input field is found
+            if (!allFieldsFilled) {
+                return false;
+            }
+        });
+        
+        // If all input fields have values, submit the form
+        if (allFieldsFilled) {
+            this.submit();
+
+            
+        }
+    });
+});
+</script>
          <script>
             
             function trn() {

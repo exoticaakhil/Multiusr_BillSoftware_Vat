@@ -664,10 +664,7 @@ def save_item(request):
       if Item.objects.filter(itm_hsn=itm_hsn,company=cmp).exists():
           # Send a message indicating that the HSN number already exists
           return JsonResponse({'success': False})
-      print(name)
-      print(itm_type)
-      print(itm_hsn)
-      print(itm_taxable)
+
       itm = Item(
           user=usr,
           company=cmp,
@@ -758,6 +755,79 @@ def save_party1(request):
             additionalfield3=additionalfield3
         )
         return redirect('createbill')
+def save_party2(request):
+    if request.user.is_company:
+        cmp = request.user.company
+    else:
+        cmp = request.user.employee.company  
+    usr = CustomUser.objects.get(username=request.user)
+
+    if request.method == 'POST':
+        pbillhide=request.POST.get('pbillhid')
+        partyname = request.POST.get('partyname')
+        trn_no = request.POST.get('trn_no')
+        contact = request.POST.get('contact')
+        trn_type = request.POST.get('trn_type')
+        address = request.POST.get('address')
+        email = request.POST.get('email')
+        balance = request.POST.get('balance')
+        paymentType = request.POST.get('paymentType')
+        currentdate = request.POST.get('currentdate')
+        additionalfield1 = request.POST.get('additionalfield1')
+        additionalfield2 = request.POST.get('additionalfield2')
+        additionalfield3 = request.POST.get('additionalfield3')
+        # print(trn_no)
+        # print(partyname)
+
+        # Check if the contact number already exists in the database
+        if Party.objects.filter(contact=contact,company=cmp).exists():
+            # Send a message indicating that the contact number already exists
+
+            return redirect('edit_purchasebill', pbillhide)
+
+        # Check if the transaction number already exists in the database
+        if trn_type == "Unregistered/Consumers":
+            prtobj = Party.objects.create(    user=usr,
+            company=cmp,
+            party_name=partyname,
+            trn_no=trn_no,
+            contact=contact,
+            trn_type=trn_type,
+            address=address,
+            email=email,
+            openingbalance=balance,
+            payment=paymentType,
+            current_date=currentdate,
+            additionalfield1=additionalfield1,
+            additionalfield2=additionalfield2,
+            additionalfield3=additionalfield3)
+            prtobj.save()
+            # Optionally, you can send a success message here
+
+            return redirect('edit_purchasebill', pbillhide)
+        else:
+             if Party.objects.filter(trn_no=trn_no, company=cmp).exists():
+                # Send a message indicating that the transaction number already exists
+
+                return redirect('edit_purchasebill', pbillhide)
+        prtobj = Party.objects.create(
+            user=usr,
+            company=cmp,
+            party_name=partyname,
+            trn_no=trn_no,
+            contact=contact,
+            trn_type=trn_type,
+            address=address,
+            email=email,
+            openingbalance=balance,
+            payment=paymentType,
+            current_date=currentdate,
+            additionalfield1=additionalfield1,
+            additionalfield2=additionalfield2,
+            additionalfield3=additionalfield3
+        )
+        prtobj.save()
+        return redirect('edit_purchasebill', pbillhide)
     
 def sharepdftomail(request,id):
  if request.user:
