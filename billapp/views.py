@@ -20,6 +20,7 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.core.serializers import serialize
+from django.http import HttpResponse
 
 
 
@@ -449,57 +450,55 @@ def custdata(request):
   bal = part.openingbalance
   return JsonResponse({'phno':phno, 'address':address, 'pay':pay, 'bal':bal})
 def createbill(request):
-  if request.method == 'POST': 
-    if request.user.is_company:
-      cmp = request.user.company
-    else:
-      cmp = request.user.employee.company  
-    usr = CustomUser.objects.get(username=request.user)  
-    part = Party.objects.get(id=request.POST.get('customername'))
-    pbill = PurchaseBill(party=part, 
-                          billno=request.POST.get('bill_no'),
-                          billdate=request.POST.get('billdate'),
-                          subtotal=float(request.POST.get('subtotal')),
-                          adjust = request.POST.get("adj"),
-                          taxamount = request.POST.get("taxamount"),
-                          grandtotal=request.POST.get('grandtotal'),
-                          company=cmp,
-                          staff=usr
-                          )
-    pbill.save()
-    
+    if request.method == 'POST': 
+        if request.user.is_company:
+            cmp = request.user.company
+        else:
+            cmp = request.user.employee.company  
+        usr = CustomUser.objects.get(username=request.user)  
+        part = Party.objects.get(id=request.POST.get('customername'))
+        pbill = PurchaseBill(party=part, 
+                             billno=request.POST.get('bill_no'),
+                             billdate=request.POST.get('billdate'),
+                             subtotal=float(request.POST.get('subtotal')),
+                             adjust = request.POST.get("adj"),
+                             taxamount = request.POST.get("taxamount"),
+                             grandtotal=request.POST.get('grandtotal'),
+                             company=cmp,
+                             staff=usr
+                             )
+        pbill.save()
         
-    product = tuple(request.POST.getlist("product[]"))
-    qty =  tuple(request.POST.getlist("qty[]"))
-    discount =  tuple(request.POST.getlist("discount[]"))
-    tax =  tuple(request.POST.getlist("vat[]"))
-    total =  tuple(request.POST.getlist("total[]"))
-    billno = PurchaseBill.objects.get(billno=pbill.billno,company=cmp)
-    # print(billno)
-    if len(product)==len(qty)==len(tax)==len(discount)==len(total):
-        mapped=zip(product,qty,tax,discount,total)
-        mapped=list(mapped)
-        for ele in mapped:
-          itm = Item.objects.get(id=ele[0])
-          PurchaseBillItem.objects.create(product = itm,qty=ele[1], VAT=ele[2],discount=ele[3],total=ele[4],purchasebill=billno,company=cmp)
+        product = tuple(request.POST.getlist("product[]"))
+        qty =  tuple(request.POST.getlist("qty[]"))
+        discount =  tuple(request.POST.getlist("discount[]"))
+        tax =  tuple(request.POST.getlist("vat[]"))
+        total =  tuple(request.POST.getlist("total[]"))
+        billno = PurchaseBill.objects.get(billno=pbill.billno,company=cmp)
+        # print(billno)
+        if len(product)==len(qty)==len(tax)==len(discount)==len(total):
+            mapped=zip(product,qty,tax,discount,total)
+            mapped=list(mapped)
+            for ele in mapped:
+                itm = Item.objects.get(id=ele[0])
+                PurchaseBillItem.objects.create(product = itm,qty=ele[1], VAT=ele[2],discount=ele[3],total=ele[4],purchasebill=billno,company=cmp)
 
-    PurchaseBill.objects.filter(company=cmp,staff=usr).update(tot_bill_no=F('tot_bill_no') + 1)
-    
-    
-    pbill.tot_bill_no = pbill.billno
-    print(pbill.tot_bill_no)
-    pbill.save()
+        PurchaseBill.objects.filter(company=cmp,staff=usr).update(tot_bill_no=F('tot_bill_no') + 1)
+        
+        pbill.tot_bill_no = pbill.billno
+        print(pbill.tot_bill_no)
+        pbill.save()
 
-    PurchaseBillTransactionHistory.objects.create(purchasebill=pbill,action='Created',company=cmp,staff=usr)
+        PurchaseBillTransactionHistory.objects.create(purchasebill=pbill,action='Created',company=cmp,staff=usr)
 
-    if 'Next' in request.POST:
-      return redirect('purchasebill')
-    
-    if "Save" in request.POST:
-      return redirect('allbill')
-    
-  else:
-     return redirect('purchasebill')
+        if 'Next' in request.POST:
+            return redirect('purchasebill')
+        if "Save" in request.POST:
+            return redirect('allbill') 
+    else:
+        return redirect('purchasebill')
+
+
 def billhistory(request):
   pid = request.POST['id']
   if request.user.is_company:
@@ -872,23 +871,38 @@ def sharepdftomail(request,id):
             messages.error(request, f'{e}')
             return redirect(details_purchasebill, id)
 def check_trn_no_exists(request):
+    if request.user.is_company:
+        cmp = request.user.company
+    else:
+        cmp = request.user.employee.company  
+    usr = CustomUser.objects.get(username=request.user) 
     trn_no = request.GET.get('trn_no')
     trn_type = request.POST.get('trn_type')
     print(trn_type)
     if trn_type != "Unregistered/Consumers":
-      if Party.objects.filter(trn_no=trn_no).exists():
+      if Party.objects.filter(trn_no=trn_no,company=cmp).exists():
           return JsonResponse({'exists': True})
       return JsonResponse({'exists': False})
 
 def check_phone_number_exists(request):
+    if request.user.is_company:
+        cmp = request.user.company
+    else:
+        cmp = request.user.employee.company  
+    usr = CustomUser.objects.get(username=request.user)
     phone_number = request.GET.get('phone_number')
-    if Party.objects.filter(contact=phone_number).exists():
+    if Party.objects.filter(contact=phone_number,company=cmp).exists():
         return JsonResponse({'exists': True})
     return JsonResponse({'exists': False})
 
 def check_hsn_number_exists(request):
+    if request.user.is_company:
+        cmp = request.user.company
+    else:
+        cmp = request.user.employee.company  
+    usr = CustomUser.objects.get(username=request.user)
     hsn = request.GET.get('hsn1')
-    if Item.objects.filter(itm_hsn=hsn).exists():
+    if Item.objects.filter(itm_hsn=hsn,company=cmp).exists():
         return JsonResponse({'exists': True})
     return JsonResponse({'exists': False})
     

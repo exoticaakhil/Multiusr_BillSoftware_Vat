@@ -359,7 +359,8 @@
                                       <div class="d-flex mt-2">
                                         <div class=" me-3 w-50">
                                           <label class="fw-bold tb fs-3 " for="">HSN </label><br>
-                                          <input style="color: black;" class="form-control mt-2 input_border text-black" type="number" placeholder="Enter HSN value" name="hsn" id="hsn1" onchange="checkhsn(this)" >
+                                          <input style="color: black;" class="form-control mt-2 input_border text-black" type="number" placeholder="Enter HSN value" name="hsn" id="hsn1" onchange="checkhsn(this)">
+
                                           <span id="hsn-validation" style="position: absolute; right: 14px; top: 8px;"></span>
                                           <div class="text-danger m-2" id="warnhsn"></div>
                                           <label id="hsnerror" style="color: rgb(101, 3, 3);"></label>
@@ -540,7 +541,7 @@
                                     </div>
                                     
                                     <div class="col-md-4" style="position: relative;">
-                                        <input required type="number" style="background-color: white;" class="form-control" id="contact" pattern="[0-9]{10}" name="contact" placeholder="Phone Number" oninput="validatePhoneNumber(this)">
+                                        <input required type="number" style="background-color: white;" class="form-control contact" id="contact" pattern="[0-9]{10}" name="contact" placeholder="Phone Number" oninput="validatePhoneNumber(this)" required>
                                         <span id="contact-validation" style="position: absolute; right: 15px; top: 8px;"></span>
                                         <label id="phone_number_error" style="color: rgb(101, 3, 3);"></label>
                                     </div>
@@ -653,67 +654,109 @@
         <script>
             function validatepurchasebill() {
                 var customer = document.getElementById('customer').value;
+                var qty = document.querySelector('.qty').value;
+                var name = document.querySelector('.product').value;
+                
                 if (customer === '') {
                     alert('Please select a customer');
                     return false;
                 } 
-                
+                if (name === '') {
+                    alert('Please select a Item');
+                    return false;
+                }
+
+    
                 return true; 
+          
             }
         </script>
+             
         
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
-$(document).ready(function() {
-    $('#pbillForm').submit(function(event) {
-        // Prevent the form from submitting by default
-        event.preventDefault();
-        console.log("jjhfgjsgd")
-        
-        // Flag to check if all input fields have values
-        var allFieldsFilled = true;
-        
-        // Iterate over each row in the table
-        $('#pbillForm tr').each(function() {
+    $(document).ready(function() {
+        $('#forms').submit(function(event) {
+            // Prevent the form from submitting by default
+            event.preventDefault();
+            console.log("jjhfgjsgd")
             
-            $(this).find('input.qty').each(function() {
+            // Flag to check if all input fields have values
+            var allFieldsFilled = true;
+            
+            // Iterate over each row in the table
+            $('#forms').each(function() {
                 
-                if (($(this).val() === '')||($(this).val() == 0)) {
-                    // Empty input field found, set flag to false and alert the user
-                    console.log($(this).val())
-                    allFieldsFilled = false;
-                    alert('Please fill quanty.');
-                    // Optionally, you can add further validation logic or UI feedback here
-                    return false; // Exit the loop after the first empty input field is found
-                }
-            });
-            $(this).find('select.product').each(function() {
+                $(this).find('input.contact').each(function() {
+                    
+                    if (($(this).val() === '')||($(this).val() == 0)) {
+                        // Empty input field found, set flag to false and alert the user
+                        console.log($(this).val())
+                        allFieldsFilled = false;
+                        alert('Please fill contact.');
+                        // Optionally, you can add further validation logic or UI feedback here
+                        return false; // Exit the loop after the first empty input field is found
+                    }
+                });
                 
-                if ($(this).val() === '') {
-                    // Empty input field found, set flag to false and alert the user
-                    console.log($(this).val())
-                    allFieldsFilled = false;
-                    alert('Please fill item name.');
-                    // Optionally, you can add further validation logic or UI feedback here
-                    return false; // Exit the loop after the first empty input field is found
+                
+                // Exit the loop if any empty input field is found
+                if (!allFieldsFilled) {
+                    return false;
                 }
             });
             
-            // Exit the loop if any empty input field is found
-            if (!allFieldsFilled) {
-                return false;
+            // If all input fields have values, submit the form
+            if (allFieldsFilled) {
+                this.submit();
+    
+                
             }
         });
-        
-        // If all input fields have values, submit the form
-        if (allFieldsFilled) {
-            this.submit();
-
-            
-        }
     });
-});
-</script>
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#modalItem').submit(function(event) {
+                // Prevent the form from submitting by default
+                event.preventDefault();
+                console.log("jjhfgjsgd")
+                
+                // Flag to check if all input fields have values
+                var allFieldsFilled = true;
+                
+                // Iterate over each row in the table
+                $('#modalItem').each(function() {
+                    
+                    $(this).find('input.contact').each(function() {
+                        
+                        if (($(this).val() === '')||($(this).val() == 0)) {
+                            // Empty input field found, set flag to false and alert the user
+                            console.log($(this).val())
+                            allFieldsFilled = false;
+                            alert('Please fill contact.');
+                            // Optionally, you can add further validation logic or UI feedback here
+                            return false; // Exit the loop after the first empty input field is found
+                        }
+                    });
+                    
+                    
+                    // Exit the loop if any empty input field is found
+                    if (!allFieldsFilled) {
+                        return false;
+                    }
+                });
+                
+                // If all input fields have values, submit the form
+                if (allFieldsFilled) {
+                    this.submit();
+        
+                    
+                }
+            });
+        });
+        </script>
          <script>
             
             function trn() {
@@ -925,6 +968,7 @@ $(document).ready(function () {
         document.getElementById(`Vat${d}`).value = 0
         document.getElementById(`disc${d}`).value = 0
         document.getElementById(`taxamount${d}`).value = 0
+
        
         $.ajax({
             url: "{% url 'itemdetails' %}",
@@ -960,6 +1004,7 @@ $(document).ready(function () {
         } else {
             document.getElementById('warnhsn').innerHTML = 'Please provide a valid HSN Number';
             alert('Please provide a valid HSN Number');
+           
         }
     }
 </script>
@@ -1021,60 +1066,62 @@ $(document).ready(function () {
         })
     })
 </script>
+<script>
+$(document).on("click", "#itemsave", function() {
+    var item_name = document.getElementById('item_name').value;
+    var hsn = $("#hsn1").val(); // Get the value of HSN
 
-    <script>
-   
+    // Check if the length of HSN is less than 6
+    if (hsn.length < 6) {
+        alert('HSN must be at least 6 characters long');
+        return; // Exit function to prevent further execution
+    }
 
-    $(document).on("click","#itemsave",function(){
-        var item_name = document.getElementById('item_name').value;
+    var tax;
+    if ($('#item_tax_1').prop('checked')) {
+        tax = $('#taxable_result').val();
+    } else {
+        tax = $('#taxable_result').val();
+    }
 
+    if (item_name === '') {
+        alert('Please provide an item name');
+    } else {
+        console.log($("#hsn1").val())
+        $.ajax({
+            type: 'POST',
+            url: "save_item", // Replace this with the actual URL path to your save_item view
+            data: {
+                itm_type: $("#itm_type").val(),
+                name: $("#item_name").val(),
+                unit: $("#unit_list_drp").val(),
+                hsn: hsn, // Use the hsn variable here
+                taxref: tax,
+                sell_price: $("#sal_price").val(),
+                cost_price: $("#pur_price").val(),
+                vat: $("#vat").val(),
+                itmdate: $("#date").val(),
+                stock: $("#opn_stock_").val(),
+                itmprice: $("#at_price").val(),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
 
-        if ($('#item_tax_1').prop('checked')) {
-            tax= $('#taxable_result').val();
-        } 
-        else{
-            tax = $('#taxable_result').val();
-        }
+            success: function(response) {
+                document.getElementById("modalItem").reset();
+                var today = new Date();
+                // Format date as YYYY-MM-DD
+                var year = today.getFullYear();
+                var month = (today.getMonth() + 1).toString().padStart(2, '0');
+                var day = today.getDate().toString().padStart(2, '0');
 
-        if (item_name === ''){
-            alert('Please provide an item name');
-        } else{
-            console.log($("#hsn1").val())
-            $.ajax({
-                type : 'POST',
-                url:"save_item", // Replace this with the actual URL path to your save_item view
-                data:{
-                    itm_type :$("#itm_type").val(),
-                    name : $("#item_name").val(),
-                    unit : $("#unit_list_drp").val(),
-                    hsn : $("#hsn1").val(),
-                    taxref : tax,
-                    sell_price : $("#sal_price").val(),
-                    cost_price : $("#pur_price").val(),
-                    vat : $("#vat").val(),
-                    itmdate : $("#date").val(),
-                    stock : $("#opn_stock_").val(),
-                    itmprice : $("#at_price").val(),
-                    csrfmiddlewaretoken: '{{ csrf_token }}',
-                    
-                },
-                
-                success: function(response) {
-                    document.getElementById("modalItem").reset();
-                    var today = new Date();
-                    // Format date as YYYY-MM-DD
-                    var year = today.getFullYear();
-                    var month = (today.getMonth() + 1).toString().padStart(2, '0');
-                    var day = today.getDate().toString().padStart(2, '0');
-                
-                    // Set the value of the date input field to today's date
-                    document.getElementById('date').value = year + '-' + month + '-' + day;
-                    $('#newitem').modal('hide');
-                    reloadItem();
-                },
-            });  
-        }      
-    });
+                // Set the value of the date input field to today's date
+                document.getElementById('date').value = year + '-' + month + '-' + day;
+                $('#newitem').modal('hide');
+                reloadItem();
+            },
+        });
+    }
+});
 
 
     function reloadItem() {
@@ -1130,7 +1177,7 @@ $(document).ready(function () {
             roinc1++
             $('#items-table-body').append(
                 `<tr id='addr0${roinc}'>
-                    <td class = 'nnum' style="text-align: center; width:2%"">${roinc1}</td>
+                    <td class = 'nnum  rowinc' style="text-align: center; width:2%"">${roinc1}</td>
 
                     <td style="width:18%">
                         <div class="d-flex">
@@ -1150,7 +1197,7 @@ $(document).ready(function () {
                     </td>
 
                     <td tyle="width:15%">
-                        <input type="text" name='hsn[]' id="hsn${roinc}" class="form-control border-danger px-1" style="color: black; background-color: white;" readonly />
+                        <input type="text" name='hsn[]' id="hsn${roinc}" class="form-control border-danger px-1 hsn" style="color: black; background-color: white;" readonly />
                     </td>
 
                     <td style="width:10%">
@@ -1184,9 +1231,38 @@ $(document).ready(function () {
             reloadItem();
    
         });
-       
-
+        $('#tab_logic').on('change', '.qty, .hsn', function() {
+        validateRows();
     });
+
+    // Function to validate rows
+    function validateRows() {
+        var isValid = true;
+        $('#tab_logic tbody tr').each(function(index) {
+            var product = $(this).find('.hsn').val();
+            var qty = $(this).find('.qty').val();
+            if (product === '') {
+                alert('Select a product on row ' + (index + 1));
+                isValid = false;
+                return false;
+            }
+            if (qty === '' || qty === '0') {
+                alert('Add quantity in row ' + (index + 1));
+                isValid = false;
+                return false;
+            }
+        });
+        return isValid;
+    }
+
+    // Submit event handler for the form
+    $('#pbillForm').submit(function(e) {
+        if (!validateRows()) {
+            e.preventDefault();
+        }
+    });
+});
+
     $(document).ready(function(){
     $('.select2').select2();
     $(document).on('change', '.itemselect2',function(){ 
@@ -1382,6 +1458,7 @@ currentDateInput.value = formatDate(currentDate);
 
 function validatePhoneNumber(inputElement) {
 const phoneNumber = inputElement.value;
+
 const validationSpan = document.getElementById("contact-validation");
 
 // Regular expression to check for a 10-digit number
@@ -1396,6 +1473,7 @@ if (regex.test(phoneNumber)) {
     validationSpan.innerHTML = "&#10060;"; // Cross mark symbol
     validationSpan.style.color = "red";
 }
+
 }
 
 function validateGSTIN(inputElement) {

@@ -689,6 +689,47 @@ $(document).ready(function() {
 });
 </script>
 <script>
+    $(document).ready(function() {
+        $('#forms').submit(function(event) {
+            // Prevent the form from submitting by default
+            event.preventDefault();
+            console.log("jjhfgjsgd")
+            
+            // Flag to check if all input fields have values
+            var allFieldsFilled = true;
+            
+            // Iterate over each row in the table
+            $('#forms').each(function() {
+                
+                $(this).find('input.contact').each(function() {
+                    
+                    if (($(this).val() === '')||($(this).val() == 0)) {
+                        // Empty input field found, set flag to false and alert the user
+                        console.log($(this).val())
+                        allFieldsFilled = false;
+                        alert('Please fill contact.');
+                        // Optionally, you can add further validation logic or UI feedback here
+                        return false; // Exit the loop after the first empty input field is found
+                    }
+                });
+                
+                
+                // Exit the loop if any empty input field is found
+                if (!allFieldsFilled) {
+                    return false;
+                }
+            });
+            
+            // If all input fields have values, submit the form
+            if (allFieldsFilled) {
+                this.submit();
+    
+                
+            }
+        });
+    });
+    </script>
+<script>
     function checkhsn(element){
         var hsninput = element.value;
         var gstregexp = "[0-9]{6}";
@@ -917,47 +958,61 @@ console.log(selectedvalue,'hihi')
                 <script>
    
 
-                    $(document).on("click","#itemsave",function(){
-                        var item_name = document.getElementById('item_name').value;
-                
-                        if ($('#item_tax_1').prop('checked')) {
-                            tax= $('#taxable_result').val();
-                        } 
-                        else{
-                            tax = $('#taxable_result').val();
-                        }
-                
-                        if (item_name === ''){
-                            alert('Please provide an Item Name');
-                        }else{
-                            console.log($("#hsn1").val())
-                            $.ajax({
-                                type : 'POST',
-                                url:"save_item", // Replace this with the actual URL path to your save_item view
-                                data:{
-                                    itm_type :$("#itm_type").val(),
-                                    name : $("#item_name").val(),
-                                    unit : $("#unit").val(),
-                                    hsn : $("#hsn1").val(),
-                                    taxref : tax,
-                                    sell_price : $("#sal_price").val(),
-                                    cost_price : $("#pur_price").val(),
-                                    vat : $("#vat").val(),
-                                    itmdate : $("#date").val(),
-                                    stock : $("#opn_stock_").val(),
-                                    itmprice : $("#at_price").val(),
-                                    csrfmiddlewaretoken: '{{ csrf_token }}',
-                                    
-                                },
-                                
-                                success: function(response) {
-                                    document.getElementById("modalItem").reset();
-                                    $('#newitem').modal('hide');
-                                    reloadItem();
-                                },
-                            });  
-                        }      
-                    });
+   $(document).on("click", "#itemsave", function() {
+    var item_name = document.getElementById('item_name').value;
+    var hsn = $("#hsn1").val(); // Get the value of HSN
+
+    // Check if the length of HSN is less than 6
+    if (hsn.length < 6) {
+        alert('HSN must be at least 6 characters long');
+        return; // Exit function to prevent further execution
+    }
+
+    var tax;
+    if ($('#item_tax_1').prop('checked')) {
+        tax = $('#taxable_result').val();
+    } else {
+        tax = $('#taxable_result').val();
+    }
+
+    if (item_name === '') {
+        alert('Please provide an item name');
+    } else {
+        console.log($("#hsn1").val())
+        $.ajax({
+            type: 'POST',
+            url: "save_item", // Replace this with the actual URL path to your save_item view
+            data: {
+                itm_type: $("#itm_type").val(),
+                name: $("#item_name").val(),
+                unit: $("#unit_list_drp").val(),
+                hsn: hsn, // Use the hsn variable here
+                taxref: tax,
+                sell_price: $("#sal_price").val(),
+                cost_price: $("#pur_price").val(),
+                vat: $("#vat").val(),
+                itmdate: $("#date").val(),
+                stock: $("#opn_stock_").val(),
+                itmprice: $("#at_price").val(),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+
+            success: function(response) {
+                document.getElementById("modalItem").reset();
+                var today = new Date();
+                // Format date as YYYY-MM-DD
+                var year = today.getFullYear();
+                var month = (today.getMonth() + 1).toString().padStart(2, '0');
+                var day = today.getDate().toString().padStart(2, '0');
+
+                // Set the value of the date input field to today's date
+                document.getElementById('date').value = year + '-' + month + '-' + day;
+                $('#newitem').modal('hide');
+                reloadItem();
+            },
+        });
+    }
+});
                 
                     function reloadItem() {
                         $.ajax({
