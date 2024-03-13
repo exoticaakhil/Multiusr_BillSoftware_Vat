@@ -633,7 +633,6 @@
 </div>
 
 
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
@@ -659,6 +658,7 @@ $(document).ready(function() {
                     return false; // Exit the loop after the first empty input field is found
                 }
             });
+         
             $(this).find('select.product').each(function() {
                 
                 if ($(this).val() === '') {
@@ -670,7 +670,7 @@ $(document).ready(function() {
                     return false; // Exit the loop after the first empty input field is found
                 }
             });
-            calc();
+            
             
             // Exit the loop if any empty input field is found
             if (!allFieldsFilled) {
@@ -684,9 +684,23 @@ $(document).ready(function() {
 
             
         }
+        calc();
     });
 });
 </script>
+<script>
+    function checkhsn(element){
+        var hsninput = element.value;
+        var gstregexp = "[0-9]{6}";
+        if (hsninput.match(gstregexp)) {
+            document.getElementById('warnhsn').innerHTML = '';
+        } else {
+            document.getElementById('warnhsn').innerHTML = 'Please provide a valid HSN Number';
+            alert('Please provide a valid HSN Number');
+            }
+    
+        }
+    </script>
     
         
  
@@ -1522,24 +1536,7 @@ $(document).ready(function() {
     
 });
 
-$('#hsn1').blur(function() {
-        var hsn1 = $(this).val();
-        $.ajax({
-            url: 'check_hsn_number_exists',
-            data: {
-                'hsn1': hsn1
-            },
-            dataType: 'json',
-            success: function(data) {
-                if (data.exists) {
-                    $('#hsnerror').text('HSN number already exists!');
-                } else {
-                    $('#hsnerror').text('');
-                }
-            }
-        });
-        
-    });
+
     $(document).on("click","#saveItemUnit",function(){
         var name = $("#unit_name").val();
         if (name !=""){
