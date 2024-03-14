@@ -52,8 +52,5 @@ urlpatterns = [
     path('unit_reload_modal', views.unit_reload_modal, name='unit_reload_modal'),
     path('save_unit', views.save_unit, name='save_unit'),
 
-   
-    
- 
 
 ]

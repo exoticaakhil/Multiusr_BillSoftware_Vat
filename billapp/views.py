@@ -390,8 +390,8 @@ def itemdetails(request):
   hsn = itm.itm_hsn
   vat = itm.itm_vat
   price = itm.itm_purchase_price
-  qty = itm.itm_stock_in_hand
-  # print(vat)
+  qty = 0
+  print(qty)
   return JsonResponse({'hsn':hsn, 'vat':vat,  'price':price, 'qty':qty})
 def item_dropdown(request):
   if request.user.is_company:

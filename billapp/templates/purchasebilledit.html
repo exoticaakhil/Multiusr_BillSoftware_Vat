@@ -429,7 +429,7 @@
                           </div>
                           <div  class="col-sm-12 col-md-1"></div>
                           <div class="text-start" style="margin-left: 9%;">
-                            <button class="btn me-3 button_border" type="submit" value="save_and_next" name="save_and_next">Save & Next</submit>
+                           
                             <button class="btn me-3 button_border" type="button" value="save" name="save" id="itemsave">Save</button>
                           </div>
                         </div>
@@ -814,13 +814,13 @@ $(document).ready(function () {
     $(document).ready(function(){
       $('#item_tax_1').on('click',function(){
           $('#vatdiv').attr('hidden',false)
-          $('#vat').val('vat 5')
+          $('#vat').val('VAT 5%')
       })
     })
     $(document).ready(function(){
       $('#item_tax_2').on('click',function(){
           $('#vatdiv').attr('hidden',false)
-          $('#vat').val('vat 0')
+          $('#vat').val('VAT 0%')
       })
     })
   
@@ -876,11 +876,13 @@ $(document).ready(function () {
                 data = response.hsn
                 data3 = response.price
                 data4 = response.vat
+                data5 = response.qty
                 
                 
                 document.getElementById(`hsn${d}`).value = data;
                 document.getElementById(`unit${d}`).value = data3;
                 document.getElementById(`Vat${d}`).value = data4;
+                document.getElementById(`qty${d}`).value = data5;
                 
 
                 
@@ -919,17 +921,21 @@ console.log(selectedvalue,'hihi')
                 data = response.hsn
                 data3 = response.price
                 data4 = response.vat
+                data5 = response.qty
+                console.log( data5)
                 
                 
                 document.getElementById(`hsn${b}`).value = data;
                 document.getElementById(`unit${b}`).value = data3;
                 document.getElementById(`Vat${b}`).value = data4;
+                document.getElementById(`qty${b}`).value = data5;
                 
 
                 
                 
             },
             
+           
         
         });
         calc();
@@ -1009,7 +1015,11 @@ console.log(selectedvalue,'hihi')
                 document.getElementById('date').value = year + '-' + month + '-' + day;
                 $('#newitem').modal('hide');
                 reloadItem();
+                
             },
+
+                    
+
         });
     }
 });
@@ -1188,11 +1198,13 @@ console.log(selectedvalue,'hihi')
                         data = response.hsn
                         data3 = response.price
                         data4 = response.vat
+                        data5 = response.qty
                         
                         
                         document.getElementById('hsn'+n).value = data;
                         document.getElementById('unit'+n).value = data3;
                         document.getElementById('Vat'+n).value = data4;
+                        document.getElementById('qty'+n).value = data5;
                         
         
                         
